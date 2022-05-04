@@ -26,7 +26,7 @@ const ForkTsCheckerWebpackPlugin =
     : require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash');
+const createEnvironmentHash = require('./createEnvironmentHash');
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -712,10 +712,7 @@ module.exports = function (webpackEnv) {
               { file: '**/src/**/*.{ts,tsx}' },
             ],
             exclude: [
-              { file: '**/src/**/__tests__/**' },
-              { file: '**/src/**/?(*.){spec|test}.*' },
               { file: '**/src/setupProxy.*' },
-              { file: '**/src/setupTests.*' },
             ],
           },
           logger: {

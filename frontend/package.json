@@ -1,19 +1,14 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "project-frontend",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^5.5.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "babel-jest": "^27.4.2",
     "babel-loader": "^8.2.3",
     "babel-plugin-named-asset-import": "^0.3.8",
     "babel-preset-react-app": "^10.0.1",
@@ -32,9 +27,6 @@
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^27.4.3",
-    "jest-resolve": "^27.4.2",
-    "jest-watch-typeahead": "^1.0.0",
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.4.4",
     "postcss-flexbugs-fixes": "^5.0.2",
@@ -60,17 +52,45 @@
     "webpack": "^5.64.4",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
-    "workbox-webpack-plugin": "^6.4.1"
+    "workbox-webpack-plugin": "^6.4.1",
+    "@ant-design/icons": "^4.6.3",
+    "@tippyjs/react": "^4.2.6",
+    "@types/styled-components": "^5.1.15",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "antd": "^4.16.12",
+    "@babel/eslint-parser": "^7.17.0",
+    "cross-env": "^7.0.3",
+    "mobx": "^6.4.0",
+    "mobx-react-lite": "^3.3.0",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-datepicker": "^4.3.0",
+    "react-dropzone": "^11.4.2",
+    "react-query": "^3.19.6",
+    "react-router-dom": "^5.2.0",
+    "react-table": "^7.7.0",
+    "styled-components": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.2",
+    "babel-plugin-styled-components": "^1.13.2",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^15.0.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "prettier": "2.5.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "build": "node scripts/build.js"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
@@ -85,58 +105,10 @@
       "last 1 safari version"
     ]
   },
-  "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts"
-    ],
-    "setupFiles": [
-      "react-app-polyfill/jsdom"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
-    ],
-    "testEnvironment": "jsdom",
-    "transform": {
-      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
-      "^.+\\.module\\.(css|sass|scss)$"
-    ],
-    "modulePaths": [],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
-    },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "web.ts",
-      "ts",
-      "web.tsx",
-      "tsx",
-      "json",
-      "web.jsx",
-      "jsx",
-      "node"
-    ],
-    "watchPlugins": [
-      "jest-watch-typeahead/filename",
-      "jest-watch-typeahead/testname"
-    ],
-    "resetMocks": true
-  },
   "babel": {
+    "plugins": [
+      "babel-plugin-styled-components"
+    ],
     "presets": [
       "react-app"
     ]
