@@ -2,6 +2,7 @@ export enum RoutesEnum {
   LOGIN = 'login',
   REGISTRATION = 'registration',
   PROFILE = 'profile',
+  USER = 'user/:id',
   ROOT = '/',
 }
 

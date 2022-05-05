@@ -35,11 +35,12 @@ export function AdminPanelWrapper({
           items={[
             ...(Object.entries(routesOnlyForAuthedUsers)
               .map(
-                ([path, { menuIcon, menuTitle, allowedForScopeTypes }]) =>
-                  canUserUseThisRoute(
-                    session.authInfo,
-                    allowedForScopeTypes,
-                  ) && {
+                ([
+                  path,
+                  { menuIcon, menuTitle, allowedForScopeTypes, isMenuPoint },
+                ]) =>
+                  canUserUseThisRoute(session.authInfo, allowedForScopeTypes) &&
+                  isMenuPoint && {
                     label: <Link to={`/adminPanel/${path}`}>{menuTitle}</Link>,
                     key: path,
                     icon: menuIcon,

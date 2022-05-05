@@ -21,9 +21,18 @@ export const routesOnlyForNotAuthedUsers: RoutesMap<SimpleRouteEntity> = {
 export const routesOnlyForAuthedUsers: RoutesMap<AuthedRouteEntity> = {
   [RoutesEnum.PROFILE]: {
     Component: Profile,
+    isMenuPoint: true,
     menuTitle: 'Profile menu item',
     pageTitle: 'Profile page header',
     description: 'Профиль',
+    allowedForScopeTypes: [RouteAccessScopeType.REGULAR_USER],
+    menuIcon: <UserOutlined />,
+  },
+  [RoutesEnum.USER]: {
+    Component: Profile,
+    menuTitle: 'User menu item',
+    pageTitle: 'User page header',
+    description: 'User desc',
     allowedForScopeTypes: [RouteAccessScopeType.REGULAR_USER],
     menuIcon: <UserOutlined />,
   },
