@@ -1,10 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { ISession } from 'types';
-import { getLocalStorageAuth, isValidSession } from 'utils';
-
-function setLocalStorageAuth(obj: ISession) {
-  localStorage.setItem('authed', JSON.stringify(obj));
-}
+import { isValidSession } from 'utils';
+import { ILocalStorageAuth, ISession } from 'types';
 
 if (!getLocalStorageAuth()) {
   setLocalStorageAuth({
@@ -22,10 +18,7 @@ const AuthContextUpdater = React.createContext(
 export function useAuthedUser() {
   useContext(AuthContext);
 
-  return getLocalStorageAuth() as {
-    isAuthed: boolean;
-    authInfo: Record<string, any> | undefined;
-  };
+  return getLocalStorageAuth() as ISession;
 }
 
 export function useAuthContextUpdater() {
@@ -60,4 +53,18 @@ export function AuthContextProvider({ children }) {
       </AuthContext.Provider>
     </AuthContextUpdater.Provider>
   );
+}
+
+function setLocalStorageAuth(obj: ISession) {
+  localStorage.setItem('authed', JSON.stringify(obj));
+}
+
+function getLocalStorageAuth() {
+  let state: ILocalStorageAuth = null;
+  try {
+    state = JSON.parse(localStorage.getItem('authed') as string);
+  } catch (error) {
+    state = null;
+  }
+  return state;
 }

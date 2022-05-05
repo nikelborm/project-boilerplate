@@ -16,7 +16,8 @@ export interface SimpleRouteEntity {
 
 export interface AuthedRouteEntity extends SimpleRouteEntity {
   Component: React.FC<React.PropsWithChildren<any>>;
-  allowedForScopeTypes?: RouteAccessScopeType[];
+  allowedForScopeTypes: RouteAccessScopeType[];
+  isMenuPoint?: boolean;
   menuTitle?: string;
   pageTitle?: string;
   description?: string;

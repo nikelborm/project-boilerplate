@@ -5,15 +5,17 @@ import {
   AuthWrapper,
   renderAuthFallbackRoute,
 } from 'components';
+import { canUserUseThisRoute } from 'utils';
 import {
   routesOnlyForAuthedUsers,
   routesOnlyForNotAuthedUsers,
   publicRoutes,
   publicFallbackRoute,
+  getAuthedFallbackRoute,
 } from './routes';
 
 function App() {
-  const { isAuthed, authInfo } = useAuthedUser();
+  const session = useAuthedUser();
   const usePathData = usePath();
   return (
     <Routes>
@@ -23,39 +25,38 @@ function App() {
 
       <Route
         path="/auth"
-        element={
-          <AuthWrapper
-            isAuthed={isAuthed}
-            authInfo={authInfo}
-            {...usePathData}
-          />
-        }
+        element={<AuthWrapper session={session} {...usePathData} />}
       >
         {Object.entries(routesOnlyForNotAuthedUsers).map(
           ([path, { Component }]) => (
             <Route path={path} key={path} element={<Component />} />
           ),
         )}
-        {renderAuthFallbackRoute({ isAuthed })}
+        {renderAuthFallbackRoute(session)}
       </Route>
 
       <Route
         path="/adminPanel"
-        element={
-          <AdminPanelWrapper
-            isAuthed={isAuthed}
-            authInfo={authInfo}
-            {...usePathData}
-          />
-        }
+        element={<AdminPanelWrapper session={session} {...usePathData} />}
       >
         {Object.entries(routesOnlyForAuthedUsers).map(
-          // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
           ([path, { Component, allowedForScopeTypes }]) => (
-            <Route path={path} key={path} element={<Component />} />
+            <Route
+              path={path}
+              key={path}
+              element={
+                /* eslint-disable prettier/prettier */
+                session.isAuthed && (
+                  canUserUseThisRoute(session.authInfo, allowedForScopeTypes)
+                    ? <Component />
+                    : <Navigate to={getAuthedFallbackRoute(session.authInfo)} />
+                )
+                /* eslint-enable prettier/prettier */
+              }
+            />
           ),
         )}
-        {renderAuthFallbackRoute({ isAuthed })}
+        {renderAuthFallbackRoute(session)}
       </Route>
 
       <Route path="*" element={<Navigate to={publicFallbackRoute} />} />

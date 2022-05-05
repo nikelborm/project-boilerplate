@@ -1,28 +1,24 @@
 import { useState } from 'react';
 import { Link, Outlet, Navigate } from 'react-router-dom';
 import { Layout, Menu, PageHeader } from 'antd';
-import { useAuthContextUpdater, useAuthedUser, usePath } from 'hooks';
-import { RoutesEnum } from 'types';
-import {
-  authedFallbackRoute,
-  notAuthedFallbackRoute,
-  routesOnlyForAuthedUsers,
-} from 'routes';
+import { useAuthContextUpdater, usePath } from 'hooks';
+import { ISession, RoutesEnum } from 'types';
+import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from 'routes';
+import { canUserUseThisRoute } from 'utils';
+import { ItemType } from 'antd/lib/menu/hooks/useItems';
 
 const { Header, Content, Footer, Sider } = Layout;
 
 export function AdminPanelWrapper({
-  isAuthed,
+  session,
   deepestPathPart,
   pathParts,
 }: AdminPanelWrapperProps) {
   const [isMenuCollapsed, setCollapsedMenu] = useState(false);
   const { updateAuthContext } = useAuthContextUpdater();
 
-  if (deepestPathPart === 'adminPanel')
-    return <Navigate to={authedFallbackRoute} />;
-
-  if (!isAuthed) return <Navigate to={`/auth/${notAuthedFallbackRoute}`} />;
+  if (!session.isAuthed)
+    return <Navigate to={`/auth/${notAuthedFallbackRoute}`} />;
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -32,24 +28,35 @@ export function AdminPanelWrapper({
         onCollapse={setCollapsedMenu}
         width={300}
       >
-        <Menu theme="dark" defaultSelectedKeys={pathParts} mode="inline">
-          {Object.entries(routesOnlyForAuthedUsers).map(
-            ([path, { menuIcon, menuTitle }]) => (
-              <Menu.Item key={path} icon={menuIcon}>
-                <Link to={`/adminPanel/${path}`}>{menuTitle}</Link>
-              </Menu.Item>
-            ),
-          )}
-
-          <Menu.Item key="empty" />
-
-          <Menu.Item
-            key="logout"
-            onClick={() => updateAuthContext({ isAuthed: false })}
-          >
-            Logout
-          </Menu.Item>
-        </Menu>
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={pathParts}
+          mode="inline"
+          items={[
+            ...(Object.entries(routesOnlyForAuthedUsers)
+              .map(
+                ([path, { menuIcon, menuTitle, allowedForScopeTypes }]) =>
+                  canUserUseThisRoute(
+                    session.authInfo,
+                    allowedForScopeTypes,
+                  ) && {
+                    label: <Link to={`/adminPanel/${path}`}>{menuTitle}</Link>,
+                    key: path,
+                    icon: menuIcon,
+                  },
+              )
+              .filter((isNotNullable) => isNotNullable) as ItemType[]),
+            {
+              key: 'empty',
+              disabled: true,
+            },
+            {
+              label: 'Logout',
+              key: 'logout',
+              onClick: () => updateAuthContext({ isAuthed: false }),
+            },
+          ]}
+        />
       </Sider>
       <Layout>
         <Header style={{ background: '#fff', padding: 0 }}>
@@ -77,5 +84,6 @@ export function AdminPanelWrapper({
   );
 }
 
-type AdminPanelWrapperProps = ReturnType<typeof useAuthedUser> &
-  ReturnType<typeof usePath>;
+type AdminPanelWrapperProps = { session: ISession } & ReturnType<
+  typeof usePath
+>;

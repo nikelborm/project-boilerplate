@@ -1,12 +1,15 @@
-import { useAuthedUser, usePath } from 'hooks';
+import { usePath } from 'hooks';
 import { Navigate, Outlet } from 'react-router-dom';
-import { authedFallbackRoute, notAuthedFallbackRoute } from 'routes';
+import { getAuthedFallbackRoute } from 'routes';
+import { ISession } from 'types';
 
-export function AuthWrapper({ isAuthed, deepestPathPart }: AuthWrapperProps) {
-  if (deepestPathPart === 'auth')
-    return <Navigate to={notAuthedFallbackRoute} />;
-
-  if (isAuthed) return <Navigate to={`/adminPanel/${authedFallbackRoute}`} />;
+export function AuthWrapper({ session }: AuthWrapperProps) {
+  if (session.isAuthed)
+    return (
+      <Navigate
+        to={`/adminPanel/${getAuthedFallbackRoute(session.authInfo)}`}
+      />
+    );
 
   return (
     <div>
@@ -18,5 +21,4 @@ export function AuthWrapper({ isAuthed, deepestPathPart }: AuthWrapperProps) {
   );
 }
 
-type AuthWrapperProps = ReturnType<typeof useAuthedUser> &
-  ReturnType<typeof usePath>;
+type AuthWrapperProps = { session: ISession } & ReturnType<typeof usePath>;
