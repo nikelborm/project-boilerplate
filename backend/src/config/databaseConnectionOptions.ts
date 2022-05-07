@@ -8,7 +8,7 @@ export const dataSourceConfig = {
   password: process.env.DATABASE_PASSWORD as string,
   database: process.env.DATABASE_NAME as string,
   logging: JSON.parse(
-    process.env.DATABASE_TYPEORM_LOGGING_MODE || 'all',
+    process.env.DATABASE_TYPEORM_LOGGING_MODE || '"all"',
   ) as LoggerOptions,
   entities: ['dist/modules/infrastructure/model/*.model.js'],
   migrations: ['dist/modules/infrastructure/migration/*.js'],

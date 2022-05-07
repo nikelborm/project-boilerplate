@@ -2,7 +2,7 @@ FROM nikelborm/node as prepare
 
 COPY package.json yarn.lock .eslintrc.json .prettierrc tsconfig.json ./
 
-RUN yarn
+RUN yarn --production
 
 COPY config config/
 COPY public public/
@@ -11,10 +11,10 @@ COPY src src/
 
 FROM prepare as rundev
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["node", "scripts/start.js"]
 
 FROM prepare as build
-RUN yarn build
+RUN node scripts/build.js
 
 FROM nginx:1.18.0-alpine as static
 ARG PROD_EXTERNAL_NGINX_HTTP_PORT
@@ -25,5 +25,5 @@ RUN rm -rf /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 COPY .htpasswd /etc/nginx/.htpasswd
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY prod.nginx.template.conf /etc/nginx/templates/default.conf
+COPY prod.nginx.template.conf /etc/nginx/templates/nginx.conf.template
 COPY --from=build /app/build /usr/share/nginx/html/

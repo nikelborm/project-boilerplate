@@ -71,10 +71,12 @@ services:
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
-      - type: bind
-        source: $HOME/$PROJECT_NAME-postgres-prod
+      - type: volume
+        source: postgres-prod-data
         target: /var/lib/postgresql/data
-        consistency: delegated
+
+volumes:
+  postgres-prod-data:
 
 # when i will really want to use https and ssl
 # article how to setup certbot and let's encrypt

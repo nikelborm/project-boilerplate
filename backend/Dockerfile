@@ -2,7 +2,7 @@ FROM nikelborm/node as prepare
 
 COPY package.json yarn.lock tsconfig.json .prettierrc tsconfig.build.json .eslintrc.js ./
 
-RUN yarn
+RUN yarn --production
 
 COPY src src/
 
@@ -10,11 +10,8 @@ COPY src src/
 # EXPOSE 3000
 # CMD ["yarn", "start"]
 
-FROM prepare as build
+FROM prepare as production
 RUN nest build
-
-FROM nikelborm/node as production
-COPY --from=build /app/dist/ ./dist/
 CMD [ "node", "dist/main" ]
 
 # RUN npm run build

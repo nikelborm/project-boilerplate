@@ -19,17 +19,6 @@ const validateConfig = {
   forbidNonWhitelisted: true,
 };
 
-export class BaseMessage<T> {
-  @IsDefined()
-  @IsObject()
-  payload!: T;
-
-  @IsDefined()
-  @ValidateNested()
-  @Type(() => BaseMessageReport)
-  report!: BaseMessageReport;
-}
-
 export class BaseMessageReport {
   @IsBoolean()
   isOk!: boolean;
@@ -41,6 +30,17 @@ export class BaseMessageReport {
   @IsOptional()
   @IsString()
   description?: string;
+}
+
+export class BaseMessage<T> {
+  @IsDefined()
+  @IsObject()
+  payload!: T;
+
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => BaseMessageReport)
+  report!: BaseMessageReport;
 }
 
 export function validate<P>(payload: P, payloadClass: { new (): P }) {

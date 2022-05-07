@@ -3,7 +3,9 @@ import { ConfigKeys, IAppConfigMap } from 'src/types';
 // TODO: config types validation
 export const appConfig: () => IAppConfigMap = () => ({
   [ConfigKeys.IS_DEVELOPMENT]: process.env.PROJECT_ENV_TYPE === 'development',
-  [ConfigKeys.IS_PRODUCTION]: process.env.PROJECT_ENV_TYPE === 'production',
+  [ConfigKeys.IS_PRODUCTION]:
+    (console.log(process.env.PROJECT_ENV_TYPE),
+    process.env.PROJECT_ENV_TYPE === 'production'),
   [ConfigKeys.SERVER_PORT]: parseInt(process.env.SERVER_PORT || '3000', 10),
   [ConfigKeys.WEB_SOCKET_SERVER_PORT]: parseInt(
     process.env.WEB_SOCKET_SERVER_PORT || '2999',

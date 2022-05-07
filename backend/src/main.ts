@@ -5,12 +5,19 @@ import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { logConfig } from './tools';
 import { ConfigKeys, IAppConfigMap } from './types';
+import 'reflect-metadata';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as MockServices from './mock';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
+
   const configService: ConfigService<IAppConfigMap, true> =
     app.get(ConfigService);
+
   logConfig(configService);
 
   const mode = configService.get(ConfigKeys.BOOTSTRAP_MODE, { infer: true });
@@ -29,6 +36,22 @@ async function bootstrap() {
 
   if (mode === 'endpoints' || mode === 'mockAndEndpoints') {
     const port = configService.get(ConfigKeys.SERVER_PORT, { infer: true });
+
+    if (configService.get(ConfigKeys.IS_DEVELOPMENT, { infer: true })) {
+      const config = new DocumentBuilder()
+        .setTitle('Payless API')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .setDescription(
+          `Надо учитывать то что я описал сущности наподобие того как они могут находиться в базе<br/>
+          данных, то есть если ты дёрнешь какую-то ручку, то она вернёт тебе не все данные, которые<br/>
+          есть в схеме. Это надо будет поправить и я поправлю`,
+        )
+        .build();
+
+      const document = SwaggerModule.createDocument(app, config);
+      SwaggerModule.setup('/docs', app, document);
+    }
 
     app.useWebSocketAdapter(new WsAdapter(app));
     app.use(json({ limit: '3mb' }));
