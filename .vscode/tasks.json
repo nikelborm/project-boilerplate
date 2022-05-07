@@ -1,0 +1,35 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build docker node container",
+      "type": "shell",
+      "dependsOn": [
+        "Use docker builder"
+      ],
+      "command": "docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < Dockerfile",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build production",
+      "type": "shell",
+      "dependsOn": [
+        "Use docker builder"
+      ],
+      "command": ". env/template; docker buildx bake -f docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
+      "problemMatcher": []
+    },
+    {
+      "label": "Create new docker builder",
+      "type": "shell",
+      "command": "docker buildx create --name mybuilder --platform=linux/arm64,linux/amd64"
+    },
+    {
+      "label": "Use docker builder",
+      "type": "shell",
+      "command": "docker buildx use mybuilder"
+    }
+  ]
+}

@@ -1,16 +1,4 @@
-FROM node:16-alpine AS prepare
-
-RUN mkdir /usr/local/sbin; ln -n /usr/local/bin/node /usr/local/sbin/node || true
-
-ENV TZ=Europe/Moscow
-# ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
-# ENV REACT_APP_NAME=NewApp
-# ENV GENERATE_SOURCEMAP=false
-ENV PATH $PATH:/app/node_modules/.bin
-WORKDIR /app
-
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone
+FROM nikelborm/node as prepare
 
 COPY package.json yarn.lock .eslintrc.json .prettierrc tsconfig.json ./
 
@@ -22,17 +10,20 @@ COPY scripts scripts/
 COPY src src/
 
 FROM prepare as rundev
-CMD ["yarn", "start"]
 EXPOSE 3000
+CMD ["yarn", "start"]
 
 FROM prepare as build
 RUN yarn build
 
 FROM nginx:1.18.0-alpine as static
-ENV TZ=Europe/Moscow
+ARG PROD_EXTERNAL_NGINX_HTTP_PORT
+ARG PROD_EXTERNAL_NGINX_HTTPS_PORT
+EXPOSE ${PROD_EXTERNAL_NGINX_HTTP_PORT}
+EXPOSE ${PROD_EXTERNAL_NGINX_HTTPS_PORT}
 RUN rm -rf /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 COPY .htpasswd /etc/nginx/.htpasswd
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY prod.nginx.template.conf /etc/nginx/templates/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/
-EXPOSE 8000

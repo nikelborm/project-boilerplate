@@ -6,6 +6,8 @@ export type IAppConfigMap = {
   [ConfigKeys.IS_DEVELOPMENT]: boolean;
   [ConfigKeys.IS_PRODUCTION]: boolean;
   [ConfigKeys.MOCK_SCRIPT_NAME]: string;
+  [ConfigKeys.JWT_SECRET]: string;
+  [ConfigKeys.USER_PASSWORD_HASH_SALT]: string;
   [ConfigKeys.SERVER_PORT]: number;
   [ConfigKeys.WEB_SOCKET_SERVER_PORT]: number;
 };

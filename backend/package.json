@@ -25,7 +25,13 @@
     "pgstop": "docker stop smarthouse_gateway_pgdocker",
     "pgrm": "yarn typeorm schema:drop",
     "pgrmhard": "sudo rm -rf ~/smarthouse_gateway_pgdocker; docker stop smarthouse_gateway_pgdocker; docker rm smarthouse_gateway_pgdocker; yarn pgrun; yarn pgstart;",
-    "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' smarthouse_gateway_pgdocker"
+    "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' smarthouse_gateway_pgdocker",
+    "1prebuild": "rimraf dist",
+    "1build": "nest build",
+    "1start": "nest start",
+    "1start:dev": "nest start --watch",
+    "1start:debug": "nest start --debug 0.0.0.0:9229 --watch",
+    "1start:prod": "node dist/main"
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.7",
@@ -43,7 +49,7 @@
     "@nestjsi/typeorm-pg": "0.2.3",
     "@types/validator": "^13.7.2",
     "@types/ws": "^8.5.3",
-    "bcrypt": "^5.0.1",
+    "bcrypt": "5.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "^0.13.2",
     "connect-pg-simple": "^7.0.0",
@@ -58,8 +64,6 @@
     "postgres": "^3.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.4.0",
-    "serialport": "^10.4.0",
     "source-map-support": "^0.5.20",
     "swagger-ui-express": "^4.2.0",
     "ts-loader": "^9.3.0",

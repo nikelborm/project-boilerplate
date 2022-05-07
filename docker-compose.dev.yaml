@@ -15,3 +15,111 @@ services:
         source: "${FRONTEND_ROOT}/src"
         target: /app/src
         consistency: delegated
+
+
+version: "3.5"
+services:
+  frontend:
+    image: "${DOCKER_REGISTRY}/frontend:${IMAGE_TAG}"
+    ports:
+      - ${FRONTEND_BIND}:3000/tcp
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
+    restart: always
+    build:
+      context: $FRONTEND_ROOT
+      target: prepare
+    volumes:
+      - type: bind
+        source: "${FRONTEND_ROOT}/src"
+        target: /app/src
+        consistency: delegated
+version: "3.5"
+services:
+  backend:
+    ports:
+      - ${BACKEND_BIND}:3000/tcp
+    build:
+      context: $BACKEND_ROOT
+      target: build
+    volumes:
+      - type: bind
+        source: $BACKEND_ROOT/src
+        target: /app/src
+        consistency: delegated
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
+      version: "3.5"
+services:
+  backend-postgres:
+    image: "${DOCKER_REGISTRY}/backend-postgres:${IMAGE_TAG}"
+    command: "-c default_text_search_config=pg_catalog.russian"
+    volumes:
+      - "${PG_DATA_DIR}/data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_PASSWORD
+    restart: always
+  backend:
+    depends_on:
+      - backend-postgres
+    image: "${DOCKER_REGISTRY}/backend:${IMAGE_TAG}"
+    environment:
+      - FNTCH_ENV
+      - COMPOSE_PROJECT_NAME
+      - TYPEORM_HOST=backend-postgres
+      - TYPEORM_USERNAME=${POSTGRES_USER}
+      - TYPEORM_PASSWORD=${POSTGRES_PASSWORD}
+    restart: always
+
+
+
+
+version: "3.8"
+services:
+  api:
+    # image: thomas-oliver/nestjs-dockerized 
+    build:
+      dockerfile: Dockerfile
+      context: .
+      # Only will build development stage from our dockerfile
+      target: development
+    # Mount our host Directory to the docker container
+    # Mount (.) current directory to the docker container thomas/src/app
+    # reflect file changes from host to container
+    volumes:
+      - .:/thomas/src/app
+      - ./thomas/src/app/node_modules
+    # Run in Debug Mode: npm run start:debug --> Don't forget to start your vscode debugger!
+    # Run in dev Mode: npm run start:dev
+    command: npm run start:debug
+    depends_on: 
+      - postgres
+    environment: 
+      DATABASE_URL: postgres://user:password@postgres:5432/db
+      NODE_ENV: development
+      JWT_SECRET: 1hard_to_guess_secret7890a
+      PORT: 3000
+    ports:
+      - 8080:3000
+      # debugging port
+      - 9229:9229
+
+  postgres:
+    image: postgres:10.4
+    environment: 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    ports:
+      - 35000:5432
+
+    ### Postgres Adminer ###
+  postgres_admin:
+    image: dpage/pgadmin4:4.28
+    depends_on:
+      - postgres
+    environment: 
+      PGADMIN_DEFAULT_EMAIL: admin@admin.de
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - 5050:80

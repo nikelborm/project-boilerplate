@@ -14,4 +14,7 @@ export const appConfig: () => IAppConfigMap = () => ({
     | 'endpoints'
     | 'mockAndEndpoints',
   [ConfigKeys.MOCK_SCRIPT_NAME]: process.env.MOCK_SCRIPT_NAME as string,
+  [ConfigKeys.JWT_SECRET]: process.env.JWT_SECRET as string,
+  [ConfigKeys.USER_PASSWORD_HASH_SALT]: process.env
+    .USER_PASSWORD_HASH_SALT as string,
 });

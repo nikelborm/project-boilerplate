@@ -1,37 +1,59 @@
 #!/bin/bash
 
-# frontend
-export DANGEROUSLY_DISABLE_HOST_CHECK=true
-export REACT_APP_NAME=NewApp
-export GENERATE_SOURCEMAP=false
+export TZ='Europe/Moscow'
+export PROJECT_NAME='boilerplate'
 
+# frontend
+export DANGEROUSLY_DISABLE_HOST_CHECK='true'
+export REACT_APP_NAME='NewApp'
+export GENERATE_SOURCEMAP='false'
 
 # backend
 
 # 'production' | 'development'
-export PROJECT_ENV_TYPE="development"
+export PROJECT_ENV_TYPE='development'
 
 # Don`t forget to change to another long secure random string in production
 # It`s key for sign jwt auth tokens
-export JWT_SECRET="[a0oej4rgip5g0aijefogpihn[4ijks;wk3f3ihgposldckdieselkwn5 vlkfj[q34t'k:\"KP_FF\"#ORKOWI:EJLEDK_@#sKOJGWRLGNK<ASJDN:EWLGKJWOIJWOLFJKNDSMNGSG>SNFELK<NSFMNSDLKGJBNO:FLKWEMF}}]]]"
+export JWT_SECRET='[a0oej4rgip5g0aijefogpihn[4ijks;wk3f3ihgposldckdieselkwn5 vlkfj[q34t"k:\"KP_FF\"#ORKOWI:EJLEDK_@#sKOJGWRLGNK<ASJDN:EWLGKJWOIJWOLFJKNDSMNGSG>SNFELK<NSFMNSDLKGJBNO:FLKWEMF}}]]]'
 
 # Don`t forget to change to another long secure random string in production
 # It`s a part of salt for generating user password hashes
-export USER_PASSWORD_HASH_SALT="[ijwefleskemdlckajsrnoe-]50w[4-g3q[4gi-0[wjeirgvsloij;b[-q304ihjilosekrgmoit;ehkgm zsj.dne,smjrmnf]]]]]"
+export USER_PASSWORD_HASH_SALT='[ijwefleskemdlckajsrnoe-]50w[4-g3q[4gi-0[wjeirgvsloij;b[-q304ihjilosekrgmoit;ehkgm zsj.dne,smjrmnf]]]]]'
 
-export SERVER_PORT="5000"
-export WEB_SOCKET_SERVER_PORT="4999"
-
-export MOCK_SCRIPT_NAME="fillDBScript"
+export MOCK_SCRIPT_NAME='fillDBScript'
 
 # 'mock' | 'endpoints' | 'mockAndEndpoints'
-export BOOTSTRAP_MODE="endpoints"
+export BOOTSTRAP_MODE='endpoints'
 
-
-export DATABASE_HOST='localhost'
-export DATABASE_PORT=5432
+# database
+export DATABASE_HOST='postgres-prod'
+export DATABASE_PORT='5432'
 export DATABASE_USERNAME='pgdockeruser'
 export DATABASE_PASSWORD='pgdockerpass'
 export DATABASE_NAME='pgdockeruserdatabase'
-# JSON of (true | false | "all" | ("query" | "schema" | "error" | "warn" | "info" | "log" | "migration")[])
-export DATABASE_TYPEORM_LOGGING_MODE="'all'"
+# JSON of (true | false | 'all' | ('query' | 'schema' | 'error' | 'warn' | 'info' | 'log' | 'migration')[])
+export DATABASE_TYPEORM_LOGGING_MODE='"all"'
+
+# ports
+
+export PROD_INNER_NGINX_HTTP_PORT='80'
+export PROD_INNER_NGINX_HTTPS_PORT='344'
+export PROD_INNER_BACKEND_HTTP_SERVER_PORT='3001'
+export PROD_INNER_BACKEND_WS_SERVER_PORT='3002'
+
+export PROD_EXTERNAL_NGINX_HTTP_PORT='5001'
+export PROD_EXTERNAL_NGINX_HTTPS_PORT='5002'
+
+
+export DEV_INNER_NGINX_HTTP_PORT='5000'
+export DEV_INNER_BACKEND_HTTP_SERVER_PORT='5000'
+export DEV_INNER_BACKEND_WS_SERVER_PORT='4999'
+export DEV_INNER_BACKEND_DEBUGER_PORT='4999'
+export DEV_INNER_FRONTEND_HTTP_SERVER_PORT='5000'
+export DEV_INNER_FRONTEND_DEBUGER_PORT='5000'
+
+
+export DEV_EXTERNAL_NGINX_HTTP_PORT='5000'
+export DEV_EXTERNAL_BACKEND_DEBUGER_PORT='5000'
+export DEV_EXTERNAL_FRONTEND_DEBUGER_PORT='5000'

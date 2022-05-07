@@ -6,7 +6,7 @@
   "author": {
     "name": "nikelborm",
     "email": "kolya007.klass@gmail.com",
-    "url": "https://github.com/"
+    "url": "https://github.com/nikelborm"
   },
   "license": "UNLICENSED",
   "dependencies": {
@@ -98,9 +98,9 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "yarn cross-env GENERATE_SOURCEMAP=false node scripts/build.js",
+    "build": "node scripts/build.js",
     "start_with_mem_limit": "node --max_old_space_size=4096 scripts/start.js",
-    "build_with_mem_limit": "yarn cross-env GENERATE_SOURCEMAP=false node --max_old_space_size=4096 scripts/build.js",
+    "build_with_mem_limit": "node --max_old_space_size=4096 scripts/build.js",
     "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
   },
   "eslintConfig": {
@@ -135,6 +135,5 @@
     "presets": [
       "react-app"
     ]
-  },
-  "proxy": "http://backend:5000"
+  }
 }

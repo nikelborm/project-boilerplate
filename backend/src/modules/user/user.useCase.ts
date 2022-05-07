@@ -3,5 +3,5 @@ import { repo } from '../infrastructure';
 
 @Injectable()
 export class UserUseCase {
-  constructor(private readonly routeRepo: repo.RouteRepo) {}
+  constructor(private readonly routeRepo: repo.UserRepo) {}
 }

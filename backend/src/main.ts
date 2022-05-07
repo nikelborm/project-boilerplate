@@ -4,12 +4,12 @@ import { json, urlencoded } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { logConfig } from './tools';
-import { ConfigKeys, IAllConfigMap } from './types';
+import { ConfigKeys, IAppConfigMap } from './types';
 import * as MockServices from './mock';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService: ConfigService<IAllConfigMap, true> =
+  const configService: ConfigService<IAppConfigMap, true> =
     app.get(ConfigService);
   logConfig(configService);
 

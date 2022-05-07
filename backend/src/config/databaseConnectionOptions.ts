@@ -1,7 +1,7 @@
 import { LoggerOptions } from 'typeorm';
 
 export const dataSourceConfig = {
-  type: 'postgres',
+  type: 'postgres' as const,
   host: process.env.DATABASE_HOST as string,
   port: parseInt(process.env.DATABASE_PORT || '5432', 10),
   username: process.env.DATABASE_USERNAME as string,
