@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  frontend:
+    image: "${DOCKER_REGISTRY}/frontend:${IMAGE_TAG}"
+    ports:
+      - ${FRONTEND_BIND}:3000/tcp
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
+    restart: always
+    build:
+      context: $FRONTEND_ROOT
+      target: prepare
+    volumes:
+      - type: bind
+        source: "${FRONTEND_ROOT}/src"
+        target: /app/src
+        consistency: delegated

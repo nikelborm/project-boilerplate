@@ -1,0 +1,109 @@
+Enum "endpoint_endpoint_type_enum" {
+  "eventSource"
+  "eventSink"
+  "universalSink"
+}
+
+Enum "event_event_type_enum" {
+  "command"
+  "log"
+  "query"
+  "error"
+}
+
+Table "data_validator" {
+  "data_validator_id" int [pk, not null, increment]
+  "data_validator_uuid" uuid [unique, not null]
+  "data_validator_name" "character varying" [not null]
+}
+
+Table "encryption_worker" {
+  "encryption_worker_id" int [pk, not null, increment]
+  "encryption_worker_uuid" uuid [unique, not null]
+  "encryption_worker_name" "character varying" [not null]
+}
+
+Table "endpoint" {
+  "endpoint_id" int [pk, not null, increment]
+  "endpoint_uuid" uuid [unique, not null]
+  "endpoint_name" "character varying" [not null]
+  "endpoint_name_alias" "character varying"
+  "endpoint_shortcode" "character varying(4)" [not null]
+  "endpoint_description" "character varying" [not null]
+  "endpoint_description_alias" "character varying"
+  "event_id" integer
+  "client_id" integer [not null]
+  "endpoint_type" endpoint_endpoint_type_enum [not null]
+  "endpoint_hex_color" character(6) [not null]
+}
+
+Table "event" {
+  "event_id" int [pk, not null, increment]
+  "event_uuid" uuid [unique, not null]
+  "event_name" "character varying" [not null]
+  "event_name_alias" "character varying"
+  "event_description" "character varying" [not null]
+  "event_description_alias" "character varying"
+  "event_type" event_event_type_enum [not null]
+  "event_hex_color" character(6) [not null]
+}
+
+Table "event_parameter" {
+  "event_parameter_id" int [pk, not null, increment]
+  "event_parameter_uuid" uuid [unique, not null]
+  "event_parameter_name" "character varying" [not null]
+  "event_parameter_name_alias" "character varying"
+  "data_validator_id" integer [not null]
+  "event_parameter_measurement_unit" "character varying" [not null]
+}
+
+Table "parameter_to_event_association" {
+  "parameter_to_event_association_id" int [pk, not null, increment]
+  "event_parameter_id" integer [unique, not null]
+  "event_id" integer [unique, not null]
+  "is_parameter_required_for_event" boolean [not null]
+
+Indexes {
+  (event_parameter_id, event_id) [unique, name: "IDX_6c12f8831d0c015d5870e01124"]
+}
+}
+
+Table "route" {
+  "route_id" int [pk, not null, increment]
+  "source_endpoint_id" integer [unique, not null]
+  "sink_endpoint_id" integer [unique, not null]
+
+Indexes {
+  (source_endpoint_id, sink_endpoint_id) [unique, name: "IDX_44b30a9863e98f0e33a9b289f3"]
+}
+}
+
+Table "client" {
+  "client_id" int [pk, not null, increment]
+  "client_uuid" uuid [unique, not null]
+  "client_shortname" "character varying" [not null]
+  "client_shortname_alias" "character varying"
+  "client_fullname" "character varying" [not null]
+  "client_fullname_alias" "character varying"
+  "client_description" "character varying" [not null]
+  "client_description_alias" "character varying"
+  "client_was_last_active_at" timestamp [not null]
+  "encryption_worker_id" integer [not null]
+  "client_encryption_credentials" jsonb [not null]
+}
+
+Ref:"event"."event_id" < "endpoint"."event_id" [update: no action, delete: no action]
+
+Ref:"client"."client_id" < "endpoint"."client_id" [update: no action, delete: no action]
+
+Ref:"data_validator"."data_validator_id" < "event_parameter"."data_validator_id" [update: no action, delete: no action]
+
+Ref:"event_parameter"."event_parameter_id" < "parameter_to_event_association"."event_parameter_id" [update: no action, delete: no action]
+
+Ref:"event"."event_id" < "parameter_to_event_association"."event_id" [update: no action, delete: no action]
+
+Ref:"endpoint"."endpoint_id" < "route"."source_endpoint_id" [update: no action, delete: no action]
+
+Ref:"endpoint"."endpoint_id" < "route"."sink_endpoint_id" [update: no action, delete: no action]
+
+Ref:"encryption_worker"."encryption_worker_id" < "client"."encryption_worker_id" [update: no action, delete: no action]

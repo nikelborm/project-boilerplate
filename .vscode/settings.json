@@ -1,0 +1,26 @@
+{
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "search.exclude": {
+    ".git": true,
+    ".eslintcache": true,
+    "node_modules": true,
+    "npm-debug.log.*": true,
+    "package-lock.json": true,
+    "yarn.lock": true
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "local docker pg payless",
+      "database": "payless",
+      "username": "payless",
+      "password": "payless"
+    }
+  ]
+}

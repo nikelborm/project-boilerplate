@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "description": "project frontend",
-  "author": "nikelborm",
+  "author": {
+    "name": "nikelborm",
+    "email": "kolya007.klass@gmail.com",
+    "url": "https://github.com/"
+  },
   "license": "UNLICENSED",
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
@@ -94,9 +98,10 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "build": "yarn cross-env GENERATE_SOURCEMAP=false node scripts/build.js",
     "start_with_mem_limit": "node --max_old_space_size=4096 scripts/start.js",
-    "build_with_mem_limit": "node --max_old_space_size=4096 scripts/build.js"
+    "build_with_mem_limit": "yarn cross-env GENERATE_SOURCEMAP=false node --max_old_space_size=4096 scripts/build.js",
+    "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
   },
   "eslintConfig": {
     "extends": [
@@ -108,8 +113,8 @@
   },
   "engineStrict": true,
   "engines": {
-    "npm": "8.5.0",
-    "node": "16.14.2"
+    "npm": ">=8.5.5",
+    "node": ">=16.15.0"
   },
   "browserslist": {
     "production": [

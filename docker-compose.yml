@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  frontend-static:
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    restart: always
+    build:
+      context: ./frontend/
+      target: static
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    command: certonly -n -d local.host --webroot --agree-tos --email kolya007.klass@gmail.com -w /var/www/certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+      - ./data/certbot/logs:/var/log/letsencrypt/
+
+networks:
+  # The presence of these objects is sufficient to define them
+  front-tier: {}
+  back-tier: {}

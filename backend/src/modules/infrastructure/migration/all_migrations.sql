@@ -1,0 +1,101 @@
+CREATE TABLE "data_validator" (
+  "data_validator_id" SERIAL NOT NULL,
+  "data_validator_uuid" uuid NOT NULL,
+  "data_validator_name" character varying NOT NULL,
+  CONSTRAINT "UQ_09e69c49c12702f1dfc4a03412b" UNIQUE ("data_validator_uuid"),
+  CONSTRAINT "PK_2d326af0edf8f1c1a2b7aa9a258" PRIMARY KEY ("data_validator_id")
+);
+CREATE TABLE "encryption_worker" (
+  "encryption_worker_id" SERIAL NOT NULL,
+  "encryption_worker_uuid" uuid NOT NULL,
+  "encryption_worker_name" character varying NOT NULL,
+  CONSTRAINT "UQ_c7453dcae1c2001eb83a6e7db18" UNIQUE ("encryption_worker_uuid"),
+  CONSTRAINT "PK_b1958c7d3fca19ec440e52d798a" PRIMARY KEY ("encryption_worker_id")
+);
+CREATE TYPE "endpoint_endpoint_type_enum" AS ENUM('eventSource', 'eventSink', 'universalSink');
+CREATE TABLE "endpoint" (
+  "endpoint_id" SERIAL NOT NULL,
+  "endpoint_uuid" uuid NOT NULL,
+  "endpoint_name" character varying NOT NULL,
+  "endpoint_name_alias" character varying,
+  "endpoint_shortcode" character varying(4) NOT NULL,
+  "endpoint_description" character varying NOT NULL,
+  "endpoint_description_alias" character varying,
+  "event_id" integer,
+  "client_id" integer NOT NULL,
+  "endpoint_type" "endpoint_endpoint_type_enum" NOT NULL,
+  "endpoint_hex_color" character(6) NOT NULL,
+  CONSTRAINT "UQ_9a2de9047b18c06c18fb8c36a38" UNIQUE ("endpoint_uuid"),
+  CONSTRAINT "PK_b2b02791966766a03a316b583d9" PRIMARY KEY ("endpoint_id")
+);
+CREATE TYPE "event_event_type_enum" AS ENUM('command', 'log', 'query', 'error');
+CREATE TABLE "event" (
+  "event_id" SERIAL NOT NULL,
+  "event_uuid" uuid NOT NULL,
+  "event_name" character varying NOT NULL,
+  "event_name_alias" character varying,
+  "event_description" character varying NOT NULL,
+  "event_description_alias" character varying,
+  "event_type" "event_event_type_enum" NOT NULL,
+  "event_hex_color" character(6) NOT NULL,
+  CONSTRAINT "UQ_b30b2ed258a19ed7368c92849fb" UNIQUE ("event_uuid"),
+  CONSTRAINT "PK_fe0840e4557d98ed53b0ae51466" PRIMARY KEY ("event_id")
+);
+CREATE TABLE "event_parameter" (
+  "event_parameter_id" SERIAL NOT NULL,
+  "event_parameter_uuid" uuid NOT NULL,
+  "event_parameter_name" character varying NOT NULL,
+  "event_parameter_name_alias" character varying,
+  "data_validator_id" integer NOT NULL,
+  "event_parameter_measurement_unit" character varying NOT NULL,
+  CONSTRAINT "UQ_e05ff8b95a30bd41beadc2e6477" UNIQUE ("event_parameter_uuid"),
+  CONSTRAINT "PK_89e853344fedede4a20c728d848" PRIMARY KEY ("event_parameter_id")
+);
+CREATE TABLE "parameter_to_event_association" (
+  "parameter_to_event_association_id" SERIAL NOT NULL,
+  "event_parameter_id" integer NOT NULL,
+  "event_id" integer NOT NULL,
+  "is_parameter_required_for_event" boolean NOT NULL,
+  CONSTRAINT "UQ_6c12f8831d0c015d5870e01124a" UNIQUE ("event_parameter_id", "event_id"),
+  CONSTRAINT "PK_d2090084e29bc889e27003858bf" PRIMARY KEY ("parameter_to_event_association_id")
+);
+CREATE UNIQUE INDEX "IDX_6c12f8831d0c015d5870e01124" ON "parameter_to_event_association" ("event_parameter_id", "event_id");
+CREATE TABLE "route" (
+  "route_id" SERIAL NOT NULL,
+  "source_endpoint_id" integer NOT NULL,
+  "sink_endpoint_id" integer NOT NULL,
+  CONSTRAINT "UQ_44b30a9863e98f0e33a9b289f3d" UNIQUE ("source_endpoint_id", "sink_endpoint_id"),
+  CONSTRAINT "PK_4e7fe1b2d0ef419d4ce018aa0b5" PRIMARY KEY ("route_id")
+);
+CREATE UNIQUE INDEX "IDX_44b30a9863e98f0e33a9b289f3" ON "route" ("source_endpoint_id", "sink_endpoint_id");
+CREATE TABLE "client" (
+  "client_id" SERIAL NOT NULL,
+  "client_uuid" uuid NOT NULL,
+  "client_shortname" character varying NOT NULL,
+  "client_shortname_alias" character varying,
+  "client_fullname" character varying NOT NULL,
+  "client_fullname_alias" character varying,
+  "client_description" character varying NOT NULL,
+  "client_description_alias" character varying,
+  "client_was_last_active_at" TIMESTAMP WITH TIME ZONE NOT NULL,
+  "encryption_worker_id" integer NOT NULL,
+  "client_encryption_credentials" jsonb NOT NULL,
+  CONSTRAINT "UQ_eda3a2175f92585f73102034683" UNIQUE ("client_uuid"),
+  CONSTRAINT "PK_7510ce0a84bde51dbff978b4b49" PRIMARY KEY ("client_id")
+);
+ALTER TABLE "endpoint"
+ADD CONSTRAINT "FK_d7eaf082061e16e933604d7bb97" FOREIGN KEY ("event_id") REFERENCES "event"("event_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "endpoint"
+ADD CONSTRAINT "FK_06c087987efc51ab13db8336000" FOREIGN KEY ("client_id") REFERENCES "client"("client_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "event_parameter"
+ADD CONSTRAINT "FK_229206801a63d1f44fd5e307522" FOREIGN KEY ("data_validator_id") REFERENCES "data_validator"("data_validator_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "parameter_to_event_association"
+ADD CONSTRAINT "FK_d4b41b5f1b5e388733d7de36255" FOREIGN KEY ("event_parameter_id") REFERENCES "event_parameter"("event_parameter_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "parameter_to_event_association"
+ADD CONSTRAINT "FK_e5f9a37e1ef6af48c46f9d80447" FOREIGN KEY ("event_id") REFERENCES "event"("event_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "route"
+ADD CONSTRAINT "FK_ebb0e76ecfd4661e32cb1a0916d" FOREIGN KEY ("source_endpoint_id") REFERENCES "endpoint"("endpoint_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "route"
+ADD CONSTRAINT "FK_8b945c4222359498a187243367b" FOREIGN KEY ("sink_endpoint_id") REFERENCES "endpoint"("endpoint_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "client"
+ADD CONSTRAINT "FK_b8811c5d535155e45cb001d7086" FOREIGN KEY ("encryption_worker_id") REFERENCES "encryption_worker"("encryption_worker_id") ON DELETE NO ACTION ON UPDATE NO ACTION;
