@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as model from './model';
 import * as repo from './repo';
+import { ConfigKeys, IDatabaseConfigMap } from 'src/types';
 
 const entities = Object.values(model);
 const repositories = Object.values(repo);
@@ -13,20 +14,23 @@ const repositories = Object.values(repo);
     ConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService<IDatabaseConfigMap, true>) => ({
         type: 'postgres',
-        host: configService.get('database.host'),
-        port: configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.name'),
+        host: configService.get(ConfigKeys.DATABASE_HOST, { infer: true }),
+        port: configService.get(ConfigKeys.DATABASE_PORT, { infer: true }),
+        username: configService.get(ConfigKeys.DATABASE_USERNAME, {
+          infer: true,
+        }),
+        password: configService.get(ConfigKeys.DATABASE_PASSWORD, {
+          infer: true,
+        }),
+        database: configService.get(ConfigKeys.DATABASE_NAME, {
+          infer: true,
+        }),
         entities,
-        synchronize: configService.get('database.synchronize'),
-        migrationsTableName: configService.get('database.migrationsTableName'),
-        migrations: configService.get('database.migrations'),
-        migrationsRun: configService.get('database.migrationsRun'),
-        cli: configService.get('database.cli'),
-        logging: configService.get('database.typeormLoggingMode'),
+        logging: configService.get(ConfigKeys.DATABASE_TYPEORM_LOGGING_MODE, {
+          infer: true,
+        }),
       }),
       inject: [ConfigService],
     }),

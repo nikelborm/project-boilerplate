@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# frontend
+export DANGEROUSLY_DISABLE_HOST_CHECK=true
+export REACT_APP_NAME=NewApp
+export GENERATE_SOURCEMAP=false
+
+
+# backend
+
+# 'production' | 'development'
+export PROJECT_ENV_TYPE="development"
+
+# Don`t forget to change to another long secure random string in production
+# It`s key for sign jwt auth tokens
+export JWT_SECRET="[a0oej4rgip5g0aijefogpihn[4ijks;wk3f3ihgposldckdieselkwn5 vlkfj[q34t'k:\"KP_FF\"#ORKOWI:EJLEDK_@#sKOJGWRLGNK<ASJDN:EWLGKJWOIJWOLFJKNDSMNGSG>SNFELK<NSFMNSDLKGJBNO:FLKWEMF}}]]]"
+
+# Don`t forget to change to another long secure random string in production
+# It`s a part of salt for generating user password hashes
+export USER_PASSWORD_HASH_SALT="[ijwefleskemdlckajsrnoe-]50w[4-g3q[4gi-0[wjeirgvsloij;b[-q304ihjilosekrgmoit;ehkgm zsj.dne,smjrmnf]]]]]"
+
+export SERVER_PORT="5000"
+export WEB_SOCKET_SERVER_PORT="4999"
+
+export MOCK_SCRIPT_NAME="fillDBScript"
+
+# 'mock' | 'endpoints' | 'mockAndEndpoints'
+export BOOTSTRAP_MODE="endpoints"
+
+
+export DATABASE_HOST='localhost'
+export DATABASE_PORT=5432
+export DATABASE_USERNAME='pgdockeruser'
+export DATABASE_PASSWORD='pgdockerpass'
+export DATABASE_NAME='pgdockeruserdatabase'
+# JSON of (true | false | "all" | ("query" | "schema" | "error" | "warn" | "info" | "log" | "migration")[])
+export DATABASE_TYPEORM_LOGGING_MODE="'all'"

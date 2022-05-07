@@ -3,9 +3,9 @@ FROM node:16-alpine AS prepare
 RUN mkdir /usr/local/sbin; ln -n /usr/local/bin/node /usr/local/sbin/node || true
 
 ENV TZ=Europe/Moscow
-ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
-ENV REACT_APP_NAME=NewApp
-ENV GENERATE_SOURCEMAP=false
+# ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
+# ENV REACT_APP_NAME=NewApp
+# ENV GENERATE_SOURCEMAP=false
 ENV PATH $PATH:/app/node_modules/.bin
 WORKDIR /app
 
