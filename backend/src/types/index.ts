@@ -1,3 +1,4 @@
+export * from './accessScopeType';
 export * from './configKeys';
 export * from './configMap';
 export * from './currency';

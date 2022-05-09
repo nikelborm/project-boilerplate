@@ -10,8 +10,13 @@ COPY src src/
 # EXPOSE 3000
 # CMD ["yarn", "start"]
 
-FROM prepare as production
+FROM prepare as build
 RUN nest build
+
+FROM build as mock
+RUN echo
+
+FROM build as production
 CMD [ "node", "dist/main" ]
 
 # RUN npm run build

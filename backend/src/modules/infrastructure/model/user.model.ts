@@ -4,7 +4,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
 } from 'typeorm';
+import { AccessScope, UserToAccessScope } from './';
 
 @Entity({ name: 'user' })
 export class User {
@@ -12,22 +16,71 @@ export class User {
   id!: number;
 
   @Column({
-    name: 'user_fullname',
+    name: 'user_first_name',
     nullable: false,
   })
-  fullname!: string;
+  firstName!: string;
+
+  @Column({
+    name: 'user_last_name',
+    nullable: false,
+  })
+  lastName!: string;
+
+  @Column({
+    name: 'user_email',
+    nullable: false,
+    unique: true,
+  })
+  email!: string;
+
+  @Column({
+    name: 'user_salt',
+    select: false,
+    nullable: false,
+  })
+  salt!: string;
+
+  @Column({
+    name: 'user_password_hash',
+    select: false,
+    nullable: false,
+  })
+  passwordHash!: string;
+
+  @ManyToMany(
+    () => AccessScope,
+    (accessScope) => accessScope.usersWithThatAccessScope,
+  )
+  @JoinTable({
+    name: 'user_to_access_scope',
+    joinColumn: {
+      name: 'access_scope',
+      referencedColumnName: 'access_scope_id',
+    },
+    inverseJoinColumn: {
+      name: 'user',
+      referencedColumnName: 'user_id',
+    },
+  })
+  accessScopes!: AccessScope[];
+
+  @OneToMany(
+    () => UserToAccessScope,
+    (userToAccessScope) => userToAccessScope.user,
+  )
+  userToAccessScopeRelations!: UserToAccessScope[];
 
   @CreateDateColumn({
+    name: 'user_created_at',
     type: 'timestamptz',
     nullable: false,
-    name: 'user_created_at',
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    type: 'timestamptz',
     name: 'user_updated_at',
+    type: 'timestamptz',
   })
   updatedAt!: Date;
-  // TODO: configuration?????
 }
