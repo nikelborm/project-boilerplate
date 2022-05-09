@@ -1,4 +1,5 @@
 export * from './accessScopeType';
+export * from './bootstrapMode';
 export * from './configKeys';
 export * from './configMap';
 export * from './currency';

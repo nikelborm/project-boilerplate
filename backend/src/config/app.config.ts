@@ -1,4 +1,4 @@
-import { ConfigKeys, IAppConfigMap } from 'src/types';
+import { BootstrapModeType, ConfigKeys, IAppConfigMap } from 'src/types';
 
 // TODO: config types validation
 export const appConfig: () => IAppConfigMap = () => ({
@@ -11,10 +11,7 @@ export const appConfig: () => IAppConfigMap = () => ({
     process.env.WEB_SOCKET_SERVER_PORT || '2999',
     10,
   ),
-  [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as
-    | 'mock'
-    | 'endpoints'
-    | 'mockAndEndpoints',
+  [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as BootstrapModeType,
   [ConfigKeys.MOCK_SCRIPT_NAME]: process.env.MOCK_SCRIPT_NAME as string,
   [ConfigKeys.JWT_SECRET]: process.env.JWT_SECRET as string,
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: process.env
