@@ -10,7 +10,7 @@ export class AccessScopeController {
   constructor(private readonly accessScopeUseCase: AccessScopeUseCase) {}
 
   @Post('/updateAccessScope')
-  @AllowedFor(AccessEnum.USER_EDIT_PERMISSIONS)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async updateAccessScope(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     accessScope: UpdateAccessScopeDTO,

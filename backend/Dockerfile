@@ -13,10 +13,8 @@ COPY src src/
 FROM prepare as build
 RUN nest build
 
-FROM build as mock
-RUN echo
-
 FROM build as production
+COPY scripts scripts/
 CMD [ "node", "dist/main" ]
 
 # RUN npm run build

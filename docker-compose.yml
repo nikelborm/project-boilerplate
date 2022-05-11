@@ -2,12 +2,10 @@ version: '3.9'
 services:
   nginx-prod:
     image: "nikelborm/home:${PROJECT_NAME}-nginx-prod"
-    ports:
-      - "${PROD_EXTERNAL_NGINX_HTTP_PORT}:${PROD_INNER_NGINX_HTTP_PORT}/tcp"
-      - "${PROD_EXTERNAL_NGINX_HTTPS_PORT}:${PROD_INNER_NGINX_HTTPS_PORT}/tcp"
     restart: always
     depends_on:
       - backend-prod
+      - postgres-admin
     build:
       context: ./frontend/
       target: static
@@ -21,11 +19,19 @@ services:
       - PROD_INNER_NGINX_HTTPS_PORT=${PROD_INNER_NGINX_HTTPS_PORT}
       - PROD_INNER_BACKEND_HTTP_SERVER_PORT=${PROD_INNER_BACKEND_HTTP_SERVER_PORT}
       - PROD_INNER_BACKEND_WS_SERVER_PORT=${PROD_INNER_BACKEND_WS_SERVER_PORT}
+    ports:
+      - "${PROD_EXTERNAL_NGINX_HTTP_PORT}:${PROD_INNER_NGINX_HTTP_PORT}/tcp"
+      - "${PROD_EXTERNAL_NGINX_HTTPS_PORT}:${PROD_INNER_NGINX_HTTPS_PORT}/tcp"
     networks:
-      - nginx-back-net
+      nginx-back-net:
+      nginx-pgadmin-net:
+      mynet:
+        ipv4_address: 192.168.55.10
+
     # volumes:
     #   - ./data/certbot/conf:/etc/letsencrypt
     #   - ./data/certbot/www:/var/www/certbot
+
   # certbot:
   #   image: certbot/certbot
   #   command: certonly -n -d local.host --webroot --agree-tos --email kolya007.klass@gmail.com -w /var/www/certbot
@@ -33,14 +39,15 @@ services:
   #     - ./data/certbot/conf:/etc/letsencrypt
   #     - ./data/certbot/www:/var/www/certbot
   #     - ./data/certbot/logs:/var/log/letsencrypt/
+
   backend-prod:
     image: "nikelborm/home:${PROJECT_NAME}-backend-prod"
-    networks:
-      - nginx-back-net
-      - back-db-net
     restart: always
     depends_on:
       - postgres-prod
+    build:
+      context: ./backend/
+      target: production
     environment:
       - TZ=${TZ}
       - PROJECT_ENV_TYPE=${PROJECT_ENV_TYPE}
@@ -56,14 +63,17 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
-    build:
-      context: ./backend/
-      target: production
+    volumes:
+      - type: bind
+        source: ./backend/src/modules/infrastructure/
+        target: /app/src/modules/infrastructure/
+    networks:
+      - nginx-back-net
+      - back-db-net
+
   postgres-prod:
     image: postgres
     restart: always
-    networks:
-      - back-db-net
     command: "-c default_text_search_config=pg_catalog.russian"
     environment:
       - TZ=${TZ}
@@ -74,6 +84,20 @@ services:
       - type: volume
         source: postgres-prod-data
         target: /var/lib/postgresql/data
+    networks:
+      - back-db-net
+      - db-pgadmin-net
+
+  postgres-admin:
+    image: dpage/pgadmin4:latest
+    depends_on:
+      - postgres-prod
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      - nginx-pgadmin-net
+      - db-pgadmin-net
 
 volumes:
   postgres-prod-data:
@@ -89,3 +113,12 @@ volumes:
 networks:
   nginx-back-net: {}
   back-db-net: {}
+  nginx-pgadmin-net: {}
+  db-pgadmin-net: {}
+  mynet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.55.0/24
+          gateway: 192.168.55.1

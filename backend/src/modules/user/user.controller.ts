@@ -27,7 +27,7 @@ export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
   @Get('/users')
-  @AllowedFor(AccessEnum.USER_VIEW)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async findManyUsers(
     @Query('search') search?: string,
   ): Promise<FindManyUsersResponseDTO> {
@@ -40,7 +40,7 @@ export class UserController {
   }
 
   @Post('/createUser')
-  @AllowedFor(AccessEnum.USER_CREATE)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     { firstName, lastName, email, password }: CreateUserDTO,
@@ -60,7 +60,7 @@ export class UserController {
   }
 
   @Post('/createUsers')
-  @AllowedFor(AccessEnum.USER_CREATE)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     { users }: CreateUsersDTO,
@@ -85,7 +85,7 @@ export class UserController {
   }
 
   @Post('/deleteUserById')
-  @AllowedFor(AccessEnum.USER_DELETE)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     { id }: DeleteEntityByIdDTO,

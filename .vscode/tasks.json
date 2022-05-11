@@ -9,27 +9,102 @@
       "dependsOn": [
         "Use docker builder"
       ],
-      "command": "docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < Dockerfile",
-      "problemMatcher": []
+      "command": "cat ./node.Dockerfile; docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < node.Dockerfile",
+      "problemMatcher": [],
+      "promptOnClose": true
     },
     {
-      "label": "Build production",
+      "label": "dc up",
+      "type": "shell",
+      "command": ". env/template; docker-compose up --build -d",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "Build multiplatform production",
       "type": "shell",
       "dependsOn": [
         "Use docker builder"
       ],
       "command": ". env/template; docker buildx bake -f docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "ormgen database",
+      "type": "shell",
+      "dependsOn": [ "dc up" ],
+      "command": ". env/template; docker-compose exec backend-prod sh ./scripts/ormgen.sh",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "migrate database",
+      "type": "shell",
+      "dependsOn": [ "dc up" ],
+      "command": ". env/template; docker-compose exec backend-prod sh ./scripts/migrate.sh",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "drop database",
+      "type": "shell",
+      "dependsOn": [ "dc up" ],
+      "command": ". env/template; docker-compose exec backend-prod sh ./scripts/drop.sh",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "recreate database",
+      "type": "shell",
+      "dependsOn": [ "dc up" ],
+      "command": ". env/template; docker-compose exec backend-prod sh ./scripts/recreate.sh",
+      "problemMatcher": [],
+      "promptOnClose": true
     },
     {
       "label": "Create new docker builder",
       "type": "shell",
-      "command": "docker buildx create --name mybuilder --platform=linux/arm64,linux/amd64"
+      "command": "docker buildx create --name mybuilder --platform=linux/arm64,linux/amd64",
+      "promptOnClose": false
+    },
+    {
+      "label": "Upgrade backend dependencies",
+      "type": "shell",
+      "command": "cd backend/; yarn upgrade-interactive --emoji true",
+      "promptOnClose": false,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Upgrade frontend dependencies",
+      "type": "shell",
+      "command": "cd frontend/; yarn upgrade-interactive --emoji true",
+      "promptOnClose": false,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
     },
     {
       "label": "Use docker builder",
       "type": "shell",
-      "command": "docker buildx use mybuilder"
+      "command": "docker buildx use mybuilder",
+      "promptOnClose": false
     }
   ]
 }

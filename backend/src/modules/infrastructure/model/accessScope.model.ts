@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   OneToMany,
-  JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,17 +24,6 @@ export class AccessScope {
   type!: AccessScopeType;
 
   @ManyToMany(() => User, (user) => user.accessScopes)
-  @JoinTable({
-    name: 'user_to_access_scope',
-    joinColumn: {
-      name: 'user',
-      referencedColumnName: 'user_id',
-    },
-    inverseJoinColumn: {
-      name: 'access_scope',
-      referencedColumnName: 'access_scope_id',
-    },
-  })
   usersWithThatAccessScope!: User[];
 
   @OneToMany(
@@ -45,14 +33,14 @@ export class AccessScope {
   userToAccessScopeRelations!: UserToAccessScope[];
 
   @CreateDateColumn({
-    name: 'user_created_at',
+    name: 'access_scope_created_at',
     type: 'timestamptz',
     nullable: false,
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: 'user_updated_at',
+    name: 'access_scope_updated_at',
     type: 'timestamptz',
     nullable: true,
   })
