@@ -6,7 +6,8 @@ export DOCKER_BUILDKIT=1
 
 # frontend
 export DANGEROUSLY_DISABLE_HOST_CHECK='true'
-export GENERATE_SOURCEMAP='false'
+# should be false on production
+export GENERATE_SOURCEMAP='true'
 
 # backend
 
@@ -40,10 +41,7 @@ export PGADMIN_DEFAULT_EMAIL='admin@hello.com'
 export PGADMIN_DEFAULT_PASSWORD='password'
 
 # development ports
-export DEV_INNER_BACKEND_DEBUGER_PORT='9229'
-export DEV_EXTERNAL_BACKEND_DEBUGER_PORT='9300'
-
-export DEV_INNER_FRONTEND_DEBUGER_PORT='3000'
+export DEV_BACKEND_DEBUGGER_PORT='9229'
 
 
 #universal ports

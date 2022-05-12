@@ -5,7 +5,12 @@ import { appConfig, dbConfig } from './config';
 import { AccessLogMiddleware } from './tools';
 import * as MockServices from './mock';
 
-import { InfrastructureModule, UserModule } from './modules';
+import {
+  InfrastructureModule,
+  UserModule,
+  AccessScopeModule,
+  AuthModule,
+} from './modules';
 
 @Module({
   imports: [
@@ -16,6 +21,8 @@ import { InfrastructureModule, UserModule } from './modules';
     }),
 
     InfrastructureModule,
+    AccessScopeModule,
+    AuthModule,
     UserModule,
   ],
   providers: [...Object.values(MockServices)],

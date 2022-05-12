@@ -25,7 +25,7 @@ async function bootstrap() {
   if (mode === 'mock' || mode === 'mockAndEndpoints') {
     console.log('MockServices: ', MockServices);
     // const mockUseCase = app.get(MockDataUseCase);
-    // const scriptName = configService.get('mockDataFillerScriptMethodName');
+    // const scriptName = configService.get(ConfigKeys.);
     // if (!scriptName || !(scriptName in mockUseCase))
     //   throw new Error(`Script with name '${scriptName}' was not found`);
     // console.log(`\n\n\nfilling started: ${scriptName}\n`);

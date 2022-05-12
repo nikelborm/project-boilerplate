@@ -20,7 +20,8 @@
     {
       "type": "node",
       "request": "attach",
-      "name": "Debug Nest front with VS Code",
+      "name": "Debug Nest back with VS Code",
+      "sourceMaps": true,
       "remoteRoot": "/app",
       "localRoot": "${workspaceFolder}/backend",
       "port": 9229,
@@ -28,9 +29,7 @@
         "maxAttempts": 10,
         "delay": 1000
       },
-      "address": "localhost",
       "showAsyncStacks": true,
-      "preLaunchTask": "",
       "skipFiles": [
         "<node_internals>/**"
       ]

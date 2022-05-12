@@ -8,14 +8,15 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwtAuth.guard';
 import { LocalStrategy } from './strategy/local.strategy';
+import { ConfigKeys, IAppConfigMap } from 'src/types';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('authSecret'),
+      useFactory: (configService: ConfigService<IAppConfigMap, true>) => ({
+        secret: configService.get(ConfigKeys.JWT_SECRET),
         signOptions: { expiresIn: '6h' },
       }),
       inject: [ConfigService],
