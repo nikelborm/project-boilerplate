@@ -15,6 +15,8 @@ async function bootstrap() {
     cors: true,
   });
 
+  app.setGlobalPrefix('/api');
+
   const configService: ConfigService<IAppConfigMap, true> =
     app.get(ConfigService);
 
@@ -39,14 +41,10 @@ async function bootstrap() {
 
     if (configService.get(ConfigKeys.IS_DEVELOPMENT, { infer: true })) {
       const config = new DocumentBuilder()
-        .setTitle('Payless API')
+        .setTitle('Project API')
         .setVersion('1.0')
         .addBearerAuth()
-        .setDescription(
-          `Надо учитывать то что я описал сущности наподобие того как они могут находиться в базе<br/>
-          данных, то есть если ты дёрнешь какую-то ручку, то она вернёт тебе не все данные, которые<br/>
-          есть в схеме. Это надо будет поправить и я поправлю`,
-        )
+        .setDescription(`Project API endpoints`)
         .build();
 
       const document = SwaggerModule.createDocument(app, config);

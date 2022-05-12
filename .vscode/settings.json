@@ -17,10 +17,10 @@
       "server": "localhost",
       "port": 5432,
       "driver": "PostgreSQL",
-      "name": "local docker pg payless",
-      "database": "payless",
-      "username": "payless",
-      "password": "payless"
+      "name": "local project pg",
+      "database": "database string",
+      "username": "username string",
+      "password": "password string"
     }
   ]
 }

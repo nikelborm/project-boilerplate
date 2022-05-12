@@ -4,11 +4,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategy/jwt.strategy';
-import { JwtAuthGuard } from './guards/jwtAuth.guard';
-import { LocalStrategy } from './strategy/local.strategy';
+import { JwtStrategy, LocalStrategy } from './strategy';
+import { JwtAuthGuard } from './guards';
 import { ConfigKeys, IAppConfigMap } from 'src/types';
+import { BlacklistedJWTStore } from './types';
+import { BlacklistedJWTStoreInMemory, AuthService } from './services';
 
 @Module({
   imports: [
@@ -29,6 +29,10 @@ import { ConfigKeys, IAppConfigMap } from 'src/types';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: BlacklistedJWTStore,
+      useClass: BlacklistedJWTStoreInMemory,
     },
   ],
   controllers: [AuthController],

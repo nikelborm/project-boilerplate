@@ -25,7 +25,7 @@ export USER_PASSWORD_HASH_SALT='[ijwefleskemdlckajsrnoe-]50w[4-g3q[4gi-0[wjeirgv
 export MOCK_SCRIPT_NAME='fillDBScript'
 
 # 'mock' | 'endpoints' | 'mockAndEndpoints'
-export BOOTSTRAP_MODE='endpoints'
+export BOOTSTRAP_MODE='mockAndEndpoints'
 
 # database
 # export DATABASE_HOST=

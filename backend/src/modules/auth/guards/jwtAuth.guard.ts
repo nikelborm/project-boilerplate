@@ -6,19 +6,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { repo } from 'src/modules/infrastructure';
-import {
-  AccessEnum,
-  ALLOWED_SCOPES_KEY,
-  AllowedForArgs,
-  EndpointAccess,
-  UserLevelScopes,
-} from '../decorators';
-import { messages } from 'src/config';
-import { AuthService } from '../auth.service';
 import { ConfigKeys, IAppConfigMap } from 'src/types';
+import { messages } from 'src/config';
+import { AccessEnum, ALLOWED_SCOPES_KEY } from '../tools';
+import { AllowedForArgs, EndpointAccess, UserLevelScopes } from '../types';
+import { AuthService } from '../services';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

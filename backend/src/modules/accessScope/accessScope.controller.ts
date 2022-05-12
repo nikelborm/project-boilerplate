@@ -5,7 +5,7 @@ import { EmptyResponseDTO, UpdateAccessScopeDTO } from 'src/types';
 import { AccessEnum, AllowedFor } from '../auth';
 
 @ApiTags('accessScope')
-@Controller('/api')
+@Controller()
 export class AccessScopeController {
   constructor(private readonly accessScopeUseCase: AccessScopeUseCase) {}
 

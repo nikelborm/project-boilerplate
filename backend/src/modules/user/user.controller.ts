@@ -22,7 +22,7 @@ import {
 import { AccessEnum, AllowedFor, AuthedRequest, AuthorizedOnly } from '../auth';
 
 @ApiTags('user')
-@Controller('/api')
+@Controller()
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 

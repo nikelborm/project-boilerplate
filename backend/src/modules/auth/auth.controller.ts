@@ -1,11 +1,12 @@
 import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthedRequest, AuthorizedOnly } from '.';
-import { AuthService, UserWithoutSensitiveData } from './auth.service';
-import { LocalAuthGuard } from './guards/localAuth.guard';
+import { AuthorizedOnly } from '.';
+import { AuthService } from './services';
+import { AuthedRequest, UserWithoutSensitiveData } from './types';
+import { LocalAuthGuard } from './guards';
 
 @ApiTags('auth')
-@Controller('/api/auth')
+@Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

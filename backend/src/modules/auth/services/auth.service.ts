@@ -1,10 +1,14 @@
+import { createHash, timingSafeEqual } from 'crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { model, repo } from '../infrastructure';
-import { UserAuthInfo, UserAuthTokenPayload } from './';
-import { createHash, timingSafeEqual } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { messages } from 'src/config';
+import { model, repo } from '../../infrastructure';
+import {
+  UserAuthInfo,
+  UserAuthTokenPayload,
+  UserWithoutSensitiveData,
+} from '../types';
 import { ConfigKeys, IAppConfigMap } from 'src/types';
 
 @Injectable()
@@ -93,8 +97,3 @@ export class AuthService {
     return userModel;
   }
 }
-
-export type UserWithoutSensitiveData = Omit<
-  model.User,
-  'passwordHash' | 'salt'
->;
