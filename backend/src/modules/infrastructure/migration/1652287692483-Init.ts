@@ -1,28 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Init1652285417802 implements MigrationInterface {
-  name = 'Init1652285417802';
+export class Init1652287692483 implements MigrationInterface {
+  name = 'Init1652287692483';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TYPE "public"."access_scope_access_scope_type_enum" AS ENUM('admin')
-    `);
-    await queryRunner.query(`
-      CREATE TABLE "access_scope" (
-        "access_scope_id" SERIAL NOT NULL,
-        "access_scope_type" "public"."access_scope_access_scope_type_enum" NOT NULL,
-        "access_scope_created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "access_scope_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(),
-        CONSTRAINT "PK_26acb7cf35e5f4a08a85d937b6e" PRIMARY KEY ("access_scope_id")
-      )
-    `);
-    await queryRunner.query(`
-      CREATE TABLE "user_to_access_scope" (
-        "user_id" integer NOT NULL,
-        "access_scope_id" integer NOT NULL,
-        CONSTRAINT "PK_f6326c8d048b48d6cc64b8e2e64" PRIMARY KEY ("user_id", "access_scope_id")
-      )
-    `);
     await queryRunner.query(`
       CREATE TABLE "user" (
         "user_id" SERIAL NOT NULL,
@@ -35,6 +16,25 @@ export class Init1652285417802 implements MigrationInterface {
         "user_updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         CONSTRAINT "UQ_65d72a4b8a5fcdad6edee8563b0" UNIQUE ("user_email"),
         CONSTRAINT "PK_758b8ce7c18b9d347461b30228d" PRIMARY KEY ("user_id")
+      )
+    `);
+    await queryRunner.query(`
+      CREATE TABLE "user_to_access_scope" (
+        "user_id" integer NOT NULL,
+        "access_scope_id" integer NOT NULL,
+        CONSTRAINT "PK_f6326c8d048b48d6cc64b8e2e64" PRIMARY KEY ("user_id", "access_scope_id")
+      )
+    `);
+    await queryRunner.query(`
+      CREATE TYPE "public"."access_scope_access_scope_type_enum" AS ENUM('superAdmin')
+    `);
+    await queryRunner.query(`
+      CREATE TABLE "access_scope" (
+        "access_scope_id" SERIAL NOT NULL,
+        "access_scope_type" "public"."access_scope_access_scope_type_enum" NOT NULL,
+        "access_scope_created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+        "access_scope_updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now(),
+        CONSTRAINT "PK_26acb7cf35e5f4a08a85d937b6e" PRIMARY KEY ("access_scope_id")
       )
     `);
     await queryRunner.query(`
@@ -67,16 +67,16 @@ export class Init1652285417802 implements MigrationInterface {
       DROP INDEX "public"."IDX_e507f0edbfbe11f2552fe977fc"
     `);
     await queryRunner.query(`
-      DROP TABLE "user"
+      DROP TABLE "access_scope"
+    `);
+    await queryRunner.query(`
+      DROP TYPE "public"."access_scope_access_scope_type_enum"
     `);
     await queryRunner.query(`
       DROP TABLE "user_to_access_scope"
     `);
     await queryRunner.query(`
-      DROP TABLE "access_scope"
-    `);
-    await queryRunner.query(`
-      DROP TYPE "public"."access_scope_access_scope_type_enum"
+      DROP TABLE "user"
     `);
   }
 }

@@ -1,32 +1,33 @@
 version: '3.9'
 services:
   nginx-prod:
-    image: "nikelborm/home:${PROJECT_NAME}-nginx-prod"
+    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-nginx-prod"
     restart: always
     depends_on:
       - backend-prod
       - postgres-admin
     build:
       context: ./frontend/
-      target: static
+      target: prod_nginx_with_front_static
       args:
-        - PROD_EXTERNAL_NGINX_HTTP_PORT=${PROD_EXTERNAL_NGINX_HTTP_PORT}
-        - PROD_EXTERNAL_NGINX_HTTPS_PORT=${PROD_EXTERNAL_NGINX_HTTPS_PORT}
+        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
+        - INNER_NGINX_HTTPS_PORT=${INNER_NGINX_HTTPS_PORT}
     environment:
       - TZ=${TZ}
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
-      - PROD_INNER_NGINX_HTTP_PORT=${PROD_INNER_NGINX_HTTP_PORT}
-      - PROD_INNER_NGINX_HTTPS_PORT=${PROD_INNER_NGINX_HTTPS_PORT}
-      - PROD_INNER_BACKEND_HTTP_SERVER_PORT=${PROD_INNER_BACKEND_HTTP_SERVER_PORT}
-      - PROD_INNER_BACKEND_WS_SERVER_PORT=${PROD_INNER_BACKEND_WS_SERVER_PORT}
+      - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
+      - INNER_NGINX_HTTPS_PORT=${INNER_NGINX_HTTPS_PORT}
+      - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
     ports:
-      - "${PROD_EXTERNAL_NGINX_HTTP_PORT}:${PROD_INNER_NGINX_HTTP_PORT}/tcp"
-      - "${PROD_EXTERNAL_NGINX_HTTPS_PORT}:${PROD_INNER_NGINX_HTTPS_PORT}/tcp"
+      - ${EXTERNAL_NGINX_HTTP_PORT}:${INNER_NGINX_HTTP_PORT}/tcp
+      - ${EXTERNAL_NGINX_HTTPS_PORT}:${INNER_NGINX_HTTPS_PORT}/tcp
     networks:
       nginx-back-net:
       nginx-pgadmin-net:
-      mynet:
-        ipv4_address: 192.168.55.10
+      # external-net:
+      #   ipv4_address: 192.168.55.10
 
     # volumes:
     #   - ./data/certbot/conf:/etc/letsencrypt
@@ -41,23 +42,26 @@ services:
   #     - ./data/certbot/logs:/var/log/letsencrypt/
 
   backend-prod:
-    image: "nikelborm/home:${PROJECT_NAME}-backend-prod"
+    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-backend-prod"
     restart: always
     depends_on:
       - postgres-prod
     build:
       context: ./backend/
       target: production
+      args:
+        - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+        - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
     environment:
       - TZ=${TZ}
-      - PROJECT_ENV_TYPE=${PROJECT_ENV_TYPE}
-      - SERVER_PORT=${PROD_INNER_BACKEND_HTTP_SERVER_PORT}
-      - WEB_SOCKET_SERVER_PORT=${PROD_INNER_BACKEND_WS_SERVER_PORT}
+      - NODE_ENV=production
+      - SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - WEB_SOCKET_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
       - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
       - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
-      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_HOST=postgres-prod
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
@@ -68,8 +72,8 @@ services:
         source: ./backend/src/modules/infrastructure/
         target: /app/src/modules/infrastructure/
     networks:
-      - nginx-back-net
-      - back-db-net
+      nginx-back-net:
+      back-db-net:
 
   postgres-prod:
     image: postgres
@@ -85,8 +89,8 @@ services:
         source: postgres-prod-data
         target: /var/lib/postgresql/data
     networks:
-      - back-db-net
-      - db-pgadmin-net
+      back-db-net:
+      db-pgadmin-net:
 
   postgres-admin:
     image: dpage/pgadmin4:latest
@@ -96,8 +100,8 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     networks:
-      - nginx-pgadmin-net
-      - db-pgadmin-net
+      nginx-pgadmin-net:
+      db-pgadmin-net:
 
 volumes:
   postgres-prod-data:
@@ -115,10 +119,10 @@ networks:
   back-db-net: {}
   nginx-pgadmin-net: {}
   db-pgadmin-net: {}
-  mynet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.55.0/24
-          gateway: 192.168.55.1
+  # external-net:
+  #   driver: bridge
+  #   ipam:
+  #     driver: default
+  #     config:
+  #       - subnet: 192.168.55.0/24
+  #         gateway: 192.168.55.1

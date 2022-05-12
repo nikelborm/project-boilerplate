@@ -16,7 +16,10 @@
     {
       "label": "dc up",
       "type": "shell",
-      "command": ". env/template; docker-compose up --build -d",
+      "dependsOn": [
+        "Use docker builder"
+      ],
+      "command": ". env/template; docker-compose up --build -d;echo;echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):${INNER_NGINX_HTTP_PORT}",
       "problemMatcher": [],
       "promptOnClose": true
     },
@@ -33,7 +36,9 @@
     {
       "label": "ormgen database",
       "type": "shell",
-      "dependsOn": [ "dc up" ],
+      "dependsOn": [
+        "dc up"
+      ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/ormgen.sh",
       "problemMatcher": [],
       "promptOnClose": true
@@ -41,7 +46,9 @@
     {
       "label": "migrate database",
       "type": "shell",
-      "dependsOn": [ "dc up" ],
+      "dependsOn": [
+        "dc up"
+      ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/migrate.sh",
       "problemMatcher": [],
       "promptOnClose": true
@@ -49,7 +56,9 @@
     {
       "label": "drop database",
       "type": "shell",
-      "dependsOn": [ "dc up" ],
+      "dependsOn": [
+        "dc up"
+      ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/drop.sh",
       "problemMatcher": [],
       "promptOnClose": true
@@ -57,7 +66,9 @@
     {
       "label": "recreate database",
       "type": "shell",
-      "dependsOn": [ "dc up" ],
+      "dependsOn": [
+        "dc up"
+      ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/recreate.sh",
       "problemMatcher": [],
       "promptOnClose": true
@@ -105,6 +116,13 @@
       "type": "shell",
       "command": "docker buildx use mybuilder",
       "promptOnClose": false
+    },
+    {
+      "label": "clear docker",
+      "type": "shell",
+      "command": "docker stop $(docker ps -a -q);docker rm $(docker ps -a -q);docker volume prune;docker rmi $(docker images -a -q);",
+      "promptOnClose": false,
+      "problemMatcher": []
     }
   ]
 }

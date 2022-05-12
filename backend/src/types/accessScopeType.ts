@@ -1,3 +1,3 @@
 export enum AccessScopeType {
-  SYSTEM_ADMIN = 'admin',
+  SYSTEM_ADMIN = 'superAdmin',
 }

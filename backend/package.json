@@ -6,16 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "typeorm": "f() { node --require ts-node/register ./node_modules/typeorm/cli.js \"$@\" -d src/config/data-source;}; f",
-    "ormgen": "f() { yarn prestart && yarn typeorm migration:generate -p src/modules/infrastructure/migration/\"$@\";}; f",
     "dbdoc": "rm -rf src/modules/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/modules/infrastructure/migration/all_migrations.sql -o src/modules/infrastructure/migration/all_migrations.dbml --postgres",
     "dbdoc:publish": "dbdocs build src/modules/infrastructure/migration/all_migrations.dbml --project Smarthouse",
-    "migrate": "yarn build && yarn typeorm migration:run",
     "psql": "docker exec -it smarthouse_gateway_pgdocker psql -U smarthouse_gateway_pgdocker",
-    "pgrmhard": "sudo rm -rf ~/smarthouse_gateway_pgdocker",
-    "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' smarthouse_gateway_pgdocker",
-    "1start:dev": "nest start --watch",
-    "1start:debug": "nest start --debug 0.0.0.0:9229 --watch"
+    "pgrmhard": "sudo rm -rf ~/smarthouse_gateway_pgdocker"
   },
   "dependencies": {
     "@nestjs/cli": "^8.2.5",

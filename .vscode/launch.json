@@ -5,21 +5,35 @@
       "type": "firefox",
       "request": "launch",
       "reAttach": true,
-      "name": "Launch firefox debugger",
-      "url": "http://localhost:3000/",
-      "webRoot": "${workspaceFolder}/frontend/src"
+      "name": "Debug React front with firefox",
+      "url": "http://localhost:5001/",
+      "keepProfileChanges": true,
+      "profile": "default",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "pathMappings": [
+        {
+          "url": "file:///app/src",
+          "path": "${workspaceFolder}/frontend/src"
+        }
+      ]
     },
-    // {
-    //   "type": "node",
-    //   "request": "attach",
-    //   "name": "Debug: thomas-nestjs",
-    //   "remoteRoot": "/thomas/src/app",
-    //   "localRoot": "${workspaceFolder}",
-    //   "protocol": "inspector",
-    //   "port": 9229,
-    //   "restart": true,
-    //   "address": "0.0.0.0",
-    //   "skipFiles": ["<node_internals>/**"]
-    // }
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Debug Nest front with VS Code",
+      "remoteRoot": "/app",
+      "localRoot": "${workspaceFolder}/backend",
+      "port": 9229,
+      "restart": {
+        "maxAttempts": 10,
+        "delay": 1000
+      },
+      "address": "localhost",
+      "showAsyncStacks": true,
+      "preLaunchTask": "",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
   ]
 }

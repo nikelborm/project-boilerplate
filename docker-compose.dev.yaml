@@ -1,125 +1,128 @@
-version: "3.9"
+version: '3.9'
 services:
-  frontend:
-    image: "${DOCKER_REGISTRY}/frontend:${IMAGE_TAG}"
-    ports:
-      - ${FRONTEND_BIND}:3000/tcp
-    environment:
-      - TSC_WATCHFILE=UseFsEvents
+  nginx-dev:
+    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-nginx-dev"
     restart: always
-    build:
-      context: $FRONTEND_ROOT
-      target: prepare
-    volumes:
-      - type: bind
-        source: "${FRONTEND_ROOT}/src"
-        target: /app/src
-        consistency: delegated
-
-
-version: "3.5"
-services:
-  frontend:
-    image: "${DOCKER_REGISTRY}/frontend:${IMAGE_TAG}"
-    ports:
-      - ${FRONTEND_BIND}:3000/tcp
-    environment:
-      - TSC_WATCHFILE=UseFsEvents
-    restart: always
-    build:
-      context: $FRONTEND_ROOT
-      target: prepare
-    volumes:
-      - type: bind
-        source: "${FRONTEND_ROOT}/src"
-        target: /app/src
-        consistency: delegated
-version: "3.5"
-services:
-  backend:
-    ports:
-      - ${BACKEND_BIND}:3000/tcp
-    build:
-      context: $BACKEND_ROOT
-      target: build
-    volumes:
-      - type: bind
-        source: $BACKEND_ROOT/src
-        target: /app/src
-        consistency: delegated
-    environment:
-      - TSC_WATCHFILE=UseFsEvents
-      version: "3.5"
-services:
-  backend-postgres:
-    image: "${DOCKER_REGISTRY}/backend-postgres:${IMAGE_TAG}"
-    command: "-c default_text_search_config=pg_catalog.russian"
-    volumes:
-      - "${PG_DATA_DIR}/data:/var/lib/postgresql/data"
-    environment:
-      - POSTGRES_PASSWORD
-    restart: always
-  backend:
     depends_on:
-      - backend-postgres
-    image: "${DOCKER_REGISTRY}/backend:${IMAGE_TAG}"
-    environment:
-      - FNTCH_ENV
-      - COMPOSE_PROJECT_NAME
-      - TYPEORM_HOST=backend-postgres
-      - TYPEORM_USERNAME=${POSTGRES_USER}
-      - TYPEORM_PASSWORD=${POSTGRES_PASSWORD}
-    restart: always
-
-
-
-
-version: "3.8"
-services:
-  api:
-    # image: thomas-oliver/nestjs-dockerized 
+      - backend-dev
+      - postgres-admin
+      - frontend-dev
     build:
-      dockerfile: Dockerfile
-      context: .
-      # Only will build development stage from our dockerfile
+      context: ./frontend/
+      target: dev_nginx
+      args:
+        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
+    environment:
+      - TZ=${TZ}
+      - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
+      - DEV_INNER_FRONTEND_DEBUGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+      - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
+      - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+    ports:
+      - ${EXTERNAL_NGINX_HTTP_PORT}:${INNER_NGINX_HTTP_PORT}/tcp
+    networks:
+      nginx-front-net:
+      nginx-back-net:
+      nginx-pgadmin-net:
+
+  frontend-dev:
+    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-frontend-dev"
+    restart: always
+    build:
+      context: ./frontend/
+      target: dev_front
+      args:
+        - DEV_INNER_FRONTEND_DEBUGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+    environment:
+      - TZ=${TZ}
+      - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
+      - DANGEROUSLY_DISABLE_HOST_CHECK=${DANGEROUSLY_DISABLE_HOST_CHECK}
+      - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
+      - DEV_INNER_FRONTEND_DEBUGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - TSC_WATCHFILE=UseFsEvents
+    volumes:
+      - type: bind
+        source: ./frontend/src
+        target: /app/src
+        consistency: delegated
+    networks:
+      nginx-back-net:
+      nginx-pgadmin-net:
+
+  backend-dev:
+    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-backend-dev"
+    restart: always
+    depends_on:
+      - postgres-dev
+    build:
+      context: ./backend/
       target: development
-    # Mount our host Directory to the docker container
-    # Mount (.) current directory to the docker container thomas/src/app
-    # reflect file changes from host to container
+      args:
+        - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+        - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+        - DEV_INNER_BACKEND_DEBUGER_PORT=${DEV_INNER_BACKEND_DEBUGER_PORT}
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
+      - TZ=${TZ}
+      - NODE_ENV=development
+      - JWT_SECRET=${JWT_SECRET}
+      - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
+      - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
+      - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
+
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_HOST=postgres-dev
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
+
+      - DEV_INNER_BACKEND_DEBUGER_PORT=${DEV_INNER_BACKEND_DEBUGER_PORT}
+      - SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - WEB_SOCKET_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+    ports:
+      - ${DEV_EXTERNAL_BACKEND_DEBUGER_PORT}:${DEV_INNER_BACKEND_DEBUGER_PORT}/tcp
     volumes:
-      - .:/thomas/src/app
-      - ./thomas/src/app/node_modules
-    # Run in Debug Mode: npm run start:debug --> Don't forget to start your vscode debugger!
-    # Run in dev Mode: npm run start:dev
-    command: npm run start:debug
-    depends_on: 
-      - postgres
-    environment: 
-      DATABASE_URL: postgres://user:password@postgres:5432/db
-      NODE_ENV: development
-      JWT_SECRET: 1hard_to_guess_secret7890a
-      PORT: 3000
-    ports:
-      - 8080:3000
-      # debugging port
-      - 9229:9229
+      - type: bind
+        source: ./backend/src
+        target: /app/src
+        consistency: delegated
+    networks:
+      nginx-back-net:
+      back-db-net:
 
-  postgres:
-    image: postgres:10.4
-    environment: 
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db
-    ports:
-      - 35000:5432
+  postgres-dev:
+    image: postgres
+    restart: always
+    command: "-c default_text_search_config=pg_catalog.russian"
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_DB=${DATABASE_NAME}
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      back-db-net:
+      db-pgadmin-net:
 
-    ### Postgres Adminer ###
-  postgres_admin:
-    image: dpage/pgadmin4:4.28
+  postgres-admin:
+    image: dpage/pgadmin4:latest
     depends_on:
-      - postgres
-    environment: 
-      PGADMIN_DEFAULT_EMAIL: admin@admin.de
-      PGADMIN_DEFAULT_PASSWORD: password
-    ports:
-      - 5050:80
+      - postgres-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      nginx-pgadmin-net:
+      db-pgadmin-net:
+
+networks:
+  nginx-front-net: {}
+  nginx-back-net: {}
+  nginx-pgadmin-net: {}
+
+  back-db-net: {}
+  db-pgadmin-net: {}

@@ -1,17 +1,17 @@
 #!/bin/bash
 
 export TZ='Europe/Moscow'
-export PROJECT_NAME='boilerplate'
+export COMPOSE_PROJECT_NAME='boilerplate'
+export DOCKER_BUILDKIT=1
 
 # frontend
 export DANGEROUSLY_DISABLE_HOST_CHECK='true'
-export REACT_APP_NAME='NewApp'
 export GENERATE_SOURCEMAP='false'
 
 # backend
 
 # 'production' | 'development'
-export PROJECT_ENV_TYPE='development'
+# export NODE_ENV=
 
 # Don`t forget to change to another long secure random string in production
 # It`s key for sign jwt auth tokens
@@ -27,7 +27,7 @@ export MOCK_SCRIPT_NAME='fillDBScript'
 export BOOTSTRAP_MODE='endpoints'
 
 # database
-export DATABASE_HOST='postgres-prod'
+# export DATABASE_HOST=
 export DATABASE_PORT='5432'
 export DATABASE_USERNAME='pgdockeruser'
 export DATABASE_PASSWORD='pgdockerpass'
@@ -39,24 +39,19 @@ export DATABASE_TYPEORM_LOGGING_MODE='"all"'
 export PGADMIN_DEFAULT_EMAIL='admin@hello.com'
 export PGADMIN_DEFAULT_PASSWORD='password'
 
-# production ports
-export PROD_INNER_NGINX_HTTP_PORT='80'
-export PROD_INNER_NGINX_HTTPS_PORT='443'
-export PROD_INNER_BACKEND_HTTP_SERVER_PORT='3001'
-export PROD_INNER_BACKEND_WS_SERVER_PORT='3002'
-
-export PROD_EXTERNAL_NGINX_HTTP_PORT='5001'
-export PROD_EXTERNAL_NGINX_HTTPS_PORT='5002'
-
 # development ports
-export DEV_INNER_NGINX_HTTP_PORT='5000'
-export DEV_INNER_BACKEND_HTTP_SERVER_PORT='5000'
-export DEV_INNER_BACKEND_WS_SERVER_PORT='4999'
-export DEV_INNER_BACKEND_DEBUGER_PORT='4999'
-export DEV_INNER_FRONTEND_HTTP_SERVER_PORT='5000'
-export DEV_INNER_FRONTEND_DEBUGER_PORT='5000'
+export DEV_INNER_BACKEND_DEBUGER_PORT='9229'
+export DEV_EXTERNAL_BACKEND_DEBUGER_PORT='9300'
+
+export DEV_INNER_FRONTEND_DEBUGER_PORT='3000'
 
 
-export DEV_EXTERNAL_NGINX_HTTP_PORT='5000'
-export DEV_EXTERNAL_BACKEND_DEBUGER_PORT='5000'
-export DEV_EXTERNAL_FRONTEND_DEBUGER_PORT='5000'
+#universal ports
+export INNER_BACKEND_HTTP_SERVER_PORT='3001'
+export INNER_BACKEND_WS_SERVER_PORT='3002'
+
+export INNER_NGINX_HTTPS_PORT='443'
+export INNER_NGINX_HTTP_PORT='80'
+
+export EXTERNAL_NGINX_HTTP_PORT='5001'
+export EXTERNAL_NGINX_HTTPS_PORT='5002'
