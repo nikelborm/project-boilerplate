@@ -11,6 +11,7 @@ export async function updateOnePlain<T extends EntityWithId>(
   entityName?: string,
   config?: { disableExistingCheck?: boolean },
 ): Promise<void> {
+  console.log('config: ', config);
   validateExistingId({
     entity: { id },
     shouldIdExist: true,

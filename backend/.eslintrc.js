@@ -13,16 +13,19 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    jest: true,
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
-    "prettier/prettier": ["error", {
-      "endOfLine":"auto"
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
+    'no-return-await': 'off',
+    '@typescript-eslint/return-await': ['error', 'always'],
+    'prettier/prettier': ['error', {
+      'endOfLine':'auto'
     }],
   },
 };

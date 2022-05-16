@@ -8,6 +8,7 @@ import {
   IsString,
   ValidateNested,
   validateSync,
+  ValidationError,
 } from 'class-validator';
 
 const validateConfig = {
@@ -43,7 +44,10 @@ export class BaseMessage<T> {
   report!: BaseMessageReport;
 }
 
-export function validate<P>(payload: P, payloadClass: { new (): P }) {
+export function validate<P>(
+  payload: P,
+  payloadClass: { new (): P },
+): ValidationError[] {
   const payloadInstance = plainToInstance(payloadClass, payload);
   return validateSync(payloadInstance as any, validateConfig);
 }
@@ -51,7 +55,7 @@ export function validate<P>(payload: P, payloadClass: { new (): P }) {
 export function validateWithBase<U>(
   entity: BaseMessage<U>,
   payloadClass: { new (): U },
-) {
+): ValidationError[] {
   const baseMessageInstance = plainToInstance(BaseMessage, entity);
   const baseErrors = validateSync(baseMessageInstance as any, validateConfig);
 

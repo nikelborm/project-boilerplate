@@ -27,5 +27,5 @@ export async function updateOneWithRelations<T extends EntityWithId>(
     );
 
   //@ts-expect-error asdd
-  return repo.save(updatedEntity);
+  return await repo.save(updatedEntity);
 }

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { EntityWithId, NewEntity } from '.';
 import { validateExistingId } from '..';
 
-export function createManyWithRelations<T extends EntityWithId>(
+export async function createManyWithRelations<T extends EntityWithId>(
   repo: Repository<T>,
   newEntities: NewEntity<T>[],
   entityName?: string,
@@ -15,7 +15,7 @@ export function createManyWithRelations<T extends EntityWithId>(
     errorText: messages.repo.common.cantCreateWithIds(newEntities, entityName),
   });
   // @ts-expect-error при создании мы не можем указать айди, поэтому мы его выпилили
-  return repo.save(newEntities, {
+  return await repo.save(newEntities, {
     chunk: config?.chunk,
   });
 }

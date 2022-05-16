@@ -17,7 +17,7 @@ export class AccessScopeRepo {
     private readonly repo: Repository<AccessScope>,
   ) {}
 
-  async getOneById(id: number) {
+  async getOneById(id: number): Promise<AccessScope> {
     const accessScope = await this.repo.findOne({ where: { id } });
     if (!accessScope)
       throw new BadRequestException(
@@ -26,15 +26,27 @@ export class AccessScopeRepo {
     return accessScope;
   }
 
-  async updateOneWithRelations(updatedAccessScope: UpdatedEntity<AccessScope>) {
-    return updateOneWithRelations(this.repo, updatedAccessScope, 'accessScope');
+  async updateOneWithRelations(
+    updatedAccessScope: UpdatedEntity<AccessScope>,
+  ): Promise<AccessScope> {
+    return await updateOneWithRelations(
+      this.repo,
+      updatedAccessScope,
+      'accessScope',
+    );
   }
 
-  createOneWithRelations(newAccessScope: NewEntity<AccessScope>) {
-    return createOneWithRelations(this.repo, newAccessScope, 'accessScope');
+  async createOneWithRelations(
+    newAccessScope: NewEntity<AccessScope>,
+  ): Promise<AccessScope> {
+    return await createOneWithRelations(
+      this.repo,
+      newAccessScope,
+      'accessScope',
+    );
   }
 
-  deleteMany(accessScopeIds: number[]) {
-    return this.repo.delete(accessScopeIds);
+  async deleteMany(accessScopeIds: number[]): Promise<void> {
+    await this.repo.delete(accessScopeIds);
   }
 }

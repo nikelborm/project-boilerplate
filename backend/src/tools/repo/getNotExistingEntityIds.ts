@@ -5,7 +5,11 @@ import { differenceBetweenSetsInArray } from '..';
 export async function getNotExistingEntityIds<T extends EntityWithId>(
   repo: Repository<T>,
   entitiesToCheck: EntityWithId[],
-) {
+): Promise<{
+  entityIdsToCheck: number[];
+  entityIdsFromDB: number[];
+  notExistingEntityIds: number[];
+}> {
   const entityIdsToCheck = entitiesToCheck.map(({ id }) => id);
 
   const entitiesFromDB = await repo

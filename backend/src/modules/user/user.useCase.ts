@@ -18,29 +18,21 @@ export class UserUseCase {
     );
   }
 
-  getOneById(id: number) {
-    return this.userRepo.getOneById(id);
-  }
-
-  getOneByName(name: { firstName: string; lastName: string }) {
-    return this.userRepo.findOneByName(name.firstName, name.lastName);
-  }
-
-  deleteOne(id: number) {
-    return this.userRepo.delete(id);
-  }
-
-  async findMany(search?: string) {
+  async findMany(search?: string): Promise<model.User[]> {
     return await this.userRepo.findManyWithAccessScopes(search);
   }
 
-  createManyUsers(users: InputUser[]) {
-    return this.userRepo.createManyWithRelations(
+  async createManyUsers(
+    users: InputUser[],
+  ): Promise<(UserModelToInsert & { id: number })[]> {
+    return await this.userRepo.createManyWithRelations(
       users.map((user) => this.createUserModel(user)),
     );
   }
 
-  async createUser(user: InputUser) {
+  async createUser(
+    user: InputUser,
+  ): Promise<UserModelToInsert & { id: number }> {
     const candidate = await this.userRepo.getOneByEmail(user.email);
     if (candidate) throw new BadRequestException(messages.user.exists);
     return await this.userRepo.createOneWithRelations(
@@ -48,17 +40,18 @@ export class UserUseCase {
     );
   }
 
-  async setUserPassword(id: number, password: string) {
+  async setUserPassword(id: number, password: string): Promise<void> {
     const candidate = await this.userRepo.getOneById(id);
     const updatedUser = this.createUserModel({ ...candidate, password });
-    return this.userRepo.updateOnePlain(id, updatedUser);
+    return await this.userRepo.updateOnePlain(id, updatedUser);
   }
 
-  private createUserModel({ password, ...rest }: InputUser) {
+  private createUserModel({ password, ...rest }: InputUser): UserModelToInsert {
     const salt = randomBytes(64).toString('hex');
     return {
       ...rest,
       salt,
+      accessScopes: [],
       passwordHash: createHash('sha256')
         .update(salt)
         .update(password)
@@ -66,12 +59,21 @@ export class UserUseCase {
         .digest('hex'),
     };
   }
+
+  async deleteOne(id: number): Promise<void> {
+    await this.userRepo.delete(id);
+  }
 }
+
+type UserModelToInsert = Omit<InputUser, 'password'> & {
+  salt: string;
+  passwordHash: string;
+};
 
 interface InputUser {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  accessScopes?: model.AccessScope[];
+  accessScopes: model.AccessScope[];
 }

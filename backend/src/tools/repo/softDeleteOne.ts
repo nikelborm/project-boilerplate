@@ -9,6 +9,7 @@ export async function softDeleteOne<T extends EntityWithId>(
   entityName?: string,
   config?: { disableExistingCheck?: boolean },
 ): Promise<void> {
+  console.log('config: ', config);
   validateExistingId({
     entity: entityToBeHidden,
     shouldIdExist: true,

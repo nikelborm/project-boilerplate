@@ -7,25 +7,33 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { ConfigKeys, IAppConfigMap } from 'src/types';
+import {
+  ConfigKeys,
+  IAppConfigMap,
+  AllowedForArgs,
+  EndpointAccess,
+  UserLevelScopes,
+  UserAuthInfo,
+} from 'src/types';
 import { messages } from 'src/config';
-import { AccessEnum, ALLOWED_SCOPES_KEY } from '../tools';
-import { AllowedForArgs, EndpointAccess, UserLevelScopes } from '../types';
-import { AuthService } from '../services';
+import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
+import { AccessTokenUseCase } from '../services';
+import { repo } from 'src/modules/infrastructure';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class AccessTokenGuard implements CanActivate {
   private IS_DEVELOPMENT: boolean;
 
   constructor(
     private readonly configService: ConfigService<IAppConfigMap, true>,
-    private readonly authService: AuthService,
+    private readonly accessTokenUseCase: AccessTokenUseCase,
+    private readonly userRepo: repo.UserRepo,
     private readonly reflector: Reflector,
   ) {
     this.IS_DEVELOPMENT = this.configService.get(ConfigKeys.IS_DEVELOPMENT);
   }
 
-  async canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const [allScopes, request] = this.getRouteScopesAndRequestFrom(context);
 
     const routeLevelScope = allScopes.find((scope) =>
@@ -48,16 +56,19 @@ export class JwtAuthGuard implements CanActivate {
       if (this.IS_DEVELOPMENT) return true;
       else throw new UnauthorizedException(messages.auth.developmentOnly);
 
-    const userModel = await this.authService.verify(
+    const userId = await this.accessTokenUseCase.decodeAuthHeaderAndGetUserId(
       request.headers.authorization,
     );
 
-    request.user = userModel;
+    const userFromDB: UserAuthInfo =
+      await this.userRepo.getOneByIdWithAccessScopes(userId);
+
+    request.user = userFromDB;
 
     if (routeLevelScope === AccessEnum.AUTHORIZED) return true;
 
     const userAccessScopeTypes = new Set(
-      userModel.accessScopes.map(({ type }) => type),
+      userFromDB.accessScopes.map(({ type }) => type),
     );
 
     for (const endpointAccessScope of userLevelScopes) {
@@ -71,13 +82,15 @@ export class JwtAuthGuard implements CanActivate {
     return false;
   }
 
-  private getRouteScopesAndRequestFrom(context: ExecutionContext) {
+  private getRouteScopesAndRequestFrom(
+    context: ExecutionContext,
+  ): [AllowedForArgs, Request] {
     return [
       this.reflector.get<AllowedForArgs>(
         ALLOWED_SCOPES_KEY,
         context.getHandler(),
       ),
       context.getArgByIndex<Request>(0),
-    ] as [AllowedForArgs, Request];
+    ];
   }
 }

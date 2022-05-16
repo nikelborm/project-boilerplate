@@ -8,10 +8,10 @@ export const iterateInChunks = async <T>({
   array: T[];
   callOnIteration: (element: T) => any;
   callAfterChunk: () => Promise<void> | void;
-}) => {
+}): Promise<void> => {
   let chunkIndex = 0;
 
-  const iterateInChunk = async (limit: number) => {
+  const iterateInChunk = async (limit: number): Promise<void> => {
     for (let i = chunkIndex * chunkSize; i < limit; i++) {
       callOnIteration(array[i]);
     }

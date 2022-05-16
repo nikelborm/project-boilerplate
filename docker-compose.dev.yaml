@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   nginx-dev:
-    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-nginx-dev"
+    image: "${COMPOSE_PROJECT_NAME}-nginx-dev"
     restart: always
     depends_on:
       - backend-dev
@@ -28,7 +28,7 @@ services:
       nginx-pgadmin-net:
 
   frontend-dev:
-    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-frontend-dev"
+    image: "${COMPOSE_PROJECT_NAME}-frontend-dev"
     restart: always
     build:
       context: ./frontend/
@@ -52,7 +52,7 @@ services:
       nginx-pgadmin-net:
 
   backend-dev:
-    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-backend-dev"
+    image: "${COMPOSE_PROJECT_NAME}-backend-dev"
     restart: always
     depends_on:
       - postgres-dev

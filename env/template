@@ -3,6 +3,9 @@
 export TZ='Europe/Moscow'
 export COMPOSE_PROJECT_NAME='boilerplate'
 export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+# export DOCKER_BUILDKIT=0
+# export COMPOSE_DOCKER_CLI_BUILD=0
 
 # frontend
 export DANGEROUSLY_DISABLE_HOST_CHECK='true'

@@ -1,8 +1,8 @@
-import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AccessScopeUseCase } from './accessScope.useCase';
 import { EmptyResponseDTO, UpdateAccessScopeDTO } from 'src/types';
-import { AccessEnum, AllowedFor } from '../auth';
+import { AccessEnum, AllowedFor, ValidatedBody } from 'src/tools';
 
 @ApiTags('accessScope')
 @Controller()
@@ -12,7 +12,7 @@ export class AccessScopeController {
   @Post('/updateAccessScope')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async updateAccessScope(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ValidatedBody
     accessScope: UpdateAccessScopeDTO,
   ): Promise<EmptyResponseDTO> {
     await this.accessScopeUseCase.updateOne(accessScope);

@@ -5,8 +5,8 @@ export const validateExistingId = (params: {
   entities?: any[];
   shouldIdExist: boolean;
   errorText: string;
-}) => {
-  const shouldThrowError = (entity) =>
+}): void => {
+  const shouldThrowError = (entity: any): boolean =>
     params.shouldIdExist ? !entity?.id : !!entity?.id;
 
   if (params.entity) {

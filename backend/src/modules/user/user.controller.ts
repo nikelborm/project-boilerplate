@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserUseCase } from './user.useCase';
 import {
@@ -18,8 +10,14 @@ import {
   CreateOneUserResponse,
   CreateManyUsersResponseDTO,
   SetMyPasswordDTO,
+  AuthedRequest,
 } from 'src/types';
-import { AccessEnum, AllowedFor, AuthedRequest, AuthorizedOnly } from '../auth';
+import {
+  AccessEnum,
+  AllowedFor,
+  AuthorizedOnly,
+  ValidatedBody,
+} from 'src/tools';
 
 @ApiTags('user')
 @Controller()
@@ -42,7 +40,7 @@ export class UserController {
   @Post('/createUser')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ValidatedBody
     { firstName, lastName, email, password }: CreateUserDTO,
   ): Promise<CreateOneUserResponse> {
     const user = await this.userUseCase.createUser({
@@ -62,10 +60,12 @@ export class UserController {
   @Post('/createUsers')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ValidatedBody
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
-    const userModels = await this.userUseCase.createManyUsers(users);
+    const userModels = await this.userUseCase.createManyUsers(
+      users.map((user) => ({ ...user, accessScopes: [] })),
+    );
     return {
       response: {
         users: userModels,
@@ -77,7 +77,7 @@ export class UserController {
   @AuthorizedOnly()
   async setMyPassword(
     @Req() { user }: AuthedRequest,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ValidatedBody
     { password }: SetMyPasswordDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.setUserPassword(user.id, password);
@@ -87,7 +87,7 @@ export class UserController {
   @Post('/deleteUserById')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    @ValidatedBody
     { id }: DeleteEntityByIdDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.deleteOne(id);

@@ -17,10 +17,13 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "resolveJsonModule": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "alwaysStrict":true,
     "plugins": [
       {
-        "name": "typescript-strict-plugin"
+        "name": "typescript-strict-plugin",
       }
     ]
   }

@@ -5,10 +5,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { JwtStrategy, LocalStrategy } from './strategy';
-import { JwtAuthGuard } from './guards';
+import { AccessTokenGuard } from './guards';
 import { ConfigKeys, IAppConfigMap } from 'src/types';
-import { BlacklistedJWTStore } from './types';
-import { BlacklistedJWTStoreInMemory, AuthService } from './services';
+import {
+  InMemoryWhitelistedSessionStore,
+  AuthUseCase,
+  RefreshTokenUseCase,
+  AccessTokenUseCase,
+} from './services';
+import { UserModule } from '../user';
 
 @Module({
   imports: [
@@ -17,25 +22,25 @@ import { BlacklistedJWTStoreInMemory, AuthService } from './services';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService<IAppConfigMap, true>) => ({
         secret: configService.get(ConfigKeys.JWT_SECRET),
-        signOptions: { expiresIn: '6h' },
       }),
       inject: [ConfigService],
     }),
+
+    UserModule,
   ],
   providers: [
-    AuthService,
+    AuthUseCase,
+    AccessTokenUseCase,
+    RefreshTokenUseCase,
+    InMemoryWhitelistedSessionStore,
     JwtStrategy,
     LocalStrategy,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    {
-      provide: BlacklistedJWTStore,
-      useClass: BlacklistedJWTStoreInMemory,
+      useClass: AccessTokenGuard,
     },
   ],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthUseCase],
 })
 export class AuthModule {}

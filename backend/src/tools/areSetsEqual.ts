@@ -1,4 +1,4 @@
-export function areSetsEqual<T>(firstSet: Set<T>, secondSet: Set<T>) {
+export function areSetsEqual<T>(firstSet: Set<T>, secondSet: Set<T>): boolean {
   if (firstSet.size !== secondSet.size) return false;
 
   for (const elemFromFirstSet of firstSet)

@@ -1,40 +1,77 @@
-import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import { Controller, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthorizedOnly } from '.';
-import { AuthService } from './services';
-import { AuthedRequest, UserWithoutSensitiveData } from './types';
+import { AuthorizedOnly, ValidatedBody } from 'src/tools';
+import {
+  AuthedRequest,
+  CreateUserDTO,
+  EmptyResponseDTO,
+  UserAuthInfo,
+} from 'src/types';
+import { AuthUseCase, RefreshTokenUseCase } from './services';
+import { TokenPairDTO } from './types';
 import { LocalAuthGuard } from './guards';
+import { UserUseCase } from '../user';
 
 @ApiTags('auth')
 @Controller('/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authUseCase: AuthUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly userUseCase: UserUseCase,
+  ) {}
 
-  @Get('/login')
+  @Post('/local/login')
   @UseGuards(LocalAuthGuard)
   async login(
-    @Request() req: { user: UserWithoutSensitiveData },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // leave here for documentation generation
     @Query('email') email: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Query('password') password: string,
-  ): Promise<{ access_token: string }> {
-    return {
-      access_token: await this.authService.getAccessToken(req.user),
-    };
+    @Request() req: { user: UserAuthInfo },
+  ): Promise<TokenPairDTO> {
+    return await this.authUseCase.getAccessAndRefreshToken(req.user);
   }
 
-  @Get('/me')
+  @Post('/local/register')
+  async register(
+    @ValidatedBody
+    { firstName, lastName, email, password }: CreateUserDTO,
+  ): Promise<TokenPairDTO> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { salt, passwordHash, ...user } = await this.userUseCase.createUser({
+      firstName,
+      lastName,
+      email,
+      password,
+      accessScopes: [],
+    });
+    return await this.authUseCase.getAccessAndRefreshToken(user);
+  }
+
+  @Post('/logout')
   @AuthorizedOnly()
-  async getMe(@Request() { user }: AuthedRequest) {
-    // TODO add a response dto here
-    const payload = this.authService.getUserAuthTokenPayload(
-      user as UserWithoutSensitiveData,
-    );
-    return {
-      response: {
-        user: payload.user,
-      },
-    };
+  async logout(
+    @Request() { user, sessionUUID }: AuthedRequest,
+  ): Promise<EmptyResponseDTO> {
+    await this.authUseCase.logoutSessionOf(user.id, sessionUUID);
+    return { response: {} };
+  }
+
+  @Post('/logoutAllSessions')
+  @AuthorizedOnly()
+  async logoutAllSessions(
+    @Request() { user }: AuthedRequest,
+  ): Promise<EmptyResponseDTO> {
+    await this.authUseCase.logoutAllSessions(user.id);
+    return { response: {} };
+  }
+
+  @Post('/refresh')
+  @AuthorizedOnly()
+  async refreshTokens(
+    @Request() { user, sessionUUID }: AuthedRequest,
+  ): Promise<EmptyResponseDTO> {
+    this.refreshTokenUseCase.getRefreshTokenPayload(user, sessionUUID); // TODO: change
+    return { response: {} };
   }
 }

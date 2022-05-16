@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MockDataUseCase {
-  async fillDBScript() {
+  async fillDBScript(): Promise<void> {
     console.log('fillDBScript called');
   }
 }

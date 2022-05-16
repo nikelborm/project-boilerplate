@@ -1,7 +1,7 @@
 export function assertThereAreNoDuplicateUUIDs<T extends { uuid: string }>(
   entities: T[],
   entityName: string,
-) {
+): void {
   const entitiesUUIDs = entities.map(({ uuid }) => uuid);
   const entitiesUUIDsWithoutDuplicates = new Set(entitiesUUIDs);
   if (entitiesUUIDsWithoutDuplicates.size !== entitiesUUIDs.length)

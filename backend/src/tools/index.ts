@@ -2,6 +2,7 @@ export * from './accessLog.middleware';
 export * from './areSetsEqual';
 export * from './assertThereAreNoDuplicateUUIDs';
 export * from './countValid';
+export * from './decorators';
 export * from './difference';
 export * from './enumWithUUIDsValidator';
 export * from './getRedundantAndMissingsValues';

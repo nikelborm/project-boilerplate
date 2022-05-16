@@ -1,5 +1,3 @@
-// @ts-strict
-
 export function remapToIndexedObject<
   T extends Record<string, any>,
   E extends T[keyof T],
@@ -21,7 +19,7 @@ export function remapToIndexedObject<
   array: T[],
   getIndexKey = (element: T): E => element['id'],
   getValueForKey: ((element: T) => U) | null = null,
-) {
+): Record<E, U | T> {
   if (getValueForKey === null) {
     const map: Record<E, T> = Object.create(null);
 

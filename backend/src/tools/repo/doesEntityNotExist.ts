@@ -4,7 +4,7 @@ import { EntityWithId } from '.';
 export async function doesEntityNotExist<T extends EntityWithId>(
   repo: Repository<T>,
   entityToCheck: EntityWithId,
-) {
+): Promise<boolean> {
   const entityFromDB = await repo
     .createQueryBuilder('entity')
     .select(['entity.id'])

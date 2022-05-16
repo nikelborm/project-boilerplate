@@ -9,5 +9,6 @@ export async function softDeleteByCriteria<T extends EntityWithId>(
 ): Promise<void> {
   // TODO: Сделать проверку на то существует ли сущность с этим айди
   // TODO: Сделать возможность убрать проверку на существование сущностей
+  console.log('config: ', config);
   await repo.softDelete(criteria);
 }

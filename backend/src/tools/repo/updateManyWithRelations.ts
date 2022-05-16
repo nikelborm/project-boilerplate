@@ -33,7 +33,7 @@ export async function updateManyWithRelations<T extends EntityWithId>(
     );
 
   //@ts-expect-error asd
-  return repo.save(updatedEntities, {
+  return await repo.save(updatedEntities, {
     chunk: config?.chunk,
   });
 }

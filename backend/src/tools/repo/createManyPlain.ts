@@ -8,7 +8,7 @@ export async function createManyPlain<T extends EntityWithId>(
   repo: Repository<T>,
   newEntities: PlainEntityWithoutId<T>[],
   entityName?: string,
-) {
+): Promise<T[]> {
   validateExistingId({
     entities: newEntities,
     shouldIdExist: false,

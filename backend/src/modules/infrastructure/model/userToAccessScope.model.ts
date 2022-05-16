@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { AccessScope, User } from './';
+import { AccessScope, User } from '.';
 
 @Entity({ name: 'user_to_access_scope' })
 export class UserToAccessScope {

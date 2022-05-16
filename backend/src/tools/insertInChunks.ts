@@ -6,7 +6,7 @@ export async function insertInChunks<T>(
   tableName: string,
   array: Record<string, T>[],
   getRowsToInsertFrom: (rowAsObject: Record<string, T>) => string[],
-) {
+): Promise<void> {
   let rowsToInsert: string[] = [];
 
   await iterateInChunks({

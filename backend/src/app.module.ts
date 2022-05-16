@@ -28,7 +28,7 @@ import {
   providers: [...Object.values(MockServices)],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(AccessLogMiddleware).forRoutes('*');
   }
 }

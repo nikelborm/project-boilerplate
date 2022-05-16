@@ -10,6 +10,7 @@ import {
   updateOnePlain,
   updateOneWithRelations,
 } from 'src/tools';
+import { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
 import { ILike, Repository } from 'typeorm';
 import { User } from '../model';
 
@@ -20,11 +21,11 @@ export class UserRepo {
     private readonly repo: Repository<User>,
   ) {}
 
-  getAll() {
+  getAll(): Promise<User[]> {
     return this.repo.find();
   }
 
-  findManyWithAccessScopes(search?: string) {
+  findManyWithAccessScopes(search?: string): Promise<User[]> {
     return this.repo.find({
       where: search
         ? [
@@ -37,10 +38,19 @@ export class UserRepo {
     });
   }
 
-  async getOneByIdWithAccessScopes(id: number) {
+  async getOneByIdWithAccessScopes(id: number): Promise<UserAuthInfo> {
     const user = await this.repo.findOne({
       where: { id },
       relations: ['accessScopes'],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        accessScopes: {
+          id: true,
+          type: true,
+        },
+      },
     });
     if (!user)
       throw new BadRequestException(
@@ -49,7 +59,7 @@ export class UserRepo {
     return user;
   }
 
-  async getOneById(id: number) {
+  async getOneById(id: number): Promise<User> {
     const user = await this.repo.findOne({
       where: { id },
     });
@@ -60,40 +70,62 @@ export class UserRepo {
     return user;
   }
 
-  async getOneByEmail(userEmail: string) {
+  async getOneByEmail(userEmail: string): Promise<User | null> {
     return await this.repo.findOne({ where: { email: userEmail } });
   }
 
-  async findOneByName(firstName: string, lastName: string) {
+  async findOneByName(
+    firstName: string,
+    lastName: string,
+  ): Promise<User | null> {
     return await this.repo.findOne({ where: { firstName, lastName } });
   }
 
-  createOneWithRelations(newUser: NewEntity<User>) {
-    return createOneWithRelations(this.repo, newUser, 'user');
+  async createOneWithRelations(newUser: NewEntity<User>): Promise<User> {
+    return await createOneWithRelations(this.repo, newUser, 'user');
   }
 
-  createManyWithRelations(newUsers: NewEntity<User>[]) {
-    return createManyWithRelations(this.repo, newUsers, 'user');
+  async createManyWithRelations(newUsers: NewEntity<User>[]): Promise<User[]> {
+    return await createManyWithRelations(this.repo, newUsers, 'user');
   }
 
-  updateOnePlain(id: number, updated: PlainEntityWithoutId<User>) {
-    return updateOnePlain(this.repo, id, updated, 'user');
+  async updateOnePlain(
+    id: number,
+    updated: PlainEntityWithoutId<User>,
+  ): Promise<void> {
+    return await updateOnePlain(this.repo, id, updated, 'user');
   }
 
-  updateOneWithRelations(newUser: UpdatedEntity<User>) {
-    return updateOneWithRelations(this.repo, newUser, 'user');
+  async updateOneWithRelations(newUser: UpdatedEntity<User>): Promise<User> {
+    return await updateOneWithRelations(this.repo, newUser, 'user');
   }
 
-  findOneByEmailWithAccessScopesAndPassword(email: string) {
-    return this.repo
+  async findOneByEmailWithAccessScopesAndPassword(
+    email: string,
+  ): Promise<UserForLoginAttemptValidation> {
+    const user = await this.repo
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.accessScopes', 'accessScopes')
-      .addSelect(['user.salt', 'user.passwordHash'])
-      .where('LOWER(email) = LOWER(:email)', { email })
+      .leftJoin('user.accessScopes', 'accessScopes')
+      .addSelect([
+        'user.id',
+        'user.email',
+        'user.firstName',
+        'user.lastName',
+        'user.salt',
+        'user.passwordHash',
+        'accessScopes.id',
+        'accessScopes.type',
+      ])
+      .where('email = :email', { email })
       .getOne();
+    if (!user)
+      throw new BadRequestException(
+        messages.repo.user.cantGetNotFoundBy(email),
+      );
+    return user;
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<void> {
     await this.repo.delete(id);
   }
 }

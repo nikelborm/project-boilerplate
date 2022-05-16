@@ -10,7 +10,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as MockServices from './mock';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
@@ -59,4 +59,4 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+void bootstrap();

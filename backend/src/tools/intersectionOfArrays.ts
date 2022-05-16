@@ -1,4 +1,4 @@
-export function intersection<T>(arrA: T[], arrB: T[]) {
+export function intersection<T>(arrA: T[], arrB: T[]): Set<T> {
   const setA = new Set(arrA);
 
   const _intersection = new Set<T>();
@@ -12,5 +12,5 @@ export function intersection<T>(arrA: T[], arrB: T[]) {
   return _intersection;
 }
 
-export const doesArraysIntersects = <T>(arrA: T[], arrB: T[]) =>
+export const doesArraysIntersects = <T>(arrA: T[], arrB: T[]): boolean =>
   arrB.some((elem) => arrA.includes(elem));

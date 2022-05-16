@@ -3,7 +3,11 @@ import { differenceBetweenSetsInArray } from './difference';
 export function getRedundantAndMissingsValues<T>(
   perfectSetOrArray: Set<T> | T[],
   checkableSetOrArray: Set<T> | T[],
-) {
+): {
+  missingValues: T[];
+  redundantValues: T[];
+  areThereAnyDifferences: boolean;
+} {
   const perfectSet = Array.isArray(perfectSetOrArray)
     ? new Set(perfectSetOrArray)
     : perfectSetOrArray;

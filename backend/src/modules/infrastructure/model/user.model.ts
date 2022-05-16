@@ -8,7 +8,7 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
-import { AccessScope, UserToAccessScope } from './';
+import { AccessScope, UserToAccessScope } from '.';
 
 @Entity({ name: 'user' })
 export class User {
