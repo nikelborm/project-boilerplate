@@ -5,21 +5,17 @@ import {
   AuthedRequest,
   CreateUserDTO,
   EmptyResponseDTO,
+  RefreshTokenDTO,
   UserAuthInfo,
 } from 'src/types';
-import { AuthUseCase, RefreshTokenUseCase } from './services';
+import { AuthUseCase } from './services';
 import { TokenPairDTO } from './types';
 import { LocalAuthGuard } from './guards';
-import { UserUseCase } from '../user';
 
 @ApiTags('auth')
 @Controller('/auth')
 export class AuthController {
-  constructor(
-    private readonly authUseCase: AuthUseCase,
-    private readonly refreshTokenUseCase: RefreshTokenUseCase,
-    private readonly userUseCase: UserUseCase,
-  ) {}
+  constructor(private readonly authUseCase: AuthUseCase) {}
 
   @Post('/local/login')
   @UseGuards(LocalAuthGuard)
@@ -29,23 +25,15 @@ export class AuthController {
     @Query('password') password: string,
     @Request() req: { user: UserAuthInfo },
   ): Promise<TokenPairDTO> {
-    return await this.authUseCase.getAccessAndRefreshToken(req.user);
+    return await this.authUseCase.login(req.user);
   }
 
   @Post('/local/register')
   async register(
     @ValidatedBody
-    { firstName, lastName, email, password }: CreateUserDTO,
+    createUserDTO: CreateUserDTO,
   ): Promise<TokenPairDTO> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { salt, passwordHash, ...user } = await this.userUseCase.createUser({
-      firstName,
-      lastName,
-      email,
-      password,
-      accessScopes: [],
-    });
-    return await this.authUseCase.getAccessAndRefreshToken(user);
+    return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
   }
 
   @Post('/logout')
@@ -67,11 +55,14 @@ export class AuthController {
   }
 
   @Post('/refresh')
-  @AuthorizedOnly()
   async refreshTokens(
-    @Request() { user, sessionUUID }: AuthedRequest,
+    @ValidatedBody
+    refreshTokenDTO: RefreshTokenDTO,
   ): Promise<EmptyResponseDTO> {
-    this.refreshTokenUseCase.getRefreshTokenPayload(user, sessionUUID); // TODO: change
+    // TODO: should repsponse
+    await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
+      refreshTokenDTO.refreshToken,
+    );
     return { response: {} };
   }
 }

@@ -18,7 +18,13 @@ export class AccessTokenUseCase {
     this.JWT_SECRET = this.configService.get(ConfigKeys.JWT_SECRET);
   }
 
-  getAccessTokenPayload(
+  getAccessToken(user: UserAuthInfo, sessionUUID: string): string {
+    return this.jwtService.sign(this.getAccessTokenPayload(user, sessionUUID), {
+      expiresIn: '10m',
+    });
+  }
+
+  private getAccessTokenPayload(
     user: UserAuthInfo,
     sessionUUID: string,
   ): UserAccessTokenPayload {
@@ -53,7 +59,7 @@ export class AccessTokenUseCase {
         ignoreExpiration: false,
       });
     } catch (error) {
-      throw new UnauthorizedException(messages.auth.invalidToken);
+      throw new UnauthorizedException(messages.auth.invalidAccessToken);
     }
 
     const { user, sessionUUID } = this.jwtService.decode(
@@ -63,7 +69,7 @@ export class AccessTokenUseCase {
     if (
       !(await this.whitelistedSessionStore.wasWhitelisted(user.id, sessionUUID))
     )
-      throw new UnauthorizedException(messages.auth.invalidToken);
+      throw new UnauthorizedException(messages.auth.invalidAccessToken);
 
     return user.id;
   }

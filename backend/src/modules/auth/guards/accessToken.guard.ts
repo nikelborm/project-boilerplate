@@ -36,6 +36,10 @@ export class AccessTokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const [allScopes, request] = this.getRouteScopesAndRequestFrom(context);
 
+    if (!allScopes) return true;
+
+    if (!allScopes.length) return true;
+
     const routeLevelScope = allScopes.find((scope) =>
       Object.values(EndpointAccess).includes(scope as any),
     ) as EndpointAccess;
@@ -43,10 +47,6 @@ export class AccessTokenGuard implements CanActivate {
     const userLevelScopes = (allScopes as UserLevelScopes[]).filter(
       (scope) => !Object.values(EndpointAccess).includes(scope as any),
     );
-
-    if (!allScopes) return true;
-
-    if (!allScopes.length) return true;
 
     if (routeLevelScope === AccessEnum.PUBLIC) return true;
 
@@ -84,7 +84,7 @@ export class AccessTokenGuard implements CanActivate {
 
   private getRouteScopesAndRequestFrom(
     context: ExecutionContext,
-  ): [AllowedForArgs, Request] {
+  ): [AllowedForArgs | null, Request] {
     return [
       this.reflector.get<AllowedForArgs>(
         ALLOWED_SCOPES_KEY,

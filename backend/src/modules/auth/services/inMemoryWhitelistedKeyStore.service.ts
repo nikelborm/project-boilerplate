@@ -35,9 +35,9 @@ export class InMemoryWhitelistedSessionStore {
     }
 
     if (changes.sessionToAdd) {
-      const { wasEntryFound, entry } = findEntryBy(changes.sessionToAdd.uuid);
+      const { wasEntryFound } = findEntryBy(changes.sessionToAdd.uuid);
 
-      if (!wasEntryFound) entries.push(entry);
+      if (!wasEntryFound) entries.push(changes.sessionToAdd);
     }
 
     await this.setEntriesBy(userId, entries);
@@ -88,11 +88,16 @@ export class InMemoryWhitelistedSessionStore {
   private deserialize(
     serializedSessionEntries: SerializedRefreshSessionEntries,
   ): Session[] {
-    return JSON.parse(serializedSessionEntries);
+    return JSON.parse(serializedSessionEntries).map(
+      ({ expirationDate, uuid }: { expirationDate: string; uuid: string }) => ({
+        uuid,
+        expirationDate: new Date(expirationDate),
+      }),
+    );
   }
 
   private clearExpiredWhitelistedSessions(): void {
-    console.log();
+    return;
   }
 }
 

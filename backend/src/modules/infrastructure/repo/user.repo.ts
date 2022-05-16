@@ -44,6 +44,7 @@ export class UserRepo {
       relations: ['accessScopes'],
       select: {
         id: true,
+        email: true,
         firstName: true,
         lastName: true,
         accessScopes: {

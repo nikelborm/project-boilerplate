@@ -16,8 +16,10 @@ export const messages = {
     missingAuthHeader: 'Missing Authorization header (with Token)',
     incorrectTokenType: 'Token type should be Bearer',
     missingToken: `Missing Token in Authorization header`,
-    invalidToken:
+    invalidAccessToken:
       'Token in Authorization header from that moment is not a valid JWT token, try requesting a new one',
+    invalidRefreshToken:
+      'Refresh Token tried to be used from that moment is not a valid JWT token, try requesting a new one',
   },
   user: {
     exists: 'User with this email already exists',
