@@ -1,3 +1,4 @@
+import type { MockDataUseCase } from 'src/mock';
 import { LoggerOptions } from 'typeorm';
 import { BootstrapModeType } from './bootstrapMode';
 import { ConfigKeys } from './configKeys';
@@ -6,7 +7,7 @@ export type IAppConfigMap = {
   [ConfigKeys.BOOTSTRAP_MODE]: BootstrapModeType;
   [ConfigKeys.IS_DEVELOPMENT]: boolean;
   [ConfigKeys.IS_PRODUCTION]: boolean;
-  [ConfigKeys.MOCK_SCRIPT_NAME]: string;
+  [ConfigKeys.MOCK_SCRIPT_NAME]: keyof MockDataUseCase;
   [ConfigKeys.JWT_SECRET]: string;
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: string;
   [ConfigKeys.SERVER_PORT]: number;
