@@ -13,11 +13,11 @@ import { TokenPairDTO } from './types';
 import { LocalAuthGuard } from './guards';
 
 @ApiTags('auth')
-@Controller('/auth')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authUseCase: AuthUseCase) {}
 
-  @Post('/local/login')
+  @Post('local/login')
   @UseGuards(LocalAuthGuard)
   async login(
     // leave here for documentation generation
@@ -28,7 +28,7 @@ export class AuthController {
     return await this.authUseCase.login(req.user);
   }
 
-  @Post('/local/register')
+  @Post('local/register')
   async register(
     @ValidatedBody
     createUserDTO: CreateUserDTO,
@@ -36,7 +36,7 @@ export class AuthController {
     return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
   }
 
-  @Post('/logout')
+  @Post('logout')
   @AuthorizedOnly()
   async logout(
     @Request() { user, sessionUUID }: AuthedRequest,
@@ -45,7 +45,7 @@ export class AuthController {
     return { response: {} };
   }
 
-  @Post('/logoutAllSessions')
+  @Post('logoutAllSessions')
   @AuthorizedOnly()
   async logoutAllSessions(
     @Request() { user }: AuthedRequest,
@@ -54,7 +54,7 @@ export class AuthController {
     return { response: {} };
   }
 
-  @Post('/refresh')
+  @Post('refresh')
   async refreshTokens(
     @ValidatedBody
     refreshTokenDTO: RefreshTokenDTO,

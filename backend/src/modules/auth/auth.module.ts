@@ -4,7 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
-import { JwtStrategy, LocalStrategy } from './strategy';
+import { LocalStrategy } from './strategy';
 import { AccessTokenGuard } from './guards';
 import { ConfigKeys, IAppConfigMap } from 'src/types';
 import {
@@ -33,7 +33,6 @@ import { UserModule } from '../user';
     AccessTokenUseCase,
     RefreshTokenUseCase,
     InMemoryWhitelistedSessionStore,
-    JwtStrategy,
     LocalStrategy,
     {
       provide: APP_GUARD,

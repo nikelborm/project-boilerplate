@@ -9,7 +9,7 @@ import { AccessEnum, AllowedFor, ValidatedBody } from 'src/tools';
 export class AccessScopeController {
   constructor(private readonly accessScopeUseCase: AccessScopeUseCase) {}
 
-  @Post('/updateAccessScope')
+  @Post('updateAccessScope')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async updateAccessScope(
     @ValidatedBody

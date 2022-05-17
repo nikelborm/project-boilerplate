@@ -22,17 +22,13 @@ export class UserUseCase {
     return await this.userRepo.findManyWithAccessScopes(search);
   }
 
-  async createManyUsers(
-    users: InputUser[],
-  ): Promise<(UserModelToInsert & { id: number })[]> {
+  async createManyUsers(users: InputUser[]): Promise<InsertedUserModel[]> {
     return await this.userRepo.createManyWithRelations(
       users.map((user) => this.createUserModel(user)),
     );
   }
 
-  async createUser(
-    user: InputUser,
-  ): Promise<UserModelToInsert & { id: number }> {
+  async createUser(user: InputUser): Promise<InsertedUserModel> {
     const candidate = await this.userRepo.getOneByEmail(user.email);
     if (candidate) throw new BadRequestException(messages.user.exists);
     return await this.userRepo.createOneWithRelations(
@@ -64,6 +60,8 @@ export class UserUseCase {
     await this.userRepo.delete(id);
   }
 }
+
+type InsertedUserModel = UserModelToInsert & { id: number };
 
 type UserModelToInsert = Omit<InputUser, 'password'> & {
   salt: string;

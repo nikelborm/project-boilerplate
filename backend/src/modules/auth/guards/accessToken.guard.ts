@@ -56,6 +56,12 @@ export class AccessTokenGuard implements CanActivate {
       if (this.IS_DEVELOPMENT) return true;
       else throw new UnauthorizedException(messages.auth.developmentOnly);
 
+    if (
+      routeLevelScope === AccessEnum.UNAUTHORIZED_ONLY &&
+      !request.headers.authorization
+    )
+      throw new UnauthorizedException(messages.auth.unauthorizedOnly);
+
     const userId = await this.accessTokenUseCase.decodeAuthHeaderAndGetUserId(
       request.headers.authorization,
     );

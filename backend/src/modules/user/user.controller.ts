@@ -24,7 +24,7 @@ import {
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
-  @Get('/users')
+  @Get('users')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async findManyUsers(
     @Query('search') search?: string,
@@ -37,7 +37,7 @@ export class UserController {
     };
   }
 
-  @Post('/createUser')
+  @Post('createUser')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
     @ValidatedBody
@@ -57,7 +57,7 @@ export class UserController {
     };
   }
 
-  @Post('/createUsers')
+  @Post('createUsers')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
     @ValidatedBody
@@ -73,7 +73,7 @@ export class UserController {
     };
   }
 
-  @Post('/setMyPassword')
+  @Post('setMyPassword')
   @AuthorizedOnly()
   async setMyPassword(
     @Req() { user }: AuthedRequest,
@@ -84,7 +84,7 @@ export class UserController {
     return { response: {} };
   }
 
-  @Post('/deleteUserById')
+  @Post('deleteUserById')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
     @ValidatedBody

@@ -4,6 +4,7 @@ export enum EndpointAccess {
   PUBLIC = 'public',
   FORBIDDEN = 'forbidden',
   AUTHORIZED = 'authorized',
+  UNAUTHORIZED_ONLY = 'unauthorizedOnly',
   DEVELOPMENT_ONLY = 'developmentOnly',
 }
 

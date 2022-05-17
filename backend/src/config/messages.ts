@@ -13,6 +13,7 @@ export const messages = {
     userHasNoAccessScopes:
       'This user has no access scopes. The user is not assigned to any access scope and has no additional role. Please contact the administrator',
     developmentOnly: 'Development only',
+    unauthorizedOnly: 'You should not be authorized to use this route',
     missingAuthHeader: 'Missing Authorization header (with Token)',
     incorrectTokenType: 'Token type should be Bearer',
     missingToken: `Missing Token in Authorization header`,
