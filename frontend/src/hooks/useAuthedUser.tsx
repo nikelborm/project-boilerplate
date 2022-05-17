@@ -56,13 +56,13 @@ export function AuthContextProvider({ children }) {
 }
 
 function setLocalStorageAuth(obj: ISession) {
-  localStorage.setItem('authed', JSON.stringify(obj));
+  localStorage.setItem('auth', JSON.stringify(obj));
 }
 
 function getLocalStorageAuth() {
   let state: ILocalStorageAuth = null;
   try {
-    state = JSON.parse(localStorage.getItem('authed') as string);
+    state = JSON.parse(localStorage.getItem('auth') as string);
   } catch (error) {
     state = null;
   }

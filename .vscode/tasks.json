@@ -114,7 +114,7 @@
     {
       "label": "Use docker builder",
       "type": "shell",
-      "command": "docker buildx use mybuilder",
+      "command": "docker run --privileged --rm tonistiigi/binfmt --install all;docker buildx use mybuilder",
       "promptOnClose": false
     },
     {

@@ -2,7 +2,7 @@ FROM nikelborm/node as prepare
 
 COPY package.json yarn.lock .eslintrc.json .prettierrc tsconfig.json ./
 
-RUN yarn --production
+RUN yarn --production --network-timeout 600000 && yarn cache clean
 
 COPY config config/
 COPY public public/
