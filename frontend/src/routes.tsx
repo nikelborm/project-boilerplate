@@ -1,7 +1,13 @@
 import { Profile, Login, Registration, Root } from 'pages';
 import { UserOutlined } from '@ant-design/icons';
-import { RoutesEnum, RouteAccessScopeType } from 'types';
-import type { AuthedRouteEntity, RoutesMap, SimpleRouteEntity } from 'types';
+import {
+  RoutesEnum,
+  RouteAccessScopeType,
+  AuthedRouteEntity,
+  RoutesMap,
+  SimpleRouteEntity,
+  ISession,
+} from 'types';
 
 export const publicRoutes: RoutesMap<SimpleRouteEntity> = {
   [RoutesEnum.ROOT]: {
@@ -38,8 +44,8 @@ export const routesOnlyForAuthedUsers: RoutesMap<AuthedRouteEntity> = {
   },
 };
 
-export const getAuthedFallbackRoute = (authInfo: Record<string, any>) => (
-  console.log('authInfo: ', authInfo), RoutesEnum.PROFILE
+export const getAuthedFallbackRoute = (session: ISession) => (
+  console.log('authInfo: ', session), RoutesEnum.PROFILE
 );
 
 export const notAuthedFallbackRoute = RoutesEnum.LOGIN;

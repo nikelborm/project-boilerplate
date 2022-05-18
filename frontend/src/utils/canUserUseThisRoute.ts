@@ -1,8 +1,8 @@
-import type { RouteAccessScopeType } from 'types';
+import type { ISession, RouteAccessScopeType } from 'types';
 
 export function canUserUseThisRoute(
-  authInfo: Record<string, any>,
+  authInfo: ISession,
   allowedForScopeTypes: RouteAccessScopeType[],
 ) {
-  return true;
+  return !allowedForScopeTypes || true;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthContextProvider } from 'utils';
+import { AuthStoreProvider } from 'utils';
 
 import './assets/styles/index.css';
 import './types';
@@ -14,9 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthContextProvider>
+      <AuthStoreProvider>
         <App />
-      </AuthContextProvider>
+      </AuthStoreProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

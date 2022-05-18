@@ -11,12 +11,23 @@ export class AccessTokenUseCase {
   private JWT_SECRET: string;
 
   constructor(
+    // @InjectEntityManager()
+    // private readonly entityManager: EntityManager,
     private readonly jwtService: JwtService,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
     private readonly configService: ConfigService<IAppConfigMap, true>,
   ) {
     this.JWT_SECRET = this.configService.get(ConfigKeys.JWT_SECRET);
   }
+
+  // async init(handshakeRequest: InitHandshakeQuery) {
+  //   return await this.entityManager.transaction(async (transactionManager) => {
+  //     return await this.executeClientHandshake(
+  //       transactionManager,
+  //       handshakeRequest,
+  //     );
+  //   });
+  // }
 
   getAccessToken(user: UserAuthInfo, sessionUUID: string): string {
     return this.jwtService.sign(this.getAccessTokenPayload(user, sessionUUID), {

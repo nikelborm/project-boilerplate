@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useAuthedUser, usePath } from 'hooks';
+import { useSession, usePath } from 'hooks';
 import {
   AdminPanelWrapper,
   AuthWrapper,
@@ -15,7 +15,7 @@ import {
 } from './routes';
 
 function App() {
-  const session = useAuthedUser();
+  const session = useSession();
   const usePathData = usePath();
   return (
     <Routes>
@@ -47,9 +47,9 @@ function App() {
               element={
                 /* eslint-disable prettier/prettier */
                 session.isAuthed && (
-                  canUserUseThisRoute(session.authInfo, allowedForScopeTypes)
+                  canUserUseThisRoute(session, allowedForScopeTypes)
                     ? <Component />
-                    : <Navigate to={getAuthedFallbackRoute(session.authInfo)} />
+                    : <Navigate to={getAuthedFallbackRoute(session)} />
                 )
                 /* eslint-enable prettier/prettier */
               }

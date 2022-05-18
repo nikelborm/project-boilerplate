@@ -1,15 +1,11 @@
-import { usePath } from 'hooks';
 import { Navigate, Outlet } from 'react-router-dom';
-import { getAuthedFallbackRoute } from 'routes';
+import { usePath } from 'hooks';
 import { ISession } from 'types';
+import { getAuthedFallbackRoute } from '../routes';
 
 export function AuthWrapper({ session }: AuthWrapperProps) {
   if (session.isAuthed)
-    return (
-      <Navigate
-        to={`/adminPanel/${getAuthedFallbackRoute(session.authInfo)}`}
-      />
-    );
+    return <Navigate to={`/adminPanel/${getAuthedFallbackRoute(session)}`} />;
 
   return (
     <div>

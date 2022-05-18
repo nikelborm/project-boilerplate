@@ -14,12 +14,22 @@
       "promptOnClose": true
     },
     {
-      "label": "dc up",
+      "label": "Run dev",
       "type": "shell",
       "dependsOn": [
         "Use docker builder"
       ],
-      "command": ". env/template; docker-compose up --build -d;echo;echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):${INNER_NGINX_HTTP_PORT}",
+      "command": ". env/template; docker-compose -f ./docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "Run prod",
+      "type": "shell",
+      "dependsOn": [
+        "Use docker builder"
+      ],
+      "command": ". env/template; docker-compose -f ./docker-compose.yaml up --build --remove-orphans -d; echo; echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):${INNER_NGINX_HTTP_PORT}",
       "problemMatcher": [],
       "promptOnClose": true
     },
@@ -37,7 +47,7 @@
       "label": "ormgen database",
       "type": "shell",
       "dependsOn": [
-        "dc up"
+        "Run dev"
       ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/ormgen.sh",
       "problemMatcher": [],
@@ -47,7 +57,7 @@
       "label": "migrate database",
       "type": "shell",
       "dependsOn": [
-        "dc up"
+        "Run dev"
       ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/migrate.sh",
       "problemMatcher": [],
@@ -57,7 +67,7 @@
       "label": "drop database",
       "type": "shell",
       "dependsOn": [
-        "dc up"
+        "Run dev"
       ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/drop.sh",
       "problemMatcher": [],
@@ -67,7 +77,7 @@
       "label": "recreate database",
       "type": "shell",
       "dependsOn": [
-        "dc up"
+        "Run dev"
       ],
       "command": ". env/template; docker-compose exec backend-prod sh ./scripts/recreate.sh",
       "problemMatcher": [],

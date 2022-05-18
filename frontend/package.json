@@ -32,6 +32,7 @@
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^5.5.0",
+    "jwt-decode": "^3.1.2",
     "mini-css-extract-plugin": "^2.4.5",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-loader": "^6.2.1",
@@ -39,6 +40,7 @@
     "postcss-preset-env": "^7.0.1",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.1.0",
+    "react-query": "^3.39.0",
     "react-refresh": "^0.11.0",
     "react-router-dom": "^6.3.0",
     "react": "^18.1.0",
@@ -80,7 +82,6 @@
     "graphql": "^16.5.0",
     "identity-obj-proxy": "^3.0.0",
     "js-cookie": "^3.0.1",
-    "jwt-decode": "^3.1.2",
     "mobx-react-lite": "^3.4.0",
     "mobx": "^6.4.0",
     "postcss": "^8.4.4",
@@ -91,7 +92,6 @@
     "react-datepicker": "^4.3.0",
     "react-dropzone": "^14.2.1",
     "react-hooks": "^1.0.1",
-    "react-query": "^3.39.0",
     "react-table": "^7.7.0",
     "semver": "^7.3.5",
     "style-loader": "^3.3.1",
@@ -105,14 +105,6 @@
     "start_with_mem_limit": "node --max_old_space_size=4096 scripts/start.js",
     "build_with_mem_limit": "node --max_old_space_size=4096 scripts/build.js",
     "pgip": "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "prettier",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
-    ]
   },
   "engineStrict": true,
   "engines": {

@@ -10,6 +10,7 @@
     "airbnb-typescript",
     "plugin:prettier/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -18,7 +19,7 @@
     "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
+  "plugins": ["react", "prettier", "react-hooks"],
   "ignorePatterns": ["/config", "/scripts"],
   "rules": {
     "indent": [
@@ -38,6 +39,7 @@
       "always"
     ],
     "camelcase": "warn",
+    "no-sequences": "off",
     "no-nested-ternary": "off",
     "import/no-unresolved": "off", // this resolves @components, @assets etc.
     "import/prefer-default-export": "off", // WHY: this rule is not aware of my plans to add more exports in the future
@@ -46,6 +48,15 @@
     "no-unused-vars": "warn", // WHY: unused variables should be commented out
     "@typescript-eslint/no-unused-vars": "warn", // WHY: unused variables should be commented out
     "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true }], // WHY: ts-expect-error should be used instead
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".jsx", ".tsx"]
+      }
+    ], // this requires extension to be react-ish for JSX to work
+    "react/jsx-props-no-spreading": "off", // this allows spread syntax in React
+    "react/prop-types": "off", // WHY: prop types are only needed for React Class Components
+    "react/react-in-jsx-scope": "off", // WHY: in modern react, there's no need for React in scope
     "@typescript-eslint/member-delimiter-style": [
       "error",
       {
@@ -69,22 +80,14 @@
         "ignoreRegExpLiterals": true // Multiline RegExps may be harder to maintain.
       }
     ],
-    "no-return-await": "error", // WHY: it's meaningless (and confusing) to return await
+    "no-return-await": "off",
+    "@typescript-eslint/return-await": ["error", "always"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
     // PLAN: Untested/temporary rules are defined with numbers and below this line
-    "arrow-body-style": [1, "as-needed"], // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
     "@typescript-eslint/no-use-before-define": [2, "nofunc"], // functions are hoisted, so it's safe (from ESLint docs), and helps with readability
-    "no-use-before-define": "off", // this allows to place important business logic and higher abstraction level first and make it easier to read
-		"no-sequences": "warn", // this allows to use comma operator for debugging console.logs
-    "react/jsx-filename-extension": [
-      "error",
-      {
-        "extensions": [
-          ".tsx"
-        ]
-      }
-    ], // this requires extension to be react-ish for JSX to work
-    "react/jsx-props-no-spreading": "off", // this allows spread syntax in React
-    "react/prop-types": "off", // WHY: prop types are only needed for React Class Components
-    "react/react-in-jsx-scope": "off" // WHY: in modern react, there's no need for React in scope
+    "react-hooks/rules-of-hooks": "warn",
+    "arrow-body-style": [1, "as-needed"] // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
   }
 }

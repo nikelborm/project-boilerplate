@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, Outlet, Navigate } from 'react-router-dom';
 import { Layout, Menu, PageHeader } from 'antd';
-import { useAuthContextUpdater, usePath } from 'hooks';
+import { useTokenPairUpdater, usePath } from 'hooks';
 import { ISession, RoutesEnum } from 'types';
-import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from 'routes';
 import { canUserUseThisRoute } from 'utils';
 import { ItemType } from 'antd/lib/menu/hooks/useItems';
+import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from '../routes';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -15,7 +15,7 @@ export function AdminPanelWrapper({
   pathParts,
 }: AdminPanelWrapperProps) {
   const [isMenuCollapsed, setCollapsedMenu] = useState(false);
-  const { updateAuthContext } = useAuthContextUpdater();
+  const { updateTokenPair } = useTokenPairUpdater();
 
   if (!session.isAuthed)
     return <Navigate to={`/auth/${notAuthedFallbackRoute}`} />;
@@ -39,7 +39,7 @@ export function AdminPanelWrapper({
                   path,
                   { menuIcon, menuTitle, allowedForScopeTypes, isMenuPoint },
                 ]) =>
-                  canUserUseThisRoute(session.authInfo, allowedForScopeTypes) &&
+                  canUserUseThisRoute(session, allowedForScopeTypes) &&
                   isMenuPoint && {
                     label: <Link to={`/adminPanel/${path}`}>{menuTitle}</Link>,
                     key: path,
@@ -54,7 +54,7 @@ export function AdminPanelWrapper({
             {
               label: 'Logout',
               key: 'logout',
-              onClick: () => updateAuthContext({ isAuthed: false }),
+              onClick: () => updateTokenPair(null),
             },
           ]}
         />

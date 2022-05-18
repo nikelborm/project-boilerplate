@@ -1,6 +1,6 @@
 import { Navigate, Route } from 'react-router-dom';
-import { getAuthedFallbackRoute, notAuthedFallbackRoute } from 'routes';
 import type { ISession } from 'types';
+import { getAuthedFallbackRoute, notAuthedFallbackRoute } from '../routes';
 
 export function renderAuthFallbackRoute(session: ISession) {
   return ['*', ''].map((path) => (
@@ -11,7 +11,7 @@ export function renderAuthFallbackRoute(session: ISession) {
         <Navigate
           to={
             session.isAuthed
-              ? `/adminPanel/${getAuthedFallbackRoute(session.authInfo)}`
+              ? `/adminPanel/${getAuthedFallbackRoute(session)}`
               : `/auth/${notAuthedFallbackRoute}`
           }
         />
