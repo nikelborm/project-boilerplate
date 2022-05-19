@@ -6,6 +6,7 @@ import { SessionProvider } from 'utils';
 import './assets/styles/index.css';
 import './types';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { message } from 'antd';
 import App from './App';
 
@@ -35,6 +36,7 @@ root.render(
       <SessionProvider>
         <QueryClientProvider client={queryClient}>
           <App />
+          <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
         </QueryClientProvider>
       </SessionProvider>
     </BrowserRouter>

@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(email: string, password: string): Promise<UserAuthInfo> {
     const userModel =
       await this.userRepo.findOneByEmailWithAccessScopesAndPassword(email);
-    console.log(userModel);
+
     if (!userModel)
       throw new UnauthorizedException(messages.auth.incorrectUser);
 
