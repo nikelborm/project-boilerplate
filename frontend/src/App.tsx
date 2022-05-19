@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useSession, usePath } from 'hooks';
 import {
-  AdminPanelWrapper,
-  AuthWrapper,
+  AccountPagesWrapper,
+  AuthPagesWrapper,
   renderAuthFallbackRoute,
 } from 'components';
 import { canUserUseThisRoute } from 'utils';
@@ -25,7 +25,7 @@ function App() {
 
       <Route
         path="/auth"
-        element={<AuthWrapper session={session} {...usePathData} />}
+        element={<AuthPagesWrapper session={session} {...usePathData} />}
       >
         {Object.entries(routesOnlyForNotAuthedUsers).map(
           ([path, { Component }]) => (
@@ -36,8 +36,8 @@ function App() {
       </Route>
 
       <Route
-        path="/adminPanel"
-        element={<AdminPanelWrapper session={session} {...usePathData} />}
+        path="/account"
+        element={<AccountPagesWrapper session={session} {...usePathData} />}
       >
         {Object.entries(routesOnlyForAuthedUsers).map(
           ([path, { Component, allowedForScopeTypes }]) => (

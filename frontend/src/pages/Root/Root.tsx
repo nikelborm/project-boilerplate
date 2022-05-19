@@ -1,10 +1,10 @@
 export function Root() {
   const asd = () => {
-    debugger;
+    // debugger;
   };
   return (
     <div>
-      <div>Root pasge</div>
+      <div>Root page</div>
       <button onClick={asd} type="button">
         Test debugger
       </button>

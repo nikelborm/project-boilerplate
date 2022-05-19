@@ -13,7 +13,7 @@ interface CustomFetchOptions {
   baseUrl?: string;
 }
 
-export async function customFetch(
+export async function customFetch<TResponse>(
   target: RequestInfo,
   {
     method,
@@ -62,8 +62,8 @@ export async function customFetch(
   }
 
   const responseData = await fetch(urlToFetch.href, options).then(
-    needsParsing ? handleFetch : (data) => data,
+    needsParsing ? handleFetch : (response) => response,
   );
 
-  return responseData;
+  return responseData as TResponse;
 }

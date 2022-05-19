@@ -40,12 +40,13 @@
     ],
     "camelcase": "warn",
     "no-sequences": "off",
+    "no-void": "off",
     "no-nested-ternary": "off",
     "import/no-unresolved": "off", // this resolves @components, @assets etc.
     "import/prefer-default-export": "off", // WHY: this rule is not aware of my plans to add more exports in the future
     "jsx-a11y/label-has-associated-control": "off", // this allows <label>s without "for" attribute (auto-associated)
     "no-debugger": "warn", // WHY: debbugers should be removed before pushing
-    "no-unused-vars": "warn", // WHY: unused variables should be commented out
+    "no-unused-vars": "off", // WHY: unused variables should be commented out
     "@typescript-eslint/no-unused-vars": "warn", // WHY: unused variables should be commented out
     "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true }], // WHY: ts-expect-error should be used instead
     "react/jsx-filename-extension": [
@@ -85,8 +86,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
-    // PLAN: Untested/temporary rules are defined with numbers and below this line
-    "@typescript-eslint/no-use-before-define": [2, "nofunc"], // functions are hoisted, so it's safe (from ESLint docs), and helps with readability
+    "@typescript-eslint/no-use-before-define": "off",
     "react-hooks/rules-of-hooks": "warn",
     "arrow-body-style": [1, "as-needed"] // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
   }

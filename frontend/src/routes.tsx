@@ -44,9 +44,7 @@ export const routesOnlyForAuthedUsers: RoutesMap<AuthedRouteEntity> = {
   },
 };
 
-export const getAuthedFallbackRoute = (session: ISession) => (
-  console.log('authInfo: ', session), RoutesEnum.PROFILE
-);
+export const getAuthedFallbackRoute = (session: ISession) => RoutesEnum.PROFILE;
 
 export const notAuthedFallbackRoute = RoutesEnum.LOGIN;
 export const publicFallbackRoute = RoutesEnum.ROOT;

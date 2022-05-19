@@ -11,55 +11,19 @@ import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from 'constant';
 // eslint-disable-next-line import/no-cycle
 import { customFetch } from './customFetch';
 
-class AuthStore {
-  private readonly TokenPairUpdaterContext = React.createContext(
-    (() => {}) as React.Dispatch<React.SetStateAction<number>>,
-  );
+const TokenPairUpdaterContext = React.createContext(
+  (() => {}) as React.Dispatch<React.SetStateAction<number>>,
+);
 
-  private readonly SessionContext = React.createContext(getLastSavedSession());
+class AuthStore {
+  constructor() {
+    void this.requestTokenPairRefreshing();
+
+    this.getAuthHeader.bind(this);
+    this.requestTokenPairRefreshing.bind(this);
+  }
 
   private lastTokenPairRefreshPromise: Promise<ITokenPair> | null = null;
-
-  public useSession() {
-    return useContext(this.SessionContext);
-  }
-
-  public useTokenPairUpdater() {
-    const rerenderSessionDependencies = useContext(
-      this.TokenPairUpdaterContext,
-    );
-
-    return {
-      requestTokenPairRefreshing: this.requestTokenPairRefreshing,
-      updateTokenPair: (tokenPair: ITokenPair | null) => {
-        const prevTokenPair = getLastSavedTokenPair();
-
-        const areTokenPairsEqual =
-          `${prevTokenPair?.accessToken}-${prevTokenPair?.refreshToken}` ===
-          `${tokenPair?.accessToken}-${tokenPair?.refreshToken}`;
-
-        if (!areTokenPairsEqual) {
-          setTokenPair(tokenPair);
-          rerenderSessionDependencies(Math.random());
-        }
-      },
-    };
-  }
-
-  public Provider({ children }) {
-    const rerenderSessionDependencies = useState(1)[1];
-
-    const TokenPairUpdaterProvider = this.TokenPairUpdaterContext.Provider;
-    const SessionProvider = this.SessionContext.Provider;
-
-    return (
-      <TokenPairUpdaterProvider value={rerenderSessionDependencies}>
-        <SessionProvider value={getLastSavedSession()}>
-          {children}
-        </SessionProvider>
-      </TokenPairUpdaterProvider>
-    );
-  }
 
   public async getAuthHeader() {
     if (this.lastTokenPairRefreshPromise) {
@@ -70,7 +34,7 @@ class AuthStore {
     if (tokenPair) {
       return `Bearer ${tokenPair.accessToken}`;
     }
-    throw new Error('Your session has been expired');
+    throw new Error('You are not logged in');
   }
 
   public async requestTokenPairRefreshing() {
@@ -78,7 +42,10 @@ class AuthStore {
 
     if (!tokenPair) return null;
 
-    if (!this.lastTokenPairRefreshPromise) {
+    const isItFunctionCallThatCausesRealFetch =
+      !this.lastTokenPairRefreshPromise;
+
+    if (isItFunctionCallThatCausesRealFetch) {
       this.lastTokenPairRefreshPromise = customFetch('auth/refresh', {
         method: 'POST',
         needsToken: false,
@@ -86,17 +53,62 @@ class AuthStore {
           refreshToken: tokenPair.refreshToken,
         },
       });
-
       this.lastTokenPairRefreshPromise.catch((err) =>
+        // eslint-disable-next-line no-console
         console.log('Token pair refreshing was not succesfull', err),
       );
     }
 
-    return await this.lastTokenPairRefreshPromise;
+    const newTokenPair = await this.lastTokenPairRefreshPromise;
+
+    if (isItFunctionCallThatCausesRealFetch) {
+      setTokenPair(newTokenPair);
+      this.lastTokenPairRefreshPromise = null;
+    }
+
+    return newTokenPair;
   }
 }
 
 export const authStore = new AuthStore();
+
+const SessionContext = React.createContext(getLastSavedSession());
+
+export function useSession() {
+  return useContext(SessionContext);
+}
+
+export function useTokenPairUpdater() {
+  const rerenderSessionDependencies = useContext(TokenPairUpdaterContext);
+
+  return {
+    requestTokenPairRefreshing: authStore.requestTokenPairRefreshing,
+    updateTokenPair: (tokenPair: ITokenPair | null) => {
+      const prevTokenPair = getLastSavedTokenPair();
+
+      const areTokenPairsEqual =
+        `${prevTokenPair?.accessToken}-${prevTokenPair?.refreshToken}` ===
+        `${tokenPair?.accessToken}-${tokenPair?.refreshToken}`;
+
+      if (!areTokenPairsEqual) {
+        setTokenPair(tokenPair);
+        rerenderSessionDependencies(Math.random());
+      }
+    },
+  };
+}
+
+export function SessionProvider({ children }) {
+  const rerenderSessionDependencies = useState(1)[1];
+
+  return (
+    <TokenPairUpdaterContext.Provider value={rerenderSessionDependencies}>
+      <SessionContext.Provider value={getLastSavedSession()}>
+        {children}
+      </SessionContext.Provider>
+    </TokenPairUpdaterContext.Provider>
+  );
+}
 
 function setTokenPair(tokenPair: ITokenPair | null): void {
   if (!tokenPair) return localStorage.removeItem(LOCAL_STORAGE_TOKEN_PAIR_KEY);

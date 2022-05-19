@@ -11,7 +11,7 @@ export function renderAuthFallbackRoute(session: ISession) {
         <Navigate
           to={
             session.isAuthed
-              ? `/adminPanel/${getAuthedFallbackRoute(session)}`
+              ? `/account/${getAuthedFallbackRoute(session)}`
               : `/auth/${notAuthedFallbackRoute}`
           }
         />

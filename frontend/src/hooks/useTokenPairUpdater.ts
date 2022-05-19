@@ -1,3 +1,1 @@
-import { authStore } from 'utils';
-
-export const { useTokenPairUpdater } = authStore;
+export { useTokenPairUpdater } from 'utils';

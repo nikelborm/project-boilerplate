@@ -1,3 +1,1 @@
-import { authStore } from 'utils';
-
-export const { useSession } = authStore;
+export { useSession } from 'utils';

@@ -1,3 +1,3 @@
-export * from './AdminPanelWrapper';
-export * from './AuthWrapper';
+export * from './AccountPagesWrapper';
+export * from './AuthPagesWrapper';
 export * from './renderAuthFallbackRoute';

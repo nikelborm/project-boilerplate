@@ -117,7 +117,7 @@ export class UserRepo {
         'accessScopes.id',
         'accessScopes.type',
       ])
-      .where('email = :email', { email })
+      .where('user.email = :email', { email })
       .getOne();
     if (!user)
       throw new BadRequestException(

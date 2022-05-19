@@ -1,23 +1,54 @@
-import { useTokenPairUpdater } from 'hooks';
+import { useLoginMutation } from 'hooks';
+import { Form, Button, message, Input } from 'antd';
 
 export function Login() {
-  const { updateTokenPair } = useTokenPairUpdater();
+  const [form] = Form.useForm();
+  const { sendLoginQuery } = useLoginMutation();
+  const onFinishCreationFailed = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    message.error('Submit failed!');
+  };
   return (
-    <div>
-      Login
-      <button
-        onClick={() =>
-          updateTokenPair({
-            accessToken:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uVVVJRCI6IjA0MjZkNWQyLTViMWMtNGYyOS1hZjYzLWMzNmUxZjUyMmNkOCIsInVzZXIiOnsiaWQiOjEsImVtYWlsIjoiZW1haWw4QG1haWwucnUiLCJmaXJzdE5hbWUiOiJmaXJzdE5hbWUiLCJsYXN0TmFtZSI6Imxhc3ROYW1lIn0sImlhdCI6MTY1Mjg4OTU0OSwiZXhwIjoxNjUyODkwMTQ5fQ.AnsXkkDWu5kgW9Z2_b86ZSfpCGuJJ0bL6tfHzcQD6-c',
-            refreshToken:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uVVVJRCI6IjA0MjZkNWQyLTViMWMtNGYyOS1hZjYzLWMzNmUxZjUyMmNkOCIsInVzZXIiOnsiaWQiOjF9LCJpYXQiOjE2NTI4ODk1NDksImV4cCI6MTY1MzQ5NDM0OX0.MILAPy-_GZQIOXtcs7GBrteD5EBUJZrQFhH-CJmoug0',
-          })
-        }
-        type="button"
+    <>
+      <h1>Login</h1>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={sendLoginQuery}
+        onFinishFailed={onFinishCreationFailed}
+        autoComplete="off"
       >
-        Login
-      </button>
-    </div>
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[
+            { type: 'email' },
+            { required: true },
+            { type: 'string', min: 5 },
+          ]}
+        >
+          <Input placeholder="user@mail.ru" spellCheck={false} />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          label="Password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your password!',
+            },
+            { type: 'string', min: 8 },
+          ]}
+          hasFeedback
+        >
+          <Input.Password placeholder="***********" spellCheck={false} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </>
   );
 }

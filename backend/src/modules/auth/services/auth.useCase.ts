@@ -54,8 +54,8 @@ export class AuthUseCase {
     if (!isPasswordCorrect)
       throw new UnauthorizedException(messages.auth.incorrectPassword);
 
-    if (!userModel.accessScopes.length)
-      throw new UnauthorizedException(messages.auth.userHasNoAccessScopes);
+    // if (!userModel.accessScopes.length)
+    //   throw new UnauthorizedException(messages.auth.userHasNoAccessScopes);
   }
 
   async registerNewUserAndLogin({

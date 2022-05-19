@@ -9,11 +9,11 @@ import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from '../routes';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-export function AdminPanelWrapper({
+export function AccountPagesWrapper({
   session,
   deepestPathPart,
   pathParts,
-}: AdminPanelWrapperProps) {
+}: AccountPageWrapperProps) {
   const [isMenuCollapsed, setCollapsedMenu] = useState(false);
   const { updateTokenPair } = useTokenPairUpdater();
 
@@ -41,7 +41,7 @@ export function AdminPanelWrapper({
                 ]) =>
                   canUserUseThisRoute(session, allowedForScopeTypes) &&
                   isMenuPoint && {
-                    label: <Link to={`/adminPanel/${path}`}>{menuTitle}</Link>,
+                    label: <Link to={`/account/${path}`}>{menuTitle}</Link>,
                     key: path,
                     icon: menuIcon,
                   },
@@ -85,6 +85,6 @@ export function AdminPanelWrapper({
   );
 }
 
-type AdminPanelWrapperProps = { session: ISession } & ReturnType<
+type AccountPageWrapperProps = { session: ISession } & ReturnType<
   typeof usePath
 >;
