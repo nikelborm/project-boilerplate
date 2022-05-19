@@ -23,8 +23,7 @@ export function Login() {
           label="Email"
           rules={[
             { type: 'email' },
-            { required: true },
-            { type: 'string', min: 5 },
+            { type: 'string', min: 7, required: true },
           ]}
         >
           <Input placeholder="user@mail.ru" spellCheck={false} />

@@ -57,12 +57,10 @@ export class AuthController {
   @Post('refresh')
   async refreshTokens(
     @ValidatedBody
-    refreshTokenDTO: RefreshTokenDTO,
-  ): Promise<EmptyResponseDTO> {
-    // TODO: should repsponse
-    await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
-      refreshTokenDTO.refreshToken,
+    { refreshToken }: RefreshTokenDTO,
+  ): Promise<TokenPairDTO> {
+    return await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
+      refreshToken,
     );
-    return { response: {} };
   }
 }

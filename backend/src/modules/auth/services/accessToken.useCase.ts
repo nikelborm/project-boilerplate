@@ -31,7 +31,7 @@ export class AccessTokenUseCase {
 
   getAccessToken(user: UserAuthInfo, sessionUUID: string): string {
     return this.jwtService.sign(this.getAccessTokenPayload(user, sessionUUID), {
-      expiresIn: '10m',
+      expiresIn: '20m',
     });
   }
 

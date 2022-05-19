@@ -8,7 +8,7 @@ export function useLoginMutation() {
     (credentials: { email: string; password: string }) =>
       customFetch<ITokenPair>('auth/local/login', {
         method: 'POST',
-        needsToken: false,
+        needsAccessToken: false,
         body: credentials,
       }).then(updateTokenPair),
   );

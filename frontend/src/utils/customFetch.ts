@@ -1,14 +1,13 @@
 import { API_PATH } from 'constant';
 // eslint-disable-next-line import/no-cycle
 import { authStore } from './authStore';
-import { handleFetch } from './handleFetch';
 
 interface CustomFetchOptions {
   method?: string;
   headers?: object;
   body?: object;
   params?: Record<string, string | number | boolean>;
-  needsToken?: boolean;
+  needsAccessToken?: boolean;
   needsParsing?: boolean;
   baseUrl?: string;
 }
@@ -20,7 +19,7 @@ export async function customFetch<TResponse>(
     headers,
     body,
     params,
-    needsToken = true,
+    needsAccessToken = true,
     needsParsing = true,
     baseUrl = API_PATH, // Project-specific
   }: CustomFetchOptions = {},
@@ -40,17 +39,15 @@ export async function customFetch<TResponse>(
     options.body = JSON.stringify(body);
   }
 
-  // Project-specific
-  if (needsToken) {
+  if (needsAccessToken) {
     nextHeaders.authorization = await authStore.getAuthHeader();
   }
-  // Project-specific end.
 
   options.headers = new Headers(nextHeaders);
 
   const urlToFetch = new URL(`${baseUrl}${target}`);
   const urlParamsAdditional = new URLSearchParams(
-    JSON.parse(JSON.stringify(params ?? '{}')), // JSON to remove undefined values
+    JSON.parse(JSON.stringify(params ?? {})), // JSON to remove undefined values
   );
 
   const urlParamsAdditionalStringified = urlParamsAdditional.toString();
@@ -62,8 +59,16 @@ export async function customFetch<TResponse>(
   }
 
   const responseData = await fetch(urlToFetch.href, options).then(
-    needsParsing ? handleFetch : (response) => response,
+    needsParsing ? parseJSONResponse : (response) => response,
   );
 
   return responseData as TResponse;
+}
+
+async function parseJSONResponse(res: Response) {
+  const parsed = await res.json();
+
+  if (res.ok) return parsed;
+
+  throw parsed ?? res.statusText;
 }

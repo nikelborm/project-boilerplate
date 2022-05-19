@@ -21,14 +21,14 @@ export function Registration() {
         <Form.Item
           name="firstName"
           label="First name"
-          rules={[{ required: true }, { type: 'string', min: 2 }]}
+          rules={[{ type: 'string', min: 2, required: true }]}
         >
           <Input placeholder="John" />
         </Form.Item>
         <Form.Item
           name="lastName"
           label="Last name"
-          rules={[{ required: true }, { type: 'string', min: 2 }]}
+          rules={[{ type: 'string', min: 2, required: true }]}
         >
           <Input placeholder="Doe" spellCheck={false} />
         </Form.Item>
@@ -37,8 +37,7 @@ export function Registration() {
           label="Email"
           rules={[
             { type: 'email' },
-            { required: true },
-            { type: 'string', min: 5 },
+            { type: 'string', min: 7, required: true },
           ]}
         >
           <Input placeholder="user@mail.ru" spellCheck={false} />

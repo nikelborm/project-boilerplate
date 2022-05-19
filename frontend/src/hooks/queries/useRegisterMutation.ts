@@ -8,7 +8,7 @@ export function useRegistrationMutation() {
     (credentials: { email: string; password: string }) =>
       customFetch<ITokenPair>('auth/local/register', {
         method: 'POST',
-        needsToken: false,
+        needsAccessToken: false,
         body: credentials,
       }).then(updateTokenPair),
   );

@@ -17,13 +17,19 @@ const TokenPairUpdaterContext = React.createContext(
 
 class AuthStore {
   constructor() {
-    void this.requestTokenPairRefreshing();
-
-    this.getAuthHeader.bind(this);
-    this.requestTokenPairRefreshing.bind(this);
+    if (getLastSavedTokenPair()) {
+      void this.requestTokenPairRefreshing();
+      this.automaticTokenPairRefreshingInterval = setInterval(
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        this.requestTokenPairRefreshing,
+        19 * 60 * 1000, // every 19 minutes
+      );
+    }
   }
 
-  private lastTokenPairRefreshPromise: Promise<ITokenPair> | null = null;
+  private lastTokenPairRefreshPromise: Promise<ITokenPair | null> | null = null;
+
+  private automaticTokenPairRefreshingInterval: NodeJS.Timer | undefined;
 
   public async getAuthHeader() {
     if (this.lastTokenPairRefreshPromise) {
@@ -37,34 +43,49 @@ class AuthStore {
     throw new Error('You are not logged in');
   }
 
+  public startTokenPairRefreshing() {
+    this.stopTokenPairRefreshing();
+    this.automaticTokenPairRefreshingInterval = setInterval(
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      this.requestTokenPairRefreshing,
+      19 * 60 * 1000, // every 19 minutes
+    );
+  }
+
+  public stopTokenPairRefreshing() {
+    if (this.automaticTokenPairRefreshingInterval)
+      clearInterval(this.automaticTokenPairRefreshingInterval);
+  }
+
   public async requestTokenPairRefreshing() {
     const tokenPair = getLastSavedTokenPair();
 
     if (!tokenPair) return null;
 
-    const isItFunctionCallThatCausesRealFetch =
-      !this.lastTokenPairRefreshPromise;
-
-    if (isItFunctionCallThatCausesRealFetch) {
-      this.lastTokenPairRefreshPromise = customFetch('auth/refresh', {
-        method: 'POST',
-        needsToken: false,
-        body: {
-          refreshToken: tokenPair.refreshToken,
+    if (!this.lastTokenPairRefreshPromise) {
+      this.lastTokenPairRefreshPromise = customFetch<ITokenPair>(
+        'auth/refresh',
+        {
+          method: 'POST',
+          needsAccessToken: false,
+          body: {
+            refreshToken: tokenPair.refreshToken,
+          },
         },
-      });
-      this.lastTokenPairRefreshPromise.catch((err) =>
-        // eslint-disable-next-line no-console
-        console.log('Token pair refreshing was not succesfull', err),
-      );
+      )
+        .then((newTokenPair) => {
+          setTokenPair(newTokenPair);
+          this.lastTokenPairRefreshPromise = null;
+          return newTokenPair;
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.log('Token pair refreshing was not succesfull', err);
+          return null;
+        });
     }
 
     const newTokenPair = await this.lastTokenPairRefreshPromise;
-
-    if (isItFunctionCallThatCausesRealFetch) {
-      setTokenPair(newTokenPair);
-      this.lastTokenPairRefreshPromise = null;
-    }
 
     return newTokenPair;
   }
@@ -91,6 +112,11 @@ export function useTokenPairUpdater() {
         `${tokenPair?.accessToken}-${tokenPair?.refreshToken}`;
 
       if (!areTokenPairsEqual) {
+        if (tokenPair) {
+          authStore.startTokenPairRefreshing();
+        } else {
+          authStore.stopTokenPairRefreshing();
+        }
         setTokenPair(tokenPair);
         rerenderSessionDependencies(Math.random());
       }
