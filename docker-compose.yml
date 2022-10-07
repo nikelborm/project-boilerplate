@@ -1,29 +1,26 @@
 version: '3.9'
 services:
   nginx-prod:
-    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-nginx-prod"
+    image: "${COMPOSE_PROJECT_NAME}-nginx-prod"
     restart: always
     depends_on:
       - backend-prod
-      - postgres-admin
+      - postgres-admin-prod
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
       target: prod_nginx_with_front_static
       args:
-        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
-        - INNER_NGINX_HTTPS_PORT=${INNER_NGINX_HTTPS_PORT}
+        - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
     environment:
       - TZ=${TZ}
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
       - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
-      - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
-      - INNER_NGINX_HTTPS_PORT=${INNER_NGINX_HTTPS_PORT}
       - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
       - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
     ports:
-      - ${EXTERNAL_NGINX_HTTP_PORT}:${INNER_NGINX_HTTP_PORT}/tcp
-      - ${EXTERNAL_NGINX_HTTPS_PORT}:${INNER_NGINX_HTTPS_PORT}/tcp
+      - ${EXTERNAL_NGINX_HTTP_PORT}:80/tcp
+      - ${EXTERNAL_NGINX_HTTPS_PORT}:443/tcp
     networks:
       nginx-back-net:
       nginx-pgadmin-net:
@@ -43,7 +40,7 @@ services:
   #     - ./data/certbot/logs:/var/log/letsencrypt/
 
   backend-prod:
-    image: "nikelborm/home:${COMPOSE_PROJECT_NAME}-backend-prod"
+    image: "${COMPOSE_PROJECT_NAME}-backend-prod"
     restart: always
     depends_on:
       - postgres-prod
@@ -63,7 +60,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
       - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
-      - DATABASE_HOST=postgres-prod
+      - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
@@ -94,7 +91,7 @@ services:
       back-db-net:
       db-pgadmin-net:
 
-  postgres-admin:
+  postgres-admin-prod:
     image: dpage/pgadmin4:latest
     restart: always
     depends_on:

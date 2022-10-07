@@ -5,24 +5,21 @@ services:
     restart: always
     depends_on:
       - backend-dev
-      - postgres-admin
+      - postgres-admin-dev
       - frontend-dev
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
       target: dev_nginx
-      args:
-        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
     environment:
       - TZ=${TZ}
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
       - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
       - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
       - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
-      - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
       - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
     ports:
-      - ${EXTERNAL_NGINX_HTTP_PORT}:${INNER_NGINX_HTTP_PORT}/tcp
+      - ${EXTERNAL_NGINX_HTTP_PORT}:80/tcp
     networks:
       nginx-front-net:
       nginx-back-net:
@@ -49,10 +46,10 @@ services:
         source: ./frontend/src
         target: /app/src
         consistency: delegated
-      - type: bind
-        source: ./backend/src/types/shared
-        target: /app/src/backendTypes
-        consistency: delegated
+      # - type: bind
+      #   source: ./backend/src/types/shared
+      #   target: /app/src/backendTypes
+      #   consistency: delegated
     networks:
       nginx-back-net:
       nginx-pgadmin-net:
@@ -79,8 +76,8 @@ services:
       - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
       - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
 
+      - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
-      - DATABASE_HOST=postgres-dev
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
@@ -95,11 +92,13 @@ services:
       - type: bind
         source: ./backend/src
         target: /app/src
+        # consistency: delegated
         consistency: cached
-      - type: bind
-        source: ./backend/dist
-        target: /app/dist
-        consistency: delegated
+      # - type: bind
+      #   source: ./backend/dist
+      #   target: /app/dist
+      #   # consistency: delegated
+      #   consistency: cached
     networks:
       nginx-back-net:
       back-db-net:
@@ -120,7 +119,7 @@ services:
       back-db-net:
       db-pgadmin-net:
 
-  postgres-admin:
+  postgres-admin-dev:
     image: dpage/pgadmin4:latest
     restart: always
     depends_on:
