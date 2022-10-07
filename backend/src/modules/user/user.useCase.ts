@@ -3,7 +3,14 @@ import { model, repo } from '../infrastructure';
 import { createHash, randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { messages } from 'src/config';
-import { ConfigKeys, IAppConfigMap } from 'src/types';
+import {
+  ClearedInsertedUserDTO,
+  ConfigKeys,
+  IAppConfigMap,
+  InputUser,
+  PG_UNIQUE_CONSTRAINT_VIOLATION,
+} from 'src/types';
+import { isQueryFailedError } from 'src/tools';
 
 @Injectable()
 export class UserUseCase {
@@ -19,27 +26,39 @@ export class UserUseCase {
   }
 
   async findMany(search?: string): Promise<model.User[]> {
-    return await this.userRepo.findManyWithAccessScopes(search);
+    return await this.userRepo.findMany(search);
   }
 
-  async createManyUsers(users: InputUser[]): Promise<InsertedUserModel[]> {
+  async createManyUsers(users: InputUser[]): Promise<ClearedInsertedUserDTO[]> {
     return await this.userRepo.createManyWithRelations(
       users.map((user) => this.createUserModel(user)),
     );
   }
 
-  async createUser(user: InputUser): Promise<InsertedUserModel> {
-    const candidate = await this.userRepo.getOneByEmail(user.email);
-    if (candidate) throw new BadRequestException(messages.user.exists);
-    return await this.userRepo.createOneWithRelations(
-      this.createUserModel(user),
-    );
+  async createUser(user: InputUser): Promise<ClearedInsertedUserDTO> {
+    /* eslint-disable @typescript-eslint/no-unused-vars, prettier/prettier */
+    let userWithoutSensitiveData: ClearedInsertedUserDTO;
+
+    try {
+      userWithoutSensitiveData = (({ passwordHash, salt, ...rest }): ClearedInsertedUserDTO => rest)(
+        await this.userRepo.createOneWithRelations(this.createUserModel(user)),
+      );
+    } catch (error: any) {
+      if(isQueryFailedError(error))
+        if (error.code === PG_UNIQUE_CONSTRAINT_VIOLATION)
+          throw new BadRequestException(messages.user.exists);
+      throw error;
+    }
+
+    return userWithoutSensitiveData;
+    /* eslint-enable @typescript-eslint/no-unused-vars, prettier/prettier */
   }
 
   async setUserPassword(id: number, password: string): Promise<void> {
     const candidate = await this.userRepo.getOneById(id);
+
     const updatedUser = this.createUserModel({ ...candidate, password });
-    return await this.userRepo.updateOnePlain(id, updatedUser);
+    return await this.userRepo.updateOnePlain({ id, ...updatedUser });
   }
 
   private createUserModel({ password, ...rest }: InputUser): UserModelToInsert {
@@ -47,7 +66,6 @@ export class UserUseCase {
     return {
       ...rest,
       salt,
-      accessScopes: [],
       passwordHash: createHash('sha256')
         .update(salt)
         .update(password)
@@ -61,17 +79,7 @@ export class UserUseCase {
   }
 }
 
-type InsertedUserModel = UserModelToInsert & { id: number };
-
 type UserModelToInsert = Omit<InputUser, 'password'> & {
   salt: string;
   passwordHash: string;
 };
-
-interface InputUser {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  accessScopes: model.AccessScope[];
-}

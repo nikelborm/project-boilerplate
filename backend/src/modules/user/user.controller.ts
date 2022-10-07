@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Query, Req } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Get, Post, Query, Req } from '@nestjs/common';
 import { UserUseCase } from './user.useCase';
 import {
   CreateUserDTO,
@@ -12,64 +11,46 @@ import {
   SetMyPasswordDTO,
   AuthedRequest,
 } from 'src/types';
-import {
-  AccessEnum,
-  AllowedFor,
-  AuthorizedOnly,
-  ValidatedBody,
-} from 'src/tools';
+import { ApiController, AuthorizedOnly, ValidatedBody } from 'src/tools';
 
-@ApiTags('user')
-@Controller()
+@ApiController('user')
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
-  @Get('users')
-  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @Get('all')
+  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async findManyUsers(
     @Query('search') search?: string,
   ): Promise<FindManyUsersResponseDTO> {
     const users = await this.userUseCase.findMany(search);
     return {
-      response: {
-        users,
-      },
+      users,
     };
   }
 
-  @Post('createUser')
-  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @Post('create')
+  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
     @ValidatedBody
-    { firstName, lastName, email, password }: CreateUserDTO,
+    createUserDTO: CreateUserDTO,
   ): Promise<CreateOneUserResponse> {
-    const user = await this.userUseCase.createUser({
-      firstName,
-      lastName,
-      email,
-      password,
-      accessScopes: [],
-    });
+    const user = await this.userUseCase.createUser(createUserDTO);
     return {
-      response: {
-        user,
-      },
+      user,
     };
   }
 
-  @Post('createUsers')
-  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @Post('createMany')
+  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
     @ValidatedBody
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
     const userModels = await this.userUseCase.createManyUsers(
-      users.map((user) => ({ ...user, accessScopes: [] })),
+      users.map((user) => ({ ...user, userGroups: [] })),
     );
     return {
-      response: {
-        users: userModels,
-      },
+      users: userModels,
     };
   }
 
@@ -81,16 +62,16 @@ export class UserController {
     { password }: SetMyPasswordDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.setUserPassword(user.id, password);
-    return { response: {} };
+    return {};
   }
 
-  @Post('deleteUserById')
-  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @Post('deleteById')
+  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
     @ValidatedBody
     { id }: DeleteEntityByIdDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.deleteOne(id);
-    return { response: {} };
+    return {};
   }
 }

@@ -1,9 +1,10 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
-import { EndpointAccess, AllowedForArgs } from 'src/types';
+import { EndpointAccess, AllowedForArgs, AccessScopeType } from 'src/types';
 
 export const AccessEnum = {
+  ...AccessScopeType,
   ...EndpointAccess,
 };
 export const ALLOWED_SCOPES_KEY = Symbol('ALLOWED_SCOPES_KEY');

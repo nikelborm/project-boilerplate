@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { CreatedPlainEntity, NewPlainEntity } from './types';
 
 export async function createOnePlain<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   KeysGeneratedByDB extends string = 'id',
 >(
   repo: Repository<BaseEntity>,

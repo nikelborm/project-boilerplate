@@ -1,4 +1,4 @@
-import { AccessScopeType } from '.';
+import type { AccessScopeType } from '../shared/accessScopeType';
 
 export enum EndpointAccess {
   PUBLIC = 'public',

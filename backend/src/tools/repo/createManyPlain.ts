@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 import { messages } from 'src/config';
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { CreatedPlainEntity, NewPlainEntity } from '.';
 
 export async function createManyPlain<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   KeysGeneratedByDB extends string = 'id',
 >(
   repo: Repository<BaseEntity>,

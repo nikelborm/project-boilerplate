@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { EntityAfterUpdate, UpdateEntity } from './types';
 
 export async function updateManyWithRelations<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   PrimaryKeys extends string = 'id',
 >(
   repo: Repository<BaseEntity>,

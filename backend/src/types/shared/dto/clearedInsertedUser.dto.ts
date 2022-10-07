@@ -3,7 +3,6 @@ export class ClearedInsertedUserDTO implements Omit<InputUser, 'password'> {
   firstName!: string;
   lastName!: string;
   patronymic!: string;
-  canCreateEducationalSpaces!: boolean;
   gender!: string;
   email!: string;
 }
@@ -13,7 +12,6 @@ export interface InputUser {
   lastName: string;
   patronymic: string;
   gender: string;
-  canCreateEducationalSpaces: boolean;
   email: string;
   password: string;
 }

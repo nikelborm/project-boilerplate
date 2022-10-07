@@ -51,25 +51,10 @@ export class UserRepo {
         lastName: true,
         patronymic: true,
         gender: true,
-        canCreateEducationalSpaces: true,
         phone: true,
-        userGroups: {
+        accessScopes: {
           id: true,
-          educationalSpaceId: true,
-          educationalSpaceAccessScopes: {
-            id: true,
-            type: true,
-          },
-          launchedTestingAccessScopes: {
-            id: true,
-            type: true,
-            launchedTestingId: true,
-          },
-          leaderInAccessScopes: {
-            id: true,
-            type: true,
-            subordinateUserGroupId: true,
-          },
+          type: true,
         },
       },
     });

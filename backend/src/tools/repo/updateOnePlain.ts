@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { UpdatePlainEntity } from './types';
 
 export async function updateOnePlain<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   PrimaryKeys extends string = 'id',
 >(
   repo: Repository<BaseEntity>,

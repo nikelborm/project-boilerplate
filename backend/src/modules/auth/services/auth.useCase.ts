@@ -63,7 +63,7 @@ export class AuthUseCase {
     const user = await this.userUseCase.createUser(createUserDTO);
     return await this.login({
       ...user,
-      userGroups: [],
+      accessScopes: [],
     });
   }
 

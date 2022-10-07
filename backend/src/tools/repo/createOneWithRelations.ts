@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { NewEntity, CreatedEntity } from '.';
 
 export async function createOneWithRelations<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   KeysGeneratedByDB extends string = 'id',
 >(
   repo: Repository<BaseEntity>,

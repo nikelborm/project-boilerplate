@@ -1,3 +1,4 @@
+import { AccessScopeType } from './accessScopeType';
 
 export interface UserAuthInfo {
   id: number;
@@ -6,5 +7,9 @@ export interface UserAuthInfo {
   lastName: string;
   patronymic: string;
   gender: string;
+  accessScopes: {
+    id: number;
+    type: AccessScopeType;
+  }[];
   phone?: string | undefined;
 }

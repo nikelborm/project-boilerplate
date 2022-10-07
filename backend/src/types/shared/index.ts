@@ -7,3 +7,4 @@ export * from './userAccessTokenPayload';
 export * from './userAuthInfo';
 export * from './userRefreshTokenPayload';
 export * from './utility';
+export * from './accessScopeType';

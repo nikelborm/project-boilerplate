@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 import { CreatedEntity, NewEntity } from '.';
 
 export async function createManyWithRelations<
-  BaseEntity,
+  BaseEntity extends ObjectLiteral,
   KeysGeneratedByDB extends string = 'id',
 >(
   repo: Repository<BaseEntity>,
