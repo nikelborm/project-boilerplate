@@ -15,6 +15,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import App from './App';
 
 const onErrorHandler = (err: any) => {
+  // eslint-disable-next-line no-console
   console.log('onErrorHandler err: ', err);
   if (
     err?.message ===

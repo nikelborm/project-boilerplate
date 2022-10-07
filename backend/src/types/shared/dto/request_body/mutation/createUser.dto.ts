@@ -1,13 +1,4 @@
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsDefined,
-  IsEmail,
-  IsString,
-  MaxLength,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDTO {
   @IsString()
@@ -39,12 +30,4 @@ export class CreateUserDTO {
   @MinLength(8)
   @MaxLength(128)
   password!: string;
-}
-
-export class CreateUsersDTO {
-  @IsDefined()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateUserDTO)
-  users!: CreateUserDTO[];
 }

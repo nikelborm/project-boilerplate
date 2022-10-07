@@ -22,10 +22,7 @@
   "plugins": ["react", "prettier", "react-hooks"],
   "ignorePatterns": ["/config", "/scripts"],
   "rules": {
-    "indent": [
-      "error",
-      2
-    ],
+    "indent": "off", // off because it does not work with decorators in backend types. Anyway prettier is implementing the same linting
     "linebreak-style": [
       "error",
       "unix"

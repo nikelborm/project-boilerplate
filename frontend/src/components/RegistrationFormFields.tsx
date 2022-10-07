@@ -1,5 +1,5 @@
 import { LockOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
-import { Checkbox, Form, Input } from 'antd';
+import { Form, Input } from 'antd';
 import { LoginFormFields } from './LoginFormFields';
 
 export function RegistrationFormFields() {
