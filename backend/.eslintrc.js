@@ -21,6 +21,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
+    'max-classes-per-file': 'warn',
     '@typescript-eslint/no-misused-promises': 'error',
     'no-return-await': 'off',
     '@typescript-eslint/return-await': ['error', 'always'],

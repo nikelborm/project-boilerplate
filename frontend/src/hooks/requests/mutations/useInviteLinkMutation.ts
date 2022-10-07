@@ -1,4 +1,7 @@
-import { useMutation, useQueryClient } from 'react-query';
+import {
+  useMutation,
+  // useQueryClient
+} from 'react-query';
 import {
   customFetch,
   // invalidatePassthrough,
@@ -10,7 +13,7 @@ import { UseInviteLinkDTO, EmptyResponseDTO } from 'backendTypes';
 import { message } from 'antd';
 
 export function useInviteLinkMutation(onError: (err: any) => void) {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { requestTokenPairRefreshing } = useTokenPairUpdater();
   const { mutate, isLoading, isError, isSuccess } = useMutation(
     (inviteLinkPayload: UseInviteLinkDTO) =>
