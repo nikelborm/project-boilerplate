@@ -2,6 +2,7 @@ export * from './authStore';
 export * from './copyTextToClipboard';
 export * from './customFetch';
 export * from './displayErrorNotification';
+export * from './eventHandlerStoppingEventPropagation';
 export * from './invalidatePassthrough';
 export * from './KeysFilteredByValueType';
 export * from './remapToIndexedObject';
