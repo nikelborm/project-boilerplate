@@ -1,0 +1,97 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "prettier", "react-hooks"],
+  "ignorePatterns": ["/config", "/scripts"],
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "@typescript-eslint/lines-between-class-members": "warn",
+    "max-classes-per-file": "warn",
+    "no-restricted-syntax": "off",
+    "react/require-default-props": "off",
+    "camelcase": "warn",
+    "no-sequences": "off",
+    "no-void": "off",
+    "no-nested-ternary": "off",
+    "import/no-unresolved": "off", // this resolves @components, @assets etc.
+    "import/prefer-default-export": "off", // WHY: this rule is not aware of my plans to add more exports in the future
+    "jsx-a11y/label-has-associated-control": "off", // this allows <label>s without "for" attribute (auto-associated)
+    "no-debugger": "warn", // WHY: debbugers should be removed before pushing
+    "no-unused-vars": "off", // WHY: unused variables should be commented out
+    "@typescript-eslint/no-unused-vars": "warn", // WHY: unused variables should be commented out
+    "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true }], // WHY: ts-expect-error should be used instead
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".jsx", ".tsx"]
+      }
+    ], // this requires extension to be react-ish for JSX to work
+    "react/jsx-props-no-spreading": "off", // this allows spread syntax in React
+    "react/prop-types": "off", // WHY: prop types are only needed for React Class Components
+    "react/react-in-jsx-scope": "off", // WHY: in modern react, there's no need for React in scope
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "semi",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ],
+    "max-len": [
+      "warn", // WHY: having max-len as an "error" interrupts coding too much.
+      {
+        "code": 100, // 100 was the default somewhere.
+        "ignoreComments": true, // Ignoring comments speeds things up, and adds some expectable logic.
+        "ignoreStrings": true, // Mostly convenient for imports.
+        "ignoreTemplateLiterals": true, // Template literals can obviously be of any length.
+        "ignoreRegExpLiterals": true // Multiline RegExps may be harder to maintain.
+      }
+    ],
+    "no-return-await": "off",
+    "@typescript-eslint/return-await": ["error", "always"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-use-before-define": "off",
+    "react-hooks/rules-of-hooks": "warn",
+    "arrow-body-style": [1, "as-needed"] // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
+  }
+}
