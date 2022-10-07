@@ -1,17 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { SessionProvider } from 'utils';
+import {
+  displayErrorNotification,
+  SessionProvider,
+  updateTokenPair,
+} from 'utils';
 
 import './assets/styles/index.css';
 import './types';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { message } from 'antd';
 import App from './App';
 
 const onErrorHandler = (err: any) => {
-  void message.error(`Error: ${err?.message}`);
+  console.log('onErrorHandler err: ', err);
+  if (
+    err?.message ===
+    'Your session was finished because of long inactivity.\nIf you used your account less than a week ago, your account can be hacked.\nPlease open your settings and click the "Logout on all devices" button'
+  )
+    updateTokenPair(null);
+
+  displayErrorNotification(err);
 };
 
 const queryClient = new QueryClient({

@@ -33,16 +33,14 @@ export class AccessScope {
   userToAccessScopeRelations!: UserToAccessScope[];
 
   @CreateDateColumn({
-    name: 'access_scope_created_at',
+    name: 'created_at',
     type: 'timestamptz',
-    nullable: false,
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: 'access_scope_updated_at',
+    name: 'updated_at',
     type: 'timestamptz',
-    nullable: true,
   })
   updatedAt!: Date;
 }

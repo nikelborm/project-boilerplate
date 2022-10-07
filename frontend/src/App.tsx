@@ -5,7 +5,6 @@ import {
   AuthPagesWrapper,
   renderAuthFallbackRoute,
 } from 'components';
-import { canUserUseThisRoute } from 'utils';
 import {
   routesOnlyForAuthedUsers,
   routesOnlyForNotAuthedUsers,
@@ -40,14 +39,14 @@ function App() {
         element={<AccountPagesWrapper session={session} {...usePathData} />}
       >
         {Object.entries(routesOnlyForAuthedUsers).map(
-          ([path, { Component, allowedForScopeTypes }]) => (
+          ([path, { Component, canUserOpenThisRoute }]) => (
             <Route
               path={path}
               key={path}
               element={
                 /* eslint-disable prettier/prettier */
                 session.isAuthed && (
-                  canUserUseThisRoute(session, allowedForScopeTypes)
+                  canUserOpenThisRoute(session)
                     ? <Component />
                     : <Navigate to={getAuthedFallbackRoute(session)} />
                 )

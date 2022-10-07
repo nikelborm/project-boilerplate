@@ -1,18 +1,16 @@
-import { messages } from 'src/config';
 import { Repository } from 'typeorm';
-import { EntityWithId, NewEntity } from '.';
-import { validateExistingId } from '..';
+import { NewEntity, CreatedEntity } from '.';
 
-export async function createOneWithRelations<T extends EntityWithId>(
-  repo: Repository<T>,
-  newEntity: NewEntity<T>,
-  entityName?: string,
-): Promise<T> {
-  validateExistingId({
-    entity: newEntity,
-    shouldIdExist: false,
-    errorText: messages.repo.common.cantCreateWithId(newEntity, entityName),
-  });
+export async function createOneWithRelations<
+  BaseEntity,
+  KeysGeneratedByDB extends string = 'id',
+>(
+  repo: Repository<BaseEntity>,
+  // это необходимо чтобы тайпорм не вписывала добавленные айдишники в исходные newEntities
+  { ...newEntity }: NewEntity<BaseEntity, KeysGeneratedByDB>,
+): Promise<CreatedEntity<BaseEntity, KeysGeneratedByDB>> {
   // @ts-expect-error при создании мы не можем указать айди, поэтому мы его выпилили
-  return await repo.save(newEntity);
+  const insertedEntityWithGeneratedPart = await repo.save(newEntity);
+  // @ts-expect-error при создании мы не можем указать айди, поэтому мы его выпилили
+  return insertedEntityWithGeneratedPart;
 }

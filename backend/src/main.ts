@@ -9,7 +9,7 @@ import 'reflect-metadata';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MockDataUseCase } from './mock';
-import { readFile, writeFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join, resolve } from 'path';
 

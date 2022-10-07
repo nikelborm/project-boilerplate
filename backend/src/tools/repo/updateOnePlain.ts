@@ -1,34 +1,16 @@
-import { BadRequestException } from '@nestjs/common';
-import { messages } from 'src/config';
 import { Repository } from 'typeorm';
-import { EntityWithId, PlainEntityWithoutId, doesEntityNotExist } from '.';
-import { validateExistingId } from '..';
+import { UpdatePlainEntity } from './types';
 
-export async function updateOnePlain<T extends EntityWithId>(
-  repo: Repository<T>,
-  id: number,
-  updated: PlainEntityWithoutId<T>,
-  entityName?: string,
-  config?: { disableExistingCheck?: boolean },
+export async function updateOnePlain<
+  BaseEntity,
+  PrimaryKeys extends string = 'id',
+>(
+  repo: Repository<BaseEntity>,
+  UpdateEntity: UpdatePlainEntity<BaseEntity, PrimaryKeys>,
 ): Promise<void> {
-  console.log('config: ', config);
-  validateExistingId({
-    entity: { id },
-    shouldIdExist: true,
-    errorText: messages.repo.common.cantUpdateWithoutId(
-      {
-        id,
-        updated,
-      },
-      entityName,
-    ),
-  });
-  // TODO: Сделать возможность убрать проверку на существование сущностей
-  if (await doesEntityNotExist(repo, { id }))
-    throw new BadRequestException(
-      messages.repo.common.cantUpdateOneNotFound(id, entityName),
-    );
-
-  // @ts-expect-error мы выпилили айди, ибо обновлять айди нет смысла, вот он и ругается
-  await repo.update(id, updated);
+  console.log('updateOnePlain before repo.update UpdateEntity: ', UpdateEntity);
+  // @ts-expect-error при создании мы не можем указать айди, поэтому мы его выпилили
+  const shit = await repo.update(id, updated);
+  console.log('updateOnePlain repo.update shit: ', shit);
+  console.log('updateOnePlain after repo.update UpdateEntity: ', UpdateEntity);
 }

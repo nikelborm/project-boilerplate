@@ -19,6 +19,7 @@ EXPOSE ${INNER_BACKEND_HTTP_SERVER_PORT}
 ARG INNER_BACKEND_WS_SERVER_PORT
 EXPOSE ${INNER_BACKEND_WS_SERVER_PORT}
 
+# TODO добавить вызов миграции на проде . ./scripts/migrate.sh
 CMD [ "node", "dist/main" ]
 
 

@@ -57,7 +57,6 @@ export class InMemoryWhitelistedSessionStore {
       uuidToSearch: string,
     ): {
       wasEntryFound: boolean;
-      entry: Session;
       index: number;
     } => {
       const indexOfEntry = entries.findIndex(
@@ -66,7 +65,6 @@ export class InMemoryWhitelistedSessionStore {
 
       return {
         wasEntryFound: indexOfEntry !== -1,
-        entry: entries[indexOfEntry],
         index: indexOfEntry,
       };
     };

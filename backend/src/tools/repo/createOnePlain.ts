@@ -1,26 +1,21 @@
-import { InternalServerErrorException } from '@nestjs/common';
-import { messages } from 'src/config';
 import { Repository } from 'typeorm';
-import { EntityWithId, PlainEntityWithoutId } from '.';
-import { validateExistingId } from '..';
+import { CreatedPlainEntity, NewPlainEntity } from './types';
 
-export async function createOnePlain<T extends EntityWithId>(
-  repo: Repository<T>,
-  newEntity: PlainEntityWithoutId<T>,
-  entityName?: string,
-): Promise<T> {
-  validateExistingId({
-    entity: newEntity,
-    shouldIdExist: false,
-    errorText: messages.repo.common.cantCreateWithId(newEntity, entityName),
-  });
+export async function createOnePlain<
+  BaseEntity,
+  KeysGeneratedByDB extends string = 'id',
+>(
+  repo: Repository<BaseEntity>,
+  { ...newEntity }: NewPlainEntity<BaseEntity, KeysGeneratedByDB>,
+): Promise<CreatedPlainEntity<BaseEntity, KeysGeneratedByDB>> {
   // @ts-expect-error при создании мы не можем указать айди, поэтому мы его выпилили
-  const [entityWithOnlyId] = (await repo.insert(newEntity)).identifiers;
+  const { generatedMaps, identifiers, raw } = await repo.insert(newEntity);
+  console.log('createOnePlain repo.insert result: ', {
+    generatedMaps,
+    identifiers,
+    raw,
+  });
 
-  if (!entityWithOnlyId?.id)
-    throw new InternalServerErrorException(
-      messages.repo.common.cantCreateOne(newEntity, entityName),
-    );
-
-  return { ...newEntity, ...entityWithOnlyId } as T;
+  // @ts-expect-error TODO
+  return { ...newEntity, ...generatedMaps, ...identifiers };
 }

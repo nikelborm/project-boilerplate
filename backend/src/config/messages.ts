@@ -18,9 +18,12 @@ export const messages = {
     incorrectTokenType: 'Token type should be Bearer',
     missingToken: `Missing Token in Authorization header`,
     invalidAccessToken:
-      'Token in Authorization header from that moment is not a valid JWT token, try requesting a new one',
-    invalidRefreshToken:
-      'Refresh Token tried to be used from that moment is not a valid JWT token, try requesting a new one',
+      'Access token in Authorization header is not a valid JWT token',
+    invalidRefreshToken: 'Refresh token you provided is not a valid JWT token',
+    accessTokenExpired:
+      'Access token in Authorization header has been expired. Refresh it with refresh token',
+    yourSessionWasFinished:
+      'Your session was finished because of long inactivity.\nIf you used your account less than a week ago, your account can be hacked.\nPlease open your settings and click the "Logout on all devices" button',
   },
   user: {
     exists: 'User with this email already exists',
@@ -29,6 +32,9 @@ export const messages = {
     notSingleAdminScope: `${messagesRepeating.moreThanOne} Admin access scope in the database`,
     notSingleSuperAdminScope: `${messagesRepeating.moreThanOne} Super Admin access scope in the database`,
     cannotPromoteYourself: 'Cannot set additional role for yourself',
+  },
+  types: {
+    shouldBeDate: 'Validation failed. Date should be in ISO format',
   },
   repo: {
     user: {

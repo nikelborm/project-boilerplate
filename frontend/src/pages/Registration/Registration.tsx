@@ -1,5 +1,11 @@
-import { Button, Form, Input, message } from 'antd';
+import { Form, message } from 'antd';
+import {
+  AuthFormSubmitButton,
+  CenteredAuthFormHeader,
+  RegistrationFormFields,
+} from 'components';
 import { useRegistrationMutation } from 'hooks';
+import { Link } from 'react-router-dom';
 
 export function Registration() {
   const [form] = Form.useForm();
@@ -10,7 +16,7 @@ export function Registration() {
   };
   return (
     <>
-      <h1>Registration</h1>
+      <CenteredAuthFormHeader>Registration</CenteredAuthFormHeader>
       <Form
         form={form}
         layout="vertical"
@@ -18,49 +24,11 @@ export function Registration() {
         onFinishFailed={onFinishCreationFailed}
         autoComplete="off"
       >
-        <Form.Item
-          name="firstName"
-          label="First name"
-          rules={[{ type: 'string', min: 2, required: true }]}
-        >
-          <Input placeholder="John" />
-        </Form.Item>
-        <Form.Item
-          name="lastName"
-          label="Last name"
-          rules={[{ type: 'string', min: 2, required: true }]}
-        >
-          <Input placeholder="Doe" spellCheck={false} />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            { type: 'email' },
-            { type: 'string', min: 7, required: true },
-          ]}
-        >
-          <Input placeholder="user@mail.ru" spellCheck={false} />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            {
-              required: true,
-              message: 'Please input your password!',
-            },
-            { type: 'string', min: 8 },
-          ]}
-          hasFeedback
-        >
-          <Input.Password placeholder="***********" spellCheck={false} />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+        <RegistrationFormFields />
+        <AuthFormSubmitButton
+          buttonText="Create account"
+          link={<Link to="/auth/login">enter your account!</Link>}
+        />
       </Form>
     </>
   );

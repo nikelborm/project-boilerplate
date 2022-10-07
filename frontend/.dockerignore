@@ -1,4 +1,5 @@
 **/bin
+**/backendTypes
 **/dist
 **/node_modules
 .git

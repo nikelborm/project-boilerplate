@@ -30,7 +30,7 @@ const CenteredContentWrapper = styled.div`
 
 const CenteredContent = styled.div`
   width: 300px;
-  height: 500px;
+  height: 670px;
 `;
 
 type AuthWrapperProps = { session: ISession } & ReturnType<typeof usePath>;

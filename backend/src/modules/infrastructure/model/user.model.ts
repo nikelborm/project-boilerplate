@@ -16,33 +16,33 @@ export class User {
   id!: number;
 
   @Column({
-    name: 'user_first_name',
+    name: 'first_name',
     nullable: false,
   })
   firstName!: string;
 
   @Column({
-    name: 'user_last_name',
+    name: 'last_name',
     nullable: false,
   })
   lastName!: string;
 
   @Column({
-    name: 'user_email',
+    name: 'email',
     nullable: false,
     unique: true,
   })
   email!: string;
 
   @Column({
-    name: 'user_salt',
+    name: 'salt',
     select: false,
     nullable: false,
   })
   salt!: string;
 
   @Column({
-    name: 'user_password_hash',
+    name: 'password_hash',
     select: false,
     nullable: false,
   })
@@ -65,15 +65,34 @@ export class User {
   )
   userToAccessScopeRelations!: UserToAccessScope[];
 
-  @CreateDateColumn({
-    name: 'user_created_at',
-    type: 'timestamptz',
+  @Column({
+    name: 'patronymic',
     nullable: false,
+  })
+  patronymic!: string;
+
+  @Column({
+    name: 'gender',
+    nullable: false,
+  })
+  gender!: string;
+
+  @Column({
+    name: 'phone',
+    type: 'varchar',
+    length: 15,
+    nullable: true,
+  })
+  phone?: string;
+
+  @CreateDateColumn({
+    name: 'created_at',
+    type: 'timestamptz',
   })
   createdAt!: Date;
 
   @UpdateDateColumn({
-    name: 'user_updated_at',
+    name: 'updated_at',
     type: 'timestamptz',
   })
   updatedAt!: Date;

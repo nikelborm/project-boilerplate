@@ -1,39 +1,28 @@
-import { BadRequestException } from '@nestjs/common';
-import { messages } from 'src/config';
 import { Repository } from 'typeorm';
-import { EntityWithId, UpdatedEntity, getNotExistingEntityIds } from '.';
-import { validateExistingId } from '..';
+import { EntityAfterUpdate, UpdateEntity } from './types';
 
-export async function updateManyWithRelations<T extends EntityWithId>(
-  repo: Repository<T & { id: number }>,
-  updatedEntities: UpdatedEntity<T>[],
+export async function updateManyWithRelations<
+  BaseEntity,
+  PrimaryKeys extends string = 'id',
+>(
+  repo: Repository<BaseEntity>,
+  updatedEntities: UpdateEntity<BaseEntity, PrimaryKeys>[],
   entityName?: string,
   config?: { chunk?: number; disableExistingCheck?: boolean },
-): Promise<T[]> {
-  validateExistingId({
-    entities: updatedEntities,
-    shouldIdExist: true,
-    errorText: messages.repo.common.cantUpdateWithoutIds(
-      updatedEntities,
-      entityName,
-    ),
-  });
-
-  // TODO: Сделать возможность убрать проверку на существование сущностей
-  const { entityIdsToCheck: wantedToUpdateEntityIds, notExistingEntityIds } =
-    await getNotExistingEntityIds(repo, updatedEntities);
-
-  if (notExistingEntityIds.length)
-    throw new BadRequestException(
-      messages.repo.common.cantUpdateManyNotFound(
-        wantedToUpdateEntityIds,
-        notExistingEntityIds,
-        entityName,
-      ),
-    );
-
+): Promise<EntityAfterUpdate<BaseEntity, PrimaryKeys>[]> {
+  console.log(
+    'updateManyWithRelations updatedEntities before insert',
+    updatedEntities,
+  );
   //@ts-expect-error asd
-  return await repo.save(updatedEntities, {
+  const shit = await repo.save(updatedEntities, {
     chunk: config?.chunk,
   });
+  console.log('updateManyWithRelations repo.save shit: ', shit);
+  console.log(
+    'updateManyWithRelations updatedEntities after insert',
+    updatedEntities,
+  );
+  // @ts-expect-error asd
+  return shit;
 }

@@ -1,5 +1,11 @@
 import { useLoginMutation } from 'hooks';
-import { Form, Button, message, Input } from 'antd';
+import { Form, message } from 'antd';
+import {
+  AuthFormSubmitButton,
+  CenteredAuthFormHeader,
+  LoginFormFields,
+} from 'components';
+import { Link } from 'react-router-dom';
 
 export function Login() {
   const [form] = Form.useForm();
@@ -10,43 +16,20 @@ export function Login() {
   };
   return (
     <>
-      <h1>Login</h1>
+      <CenteredAuthFormHeader>Login</CenteredAuthFormHeader>
       <Form
         form={form}
         layout="vertical"
         onFinish={sendLoginQuery}
         onFinishFailed={onFinishCreationFailed}
-        autoComplete="off"
+        autoComplete="on"
+        initialValues={{ remember: true }}
       >
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            { type: 'email' },
-            { type: 'string', min: 7, required: true },
-          ]}
-        >
-          <Input placeholder="user@mail.ru" spellCheck={false} />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            {
-              required: true,
-              message: 'Please input your password!',
-            },
-            { type: 'string', min: 8 },
-          ]}
-          hasFeedback
-        >
-          <Input.Password placeholder="***********" spellCheck={false} />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
+        <LoginFormFields />
+        <AuthFormSubmitButton
+          buttonText="Log in"
+          link={<Link to="/auth/registration">create an account now!</Link>}
+        />
       </Form>
     </>
   );

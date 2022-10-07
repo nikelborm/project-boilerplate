@@ -6,10 +6,10 @@ import { AccessLogMiddleware } from './tools';
 import * as MockServices from './mock';
 
 import {
+  AuthModule,
   InfrastructureModule,
   UserModule,
   AccessScopeModule,
-  AuthModule,
 } from './modules';
 
 @Module({

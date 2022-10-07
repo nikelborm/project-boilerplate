@@ -1,7 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { TokenExpiredError } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { UserRefreshTokenPayload } from '../types';
-import { ConfigKeys, IAppConfigMap, UserAuthInfo } from 'src/types';
+import {
+  ConfigKeys,
+  IAppConfigMap,
+  UserAuthInfo,
+  UserRefreshTokenPayload,
+} from 'src/types';
 import { JwtService } from '@nestjs/jwt';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 import { messages } from 'src/config';
@@ -34,6 +39,8 @@ export class RefreshTokenUseCase {
         ignoreExpiration: false,
       });
     } catch (error) {
+      if (error instanceof TokenExpiredError)
+        throw new UnauthorizedException(messages.auth.yourSessionWasFinished);
       throw new UnauthorizedException(messages.auth.invalidRefreshToken);
     }
 
@@ -47,7 +54,7 @@ export class RefreshTokenUseCase {
         tokenPayload.sessionUUID,
       ))
     )
-      throw new UnauthorizedException(messages.auth.invalidRefreshToken);
+      throw new UnauthorizedException(messages.auth.yourSessionWasFinished);
 
     return tokenPayload;
   }

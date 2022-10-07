@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
+    "preserveWatchOutput": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
@@ -19,6 +20,9 @@
     "resolveJsonModule": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "noUncheckedIndexedAccess":true,
     "strictPropertyInitialization": true,
     "alwaysStrict":true,
     "plugins": [

@@ -1,12 +1,11 @@
 import { createHash, timingSafeEqual } from 'crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { messages } from 'src/config';
 import { repo } from '../../infrastructure';
-import { TokenPairDTO } from '../types';
 import {
   ConfigKeys,
+  TokenPairDTO,
   CreateUserDTO,
   IAppConfigMap,
   UserAuthInfo,
@@ -58,21 +57,14 @@ export class AuthUseCase {
     //   throw new UnauthorizedException(messages.auth.userHasNoAccessScopes);
   }
 
-  async registerNewUserAndLogin({
-    firstName,
-    lastName,
-    email,
-    password,
-  }: CreateUserDTO): Promise<TokenPairDTO> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { salt, passwordHash, ...user } = await this.userUseCase.createUser({
-      firstName,
-      lastName,
-      email,
-      password,
-      accessScopes: [],
+  async registerNewUserAndLogin(
+    createUserDTO: CreateUserDTO,
+  ): Promise<TokenPairDTO> {
+    const user = await this.userUseCase.createUser(createUserDTO);
+    return await this.login({
+      ...user,
+      userGroups: [],
     });
-    return await this.login(user);
   }
 
   async login(user: UserAuthInfo): Promise<TokenPairDTO> {

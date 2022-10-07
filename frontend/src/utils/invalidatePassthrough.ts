@@ -2,15 +2,15 @@ import { QueryClient, QueryKey } from 'react-query';
 
 export function invalidatePassthrough(
   queryClient: QueryClient,
-  queryKeys: QueryKey | QueryKey[],
+  queryKeys: string | QueryKey[],
 ) {
   return (data: any) => {
-    (typeof queryKeys === 'string' ? [queryKeys] : queryKeys).forEach(
-      (queryKey) => {
-        // @ts-expect-error TODO
-        queryClient.invalidateQueries(queryKey);
-      },
-    );
+    (typeof queryKeys === 'string'
+      ? [queryKeys]
+      : (queryKeys as string[])
+    ).forEach((queryKey) => {
+      void queryClient.invalidateQueries(queryKey);
+    });
     return data;
   };
 }

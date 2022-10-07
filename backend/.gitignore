@@ -35,4 +35,3 @@ tourneyInfo.xlsx
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-src/modules/infrastructure/migration/1652228978988-Init.ts

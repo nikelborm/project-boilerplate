@@ -13,6 +13,8 @@ export const iterateInChunks = async <T>({
 
   const iterateInChunk = async (limit: number): Promise<void> => {
     for (let i = chunkIndex * chunkSize; i < limit; i++) {
+      // TODO: Покрыть тестами, потому что ts говорит, что тут может быть проблема
+      // @ts-expect-error TODO
       callOnIteration(array[i]);
     }
     await callAfterChunk();

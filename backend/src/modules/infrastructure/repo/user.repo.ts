@@ -2,13 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { messages } from 'src/config';
 import {
+  CreatedEntity,
   createManyWithRelations,
   createOneWithRelations,
   NewEntity,
-  PlainEntityWithoutId,
-  UpdatedEntity,
+  UpdateEntity,
   updateOnePlain,
   updateOneWithRelations,
+  UpdatePlainEntity,
 } from 'src/tools';
 import { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
 import { ILike, Repository } from 'typeorm';
@@ -21,12 +22,12 @@ export class UserRepo {
     private readonly repo: Repository<User>,
   ) {}
 
-  getAll(): Promise<User[]> {
-    return this.repo.find();
+  async getAll(): Promise<User[]> {
+    return await this.repo.find();
   }
 
-  findManyWithAccessScopes(search?: string): Promise<User[]> {
-    return this.repo.find({
+  async findMany(search?: string): Promise<User[]> {
+    return await this.repo.find({
       where: search
         ? [
             { firstName: ILike(`%${search}%`) },
@@ -34,22 +35,41 @@ export class UserRepo {
             { email: ILike(`%${search}%`) },
           ]
         : void 0,
-      relations: ['accessScopes'],
     });
   }
 
   async getOneByIdWithAccessScopes(id: number): Promise<UserAuthInfo> {
     const user = await this.repo.findOne({
       where: { id },
-      relations: ['accessScopes'],
+      relations: {
+        accessScopes: true,
+      },
       select: {
         id: true,
         email: true,
         firstName: true,
         lastName: true,
-        accessScopes: {
+        patronymic: true,
+        gender: true,
+        canCreateEducationalSpaces: true,
+        phone: true,
+        userGroups: {
           id: true,
-          type: true,
+          educationalSpaceId: true,
+          educationalSpaceAccessScopes: {
+            id: true,
+            type: true,
+          },
+          launchedTestingAccessScopes: {
+            id: true,
+            type: true,
+            launchedTestingId: true,
+          },
+          leaderInAccessScopes: {
+            id: true,
+            type: true,
+            subordinateUserGroupId: true,
+          },
         },
       },
     });
@@ -82,23 +102,28 @@ export class UserRepo {
     return await this.repo.findOne({ where: { firstName, lastName } });
   }
 
-  async createOneWithRelations(newUser: NewEntity<User>): Promise<User> {
-    return await createOneWithRelations(this.repo, newUser, 'user');
+  async updateOneWithRelations(
+    updatedUser: UpdateEntity<User, 'id'>,
+  ): Promise<User> {
+    return await updateOneWithRelations<User, 'id'>(this.repo, updatedUser);
   }
 
-  async createManyWithRelations(newUsers: NewEntity<User>[]): Promise<User[]> {
-    return await createManyWithRelations(this.repo, newUsers, 'user');
+  async createOneWithRelations(
+    newUser: NewEntity<User, 'id'>,
+  ): Promise<CreatedEntity<User, 'id'>> {
+    return await createOneWithRelations(this.repo, newUser);
+  }
+
+  async createManyWithRelations(
+    newUsers: NewEntity<User, 'id'>[],
+  ): Promise<CreatedEntity<User, 'id'>[]> {
+    return await createManyWithRelations(this.repo, newUsers);
   }
 
   async updateOnePlain(
-    id: number,
-    updated: PlainEntityWithoutId<User>,
+    updatedUser: UpdatePlainEntity<User, 'id'>,
   ): Promise<void> {
-    return await updateOnePlain(this.repo, id, updated, 'user');
-  }
-
-  async updateOneWithRelations(newUser: UpdatedEntity<User>): Promise<User> {
-    return await updateOneWithRelations(this.repo, newUser, 'user');
+    return await updateOnePlain<User, 'id'>(this.repo, updatedUser);
   }
 
   async findOneByEmailWithAccessScopesAndPassword(
@@ -106,16 +131,41 @@ export class UserRepo {
   ): Promise<UserForLoginAttemptValidation> {
     const user = await this.repo
       .createQueryBuilder('user')
-      .leftJoin('user.accessScopes', 'accessScopes')
+      .leftJoin('user.userGroups', 'userGroups')
+      .leftJoin(
+        'userGroups.educationalSpaceAccessScopes',
+        'educationalSpaceAccessScopes',
+      )
+      .leftJoin(
+        'userGroups.launchedTestingAccessScopes',
+        'launchedTestingAccessScopes',
+      )
+      .leftJoin('userGroups.leaderInAccessScopes', 'leaderInAccessScopes')
       .addSelect([
         'user.id',
         'user.email',
         'user.firstName',
         'user.lastName',
+        'user.patronymic',
+        'user.gender',
+        'user.canCreateEducationalSpaces',
+        'user.phone',
         'user.salt',
         'user.passwordHash',
-        'accessScopes.id',
-        'accessScopes.type',
+
+        'userGroups.id',
+        'userGroups.educationalSpaceId',
+
+        'educationalSpaceAccessScopes.id',
+        'educationalSpaceAccessScopes.type',
+
+        'launchedTestingAccessScopes.id',
+        'launchedTestingAccessScopes.type',
+        'launchedTestingAccessScopes.launchedTestingId',
+
+        'leaderInAccessScopes.id',
+        'leaderInAccessScopes.type',
+        'leaderInAccessScopes.subordinateUserGroupId',
       ])
       .where('user.email = :email', { email })
       .getOne();

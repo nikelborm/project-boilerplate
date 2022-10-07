@@ -7,7 +7,8 @@ services:
       - backend-prod
       - postgres-admin
     build:
-      context: ./frontend/
+      context: ./
+      dockerfile: ./frontend/Dockerfile
       target: prod_nginx_with_front_static
       args:
         - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
@@ -61,6 +62,7 @@ services:
       - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
+      - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
       - DATABASE_HOST=postgres-prod
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
@@ -94,6 +96,7 @@ services:
 
   postgres-admin:
     image: dpage/pgadmin4:latest
+    restart: always
     depends_on:
       - postgres-prod
     environment:

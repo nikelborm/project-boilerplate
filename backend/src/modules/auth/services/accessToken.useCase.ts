@@ -2,8 +2,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { messages } from 'src/config';
-import { UserAccessTokenPayload } from '../types';
-import { ConfigKeys, IAppConfigMap, UserAuthInfo } from 'src/types';
+import { TokenExpiredError } from 'jsonwebtoken';
+import {
+  ConfigKeys,
+  IAppConfigMap,
+  UserAuthInfo,
+  UserAccessTokenPayload,
+} from 'src/types';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 
 @Injectable()
@@ -11,23 +16,12 @@ export class AccessTokenUseCase {
   private JWT_SECRET: string;
 
   constructor(
-    // @InjectEntityManager()
-    // private readonly entityManager: EntityManager,
     private readonly jwtService: JwtService,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
     private readonly configService: ConfigService<IAppConfigMap, true>,
   ) {
     this.JWT_SECRET = this.configService.get(ConfigKeys.JWT_SECRET);
   }
-
-  // async init(handshakeRequest: InitHandshakeQuery) {
-  //   return await this.entityManager.transaction(async (transactionManager) => {
-  //     return await this.executeClientHandshake(
-  //       transactionManager,
-  //       handshakeRequest,
-  //     );
-  //   });
-  // }
 
   getAccessToken(user: UserAuthInfo, sessionUUID: string): string {
     return this.jwtService.sign(this.getAccessTokenPayload(user, sessionUUID), {
@@ -41,12 +35,7 @@ export class AccessTokenUseCase {
   ): UserAccessTokenPayload {
     return {
       sessionUUID,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
+      user,
     };
   }
 
@@ -70,6 +59,8 @@ export class AccessTokenUseCase {
         ignoreExpiration: false,
       });
     } catch (error) {
+      if (error instanceof TokenExpiredError)
+        throw new UnauthorizedException(messages.auth.accessTokenExpired);
       throw new UnauthorizedException(messages.auth.invalidAccessToken);
     }
 
@@ -80,7 +71,7 @@ export class AccessTokenUseCase {
     if (
       !(await this.whitelistedSessionStore.wasWhitelisted(user.id, sessionUUID))
     )
-      throw new UnauthorizedException(messages.auth.invalidAccessToken);
+      throw new UnauthorizedException(messages.auth.yourSessionWasFinished);
 
     return user.id;
   }

@@ -1,0 +1,22 @@
+{
+  "name": "backendTypes",
+  "version": "0.0.1",
+  "private": true,
+  "description": "project frontend",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "nikelborm",
+    "email": "kolya007.klass@gmail.com",
+    "url": "https://github.com/nikelborm"
+  },
+  "dependencies": {
+    "class-transformer": "0.5.1",
+    "class-validator": "^0.13.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "engineStrict": true,
+  "engines": {
+    "npm": ">=8.5.0",
+    "node": ">=16.14.2"
+  }
+}

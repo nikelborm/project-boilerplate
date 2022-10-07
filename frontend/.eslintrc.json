@@ -22,10 +22,7 @@
   "plugins": ["react", "prettier", "react-hooks"],
   "ignorePatterns": ["/config", "/scripts"],
   "rules": {
-    "indent": [
-      "error",
-      2
-    ],
+    "indent": "off",
     "linebreak-style": [
       "error",
       "unix"
@@ -38,6 +35,10 @@
       "error",
       "always"
     ],
+    "@typescript-eslint/lines-between-class-members": "warn",
+    "max-classes-per-file": "warn",
+    "no-restricted-syntax": "off",
+    "react/require-default-props": "off",
     "camelcase": "warn",
     "no-sequences": "off",
     "no-void": "off",
