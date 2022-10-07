@@ -60,13 +60,6 @@ export function RegistrationFormFields() {
       >
         <Input placeholder="Female|Male|other" prefix={<SmileOutlined />} />
       </Form.Item>
-      <Form.Item
-        name="canCreateEducationalSpaces"
-        valuePropName="checked"
-        initialValue={false}
-      >
-        <Checkbox>I want to create educational spaces</Checkbox>
-      </Form.Item>
     </>
   );
 }

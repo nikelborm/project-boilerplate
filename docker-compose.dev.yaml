@@ -46,10 +46,10 @@ services:
         source: ./frontend/src
         target: /app/src
         consistency: delegated
-      # - type: bind
-      #   source: ./backend/src/types/shared
-      #   target: /app/src/backendTypes
-      #   consistency: delegated
+      - type: bind
+        source: ./backend/src/types/shared
+        target: /app/src/backendTypes
+        consistency: delegated
     networks:
       nginx-back-net:
       nginx-pgadmin-net:

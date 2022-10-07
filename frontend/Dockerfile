@@ -49,7 +49,7 @@ FROM nginx:1.18.0-alpine as default_nginx
 EXPOSE 80
 RUN rm -rf /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
-COPY .htpasswd /etc/nginx/.htpasswd
+COPY ./frontend/.htpasswd /etc/nginx/.htpasswd
 
 
 

@@ -116,16 +116,7 @@ export class UserRepo {
   ): Promise<UserForLoginAttemptValidation> {
     const user = await this.repo
       .createQueryBuilder('user')
-      .leftJoin('user.userGroups', 'userGroups')
-      .leftJoin(
-        'userGroups.educationalSpaceAccessScopes',
-        'educationalSpaceAccessScopes',
-      )
-      .leftJoin(
-        'userGroups.launchedTestingAccessScopes',
-        'launchedTestingAccessScopes',
-      )
-      .leftJoin('userGroups.leaderInAccessScopes', 'leaderInAccessScopes')
+      .leftJoin('user.accessScopes', 'accessScopes')
       .addSelect([
         'user.id',
         'user.email',
@@ -133,24 +124,12 @@ export class UserRepo {
         'user.lastName',
         'user.patronymic',
         'user.gender',
-        'user.canCreateEducationalSpaces',
         'user.phone',
+        // 'user.telegram',
         'user.salt',
         'user.passwordHash',
-
-        'userGroups.id',
-        'userGroups.educationalSpaceId',
-
-        'educationalSpaceAccessScopes.id',
-        'educationalSpaceAccessScopes.type',
-
-        'launchedTestingAccessScopes.id',
-        'launchedTestingAccessScopes.type',
-        'launchedTestingAccessScopes.launchedTestingId',
-
-        'leaderInAccessScopes.id',
-        'leaderInAccessScopes.type',
-        'leaderInAccessScopes.subordinateUserGroupId',
+        'accessScopes.id',
+        'accessScopes.type',
       ])
       .where('user.email = :email', { email })
       .getOne();

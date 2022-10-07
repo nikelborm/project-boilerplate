@@ -7,9 +7,9 @@ export interface UserAuthInfo {
   lastName: string;
   patronymic: string;
   gender: string;
+  phone?: string | undefined;
   accessScopes: {
     id: number;
     type: AccessScopeType;
   }[];
-  phone?: string | undefined;
 }

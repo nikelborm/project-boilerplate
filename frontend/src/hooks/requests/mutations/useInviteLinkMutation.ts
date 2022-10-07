@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from 'react-query';
 import {
   customFetch,
-  invalidatePassthrough,
-  useSession,
+  // invalidatePassthrough,
+  // useSession,
   useTokenPairUpdater,
   validate,
 } from 'utils';
@@ -16,14 +16,14 @@ export function useInviteLinkMutation(onError: (err: any) => void) {
     (inviteLinkPayload: UseInviteLinkDTO) =>
       validate(inviteLinkPayload, UseInviteLinkDTO).length
         ? Promise.reject(new Error('Validation error'))
-        : customFetch<EmptyResponseDTO>('educationalSpace/useInvite', {
+        : customFetch<EmptyResponseDTO>('accounts/useInvite', {
             method: 'POST',
             body: inviteLinkPayload,
           })
-            .then(invalidatePassthrough(queryClient, 'useMyEducationalSpaces'))
+            // .then(invalidatePassthrough(queryClient, 'something'))
             .then(requestTokenPairRefreshing),
     {
-      onSuccess: () => void message.success('You sucessfully joined the group'),
+      onSuccess: () => void message.success('You were sucessfully invited'),
       onError,
     },
   );

@@ -35,7 +35,7 @@ export const routesOnlyForAuthedUsers: RoutesMap<AuthedRouteEntity> = {
     description: 'Профиль',
     menuIcon: <UserOutlined />,
     canUserOpenThisRoute: () => true,
-    Extras: () => 'Extras react component',
+    Extras: () => <>Extras react component</>,
   },
   [RoutesEnum.USER]: {
     Component: Profile,
@@ -44,7 +44,7 @@ export const routesOnlyForAuthedUsers: RoutesMap<AuthedRouteEntity> = {
     description: 'User desc',
     menuIcon: <UserOutlined />,
     canUserOpenThisRoute: () => true,
-    Extras: () => 'Extras react component',
+    Extras: () => <>Extras react component</>,
   },
 };
 
