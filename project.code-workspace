@@ -1,17 +1,19 @@
 {
-	"folders": [
-		{
-			"name": "backend",
-			"path": "./backend"
-		},
-		{
-			"name": "frontend",
-			"path": "./frontend"
-		},
-		{
-			"name": "project-root",
-			"path": "./"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "name": "backend",
+      "path": "./backend"
+    },
+    {
+      "name": "frontend",
+      "path": "./frontend"
+    },
+    {
+      "name": "project-root",
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "eslint.workingDirectories": ["./frontend", "./backend"]
+  }
 }
