@@ -33,6 +33,8 @@ yarn psql
 
 [ ] Merge typescript, prettier and eslint configs and place it in project root directory
 
+[ ] add script for fast adding new module and connecting it global scope
+
 [ ] add healthcheck
 
 [ ] wrap mock into transaction
