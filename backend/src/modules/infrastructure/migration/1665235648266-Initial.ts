@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class initial1665220825239 implements MigrationInterface {
-  name = 'initial1665220825239';
+export class Initial1665235648266 implements MigrationInterface {
+  name = 'Initial1665235648266';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -29,12 +29,12 @@ export class initial1665220825239 implements MigrationInterface {
       )
     `);
     await queryRunner.query(`
-      CREATE TYPE "public"."access_scope_access_scope_type_enum" AS ENUM('superAdmin')
+      CREATE TYPE "public"."access_scope_type_enum" AS ENUM('superAdmin')
     `);
     await queryRunner.query(`
       CREATE TABLE "access_scope" (
         "access_scope_id" SERIAL NOT NULL,
-        "access_scope_type" "public"."access_scope_access_scope_type_enum" NOT NULL,
+        "type" "public"."access_scope_type_enum" NOT NULL,
         "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         CONSTRAINT "PK_26acb7cf35e5f4a08a85d937b6e" PRIMARY KEY ("access_scope_id")
@@ -73,7 +73,7 @@ export class initial1665220825239 implements MigrationInterface {
       DROP TABLE "access_scope"
     `);
     await queryRunner.query(`
-      DROP TYPE "public"."access_scope_access_scope_type_enum"
+      DROP TYPE "public"."access_scope_type_enum"
     `);
     await queryRunner.query(`
       DROP TABLE "user_to_access_scope"

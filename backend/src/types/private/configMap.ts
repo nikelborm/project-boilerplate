@@ -7,7 +7,7 @@ export type IAppConfigMap = {
   [ConfigKeys.BOOTSTRAP_MODE]: BootstrapModeType;
   [ConfigKeys.IS_DEVELOPMENT]: boolean;
   [ConfigKeys.IS_PRODUCTION]: boolean;
-  [ConfigKeys.MOCK_SCRIPT_NAME]: keyof MockDataUseCase;
+  [ConfigKeys.MOCK_SCRIPT_NAME]: Exclude<keyof MockDataUseCase, 'executeMock'>;
   [ConfigKeys.JWT_SECRET]: string;
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: string;
   [ConfigKeys.SERVER_PORT]: number;

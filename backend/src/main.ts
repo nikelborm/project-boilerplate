@@ -42,14 +42,8 @@ async function bootstrap(): Promise<void> {
       infer: true,
     });
 
-    if (!scriptName || !(scriptName in mockUseCase))
-      throw new Error(`Script with name '${scriptName}' was not found`);
+    await mockUseCase.executeMock(scriptName);
 
-    console.log(`\n\n\nFILLING STARTED: ${scriptName}\n`);
-
-    await mockUseCase[scriptName]();
-
-    console.log('\nDATABASE FILLED SUCCESSFULLY\n\n\n');
     await writeFile(markerFilePath, '');
   }
 

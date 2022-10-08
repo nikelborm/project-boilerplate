@@ -28,18 +28,18 @@ export class AccessScopeRepo {
   }
 
   async updateOneWithRelations(
-    updatedUser: UpdateEntity<AccessScope, 'id'>,
+    updatedAccessScope: UpdateEntity<AccessScope, 'id'>,
   ): Promise<AccessScope> {
     return await updateOneWithRelations<AccessScope, 'id'>(
       this.repo,
-      updatedUser,
+      updatedAccessScope,
     );
   }
 
   async createOneWithRelations(
-    newUser: NewEntity<AccessScope, 'id'>,
+    newAccessScope: NewEntity<AccessScope, 'id'>,
   ): Promise<CreatedEntity<AccessScope, 'id'>> {
-    return await createOneWithRelations(this.repo, newUser);
+    return await createOneWithRelations(this.repo, newAccessScope);
   }
 
   async deleteMany(accessScopeIds: number[]): Promise<void> {

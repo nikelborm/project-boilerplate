@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { appConfig, dbConfig } from './config';
 import { AccessLogMiddleware } from './tools';
+import { MockDataController } from './mock/mockData.controller';
 import * as MockServices from './mock';
 
 import {
@@ -25,6 +26,7 @@ import {
     AuthModule,
     UserModule,
   ],
+  controllers: [MockDataController],
   providers: [...Object.values(MockServices)],
 })
 export class AppModule {

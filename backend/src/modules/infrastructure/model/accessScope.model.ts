@@ -16,7 +16,7 @@ export class AccessScope {
   id!: number;
 
   @Column({
-    name: 'access_scope_type',
+    name: 'type',
     type: 'enum',
     enum: AccessScopeType,
     nullable: false,

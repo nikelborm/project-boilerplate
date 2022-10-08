@@ -11,8 +11,10 @@ export const appConfig: () => IAppConfigMap = () => ({
     10,
   ),
   [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as BootstrapModeType,
-  [ConfigKeys.MOCK_SCRIPT_NAME]: process.env
-    .MOCK_SCRIPT_NAME as keyof MockDataUseCase,
+  [ConfigKeys.MOCK_SCRIPT_NAME]: process.env.MOCK_SCRIPT_NAME as Exclude<
+    keyof MockDataUseCase,
+    'executeMock'
+  >,
   [ConfigKeys.JWT_SECRET]: process.env.JWT_SECRET as string,
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: process.env
     .USER_PASSWORD_HASH_SALT as string,
