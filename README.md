@@ -27,7 +27,15 @@ yarn psql
 
 [ ] connect testing libraries
 
+[ ] Add vs code extensions recomendations
+
+[ ] Move dependencies one level higher
+
+[ ] Merge typescript, prettier and eslint configs and place it in project root directory
+
 [ ] add healthcheck
+
+[ ] wrap mock into transaction
 
 [ ] add removing expired tokens from whitelisted store
 
