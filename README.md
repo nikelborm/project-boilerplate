@@ -42,3 +42,5 @@ yarn psql
 [ ] add removing expired tokens from whitelisted store
 
 [ ] add redis as session token store
+
+[ ] update customFetch in frontend to use latest version made in tda project
