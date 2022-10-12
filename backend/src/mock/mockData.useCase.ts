@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { mockUseCaseMethodsAllowedToBeExecuted } from 'src/config';
-import { AccessScopeUseCase, repo, UserUseCase } from 'src/modules';
+import { repo, UserUseCase } from 'src/modules';
 import { AccessScopeType } from 'src/types';
 
 @Injectable()
 export class MockDataUseCase {
   constructor(
     private readonly userUseCase: UserUseCase,
-    private readonly accessScopeUseCase: AccessScopeUseCase,
+    private readonly userToAccessScopeRepo: repo.UserToAccessScopeRepo,
     private readonly accessScopeRepo: repo.AccessScopeRepo,
   ) {}
 
@@ -36,7 +36,7 @@ export class MockDataUseCase {
       type: AccessScopeType.SYSTEM_ADMIN,
     });
 
-    const defaultUser = await this.userUseCase.createUser({
+    const { user } = await this.userUseCase.createUser({
       email: 'asd@asd.asd',
       lastName: 'Такой-тов',
       firstName: 'Такой-то',
@@ -45,13 +45,9 @@ export class MockDataUseCase {
       password: 'asdasdasd',
     });
 
-    await this.accessScopeRepo.updateOneWithRelations({
-      id: systemAdminScope.id,
-      userToAccessScopeRelations: [
-        {
-          userId: defaultUser.id,
-        },
-      ],
+    await this.userToAccessScopeRepo.createOne({
+      accessScopeId: systemAdminScope.id,
+      userId: user.id,
     });
   }
 }

@@ -4,28 +4,30 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import {
   ConfigKeys,
   IAppConfigMap,
+  messages,
+  TypedConfigService,
+} from 'src/config';
+import { repo } from 'src/modules/infrastructure';
+import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
+import {
   AllowedForArgs,
   EndpointAccess,
-  UserLevelScopes,
   UserAuthInfo,
+  UserLevelScopes,
 } from 'src/types';
-import { messages } from 'src/config';
-import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
 import { AccessTokenUseCase } from '../services';
-import { repo } from 'src/modules/infrastructure';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
-  private IS_DEVELOPMENT: boolean;
+  private readonly IS_DEVELOPMENT: boolean;
 
   constructor(
-    private readonly configService: ConfigService<IAppConfigMap, true>,
+    private readonly configService: TypedConfigService<IAppConfigMap>,
     private readonly accessTokenUseCase: AccessTokenUseCase,
     private readonly userRepo: repo.UserRepo,
     private readonly reflector: Reflector,

@@ -19,7 +19,7 @@ export GENERATE_SOURCEMAP='true'
 
 # Don`t forget to change to another long secure random string in production
 # It`s key for sign jwt auth tokens
-export JWT_SECRET='[a0oej4rgip5g0aijefogpihn[4ijks;wk3f3ihgposldckdieselkwn5 vlkfj[q34t"k:\"KP_FF\"#ORKOWI:EJLEDK_@#sKOJGWRLGNK<ASJDN:EWLGKJWOIJWOLFJKNDSMNGSG>SNFELK<NSFMNSDLKGJBNO:FLKWEMF}}]]]'
+export AUTH_JWT_SECRET='[a0oej4rgip5g0aijefogpihn[4ijks;wk3f3ihgposldckdieselkwn5 vlkfj[q34t"k:\"KP_FF\"#ORKOWI:EJLEDK_@#sKOJGWRLGNK<ASJDN:EWLGKJWOIJWOLFJKNDSMNGSG>SNFELK<NSFMNSDLKGJBNO:FLKWEMF}}]]]'
 
 # Don`t forget to change to another long secure random string in production
 # It`s a part of salt for generating user password hashes

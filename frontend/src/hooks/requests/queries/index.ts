@@ -1,1 +1,1 @@
-export const test = 'asd';
+export * from './useUsersQuery';

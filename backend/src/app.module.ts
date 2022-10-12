@@ -1,27 +1,20 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-
-import { appConfig, dbConfig } from './config';
-import { AccessLogMiddleware } from './tools';
-import { MockDataController } from './mock/mockData.controller';
 import * as MockServices from './mock';
+import { MockDataController } from './mock/mockData.controller';
+import { AccessLogMiddleware } from './tools';
 
+import { TypedConfigModule } from './config';
 import {
+  AccessScopeModule,
   AuthModule,
   InfrastructureModule,
   UserModule,
-  AccessScopeModule,
 } from './modules';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      cache: true,
-      isGlobal: true,
-      load: [appConfig, dbConfig],
-    }),
-
     InfrastructureModule,
+    TypedConfigModule,
     AccessScopeModule,
     AuthModule,
     UserModule,

@@ -1,24 +1,30 @@
 import { Get, Post, Query, Req } from '@nestjs/common';
-import { UserUseCase } from './user.useCase';
 import {
+  AccessEnum,
+  AllowedFor,
+  ApiController,
+  AuthorizedOnly,
+  ValidatedBody,
+} from 'src/tools';
+import {
+  AuthedRequest,
+  CreateManyUsersResponseDTO,
+  CreateOneUserResponse,
   CreateUserDTO,
   CreateUsersDTO,
   DeleteEntityByIdDTO,
   EmptyResponseDTO,
   FindManyUsersResponseDTO,
-  CreateOneUserResponse,
-  CreateManyUsersResponseDTO,
   SetMyPasswordDTO,
-  AuthedRequest,
 } from 'src/types';
-import { ApiController, AuthorizedOnly, ValidatedBody } from 'src/tools';
+import { UserUseCase } from './user.useCase';
 
 @ApiController('user')
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
   @Get('all')
-  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @AuthorizedOnly()
   async findManyUsers(
     @Query('search') search?: string,
   ): Promise<FindManyUsersResponseDTO> {
@@ -29,28 +35,22 @@ export class UserController {
   }
 
   @Post('create')
-  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
     @ValidatedBody
     createUserDTO: CreateUserDTO,
   ): Promise<CreateOneUserResponse> {
-    const user = await this.userUseCase.createUser(createUserDTO);
-    return {
-      user,
-    };
+    return await this.userUseCase.createUser(createUserDTO);
   }
 
   @Post('createMany')
-  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
     @ValidatedBody
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
-    const userModels = await this.userUseCase.createManyUsers(
-      users.map((user) => ({ ...user, userGroups: [] })),
-    );
     return {
-      users: userModels,
+      responses: await this.userUseCase.createManyUsers(users),
     };
   }
 
@@ -66,7 +66,7 @@ export class UserController {
   }
 
   @Post('deleteById')
-  // @AllowedFor(AccessEnum.SYSTEM_ADMIN)
+  @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
     @ValidatedBody
     { id }: DeleteEntityByIdDTO,

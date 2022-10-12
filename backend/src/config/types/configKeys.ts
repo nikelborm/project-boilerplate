@@ -7,7 +7,7 @@ export enum ConfigKeys {
   DATABASE_TYPEORM_LOGGING_MODE = 'databaseLoggingMode',
   DATABASE_USERNAME = 'databaseUsername',
   IS_DEVELOPMENT = 'isDevelopment',
-  JWT_SECRET = 'jwtSecret',
+  AUTH_JWT_SECRET = 'authJwtSecret',
   USER_PASSWORD_HASH_SALT = 'userPasswordHashSalt',
   IS_PRODUCTION = 'isProduction',
   MOCK_SCRIPT_NAME = 'mockScriptName',

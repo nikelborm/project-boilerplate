@@ -1,5 +1,5 @@
-import { ClearedInsertedUserDTO } from '../../clearedInsertedUser.dto';
+import { BasicUserInfoWithIdDTO } from '../../basicUserInfoWithId.dto';
 
 export class CreateOneUserResponse {
-  user!: ClearedInsertedUserDTO;
+  user!: BasicUserInfoWithIdDTO;
 }

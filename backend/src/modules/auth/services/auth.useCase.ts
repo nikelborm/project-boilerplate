@@ -1,33 +1,31 @@
-import { createHash, timingSafeEqual } from 'crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { messages } from 'src/config';
-import { repo } from '../../infrastructure';
+import { createHash, timingSafeEqual } from 'crypto';
+import { ConfigKeys, IAppConfigMap, messages } from 'src/config';
 import {
-  ConfigKeys,
-  TokenPairDTO,
+  AuthTokenPairDTO,
   CreateUserDTO,
-  IAppConfigMap,
+  RegisterUserResponseDTO,
   UserAuthInfo,
   UserForLoginAttemptValidation,
 } from 'src/types';
+import { repo } from '../../infrastructure';
+import { AccessTokenUseCase } from './accessToken.useCase';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 import { RefreshTokenUseCase } from './refreshToken.useCase';
-import { AccessTokenUseCase } from './accessToken.useCase';
-
-import { v4 as uuid } from 'uuid';
+import { TypedConfigService } from 'src/config';
 import { UserUseCase } from 'src/modules/user';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthUseCase {
-  private USER_PASSWORD_HASH_SALT: string;
+  private readonly USER_PASSWORD_HASH_SALT: string;
 
   constructor(
     private readonly accessTokenUseCase: AccessTokenUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly userUseCase: UserUseCase,
     private readonly userRepo: repo.UserRepo,
-    private readonly configService: ConfigService<IAppConfigMap, true>,
+    private readonly configService: TypedConfigService<IAppConfigMap>,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
   ) {
     this.USER_PASSWORD_HASH_SALT = this.configService.get(
@@ -59,15 +57,17 @@ export class AuthUseCase {
 
   async registerNewUserAndLogin(
     createUserDTO: CreateUserDTO,
-  ): Promise<TokenPairDTO> {
-    const user = await this.userUseCase.createUser(createUserDTO);
-    return await this.login({
-      ...user,
-      accessScopes: [],
-    });
+  ): Promise<RegisterUserResponseDTO> {
+    const { user } = await this.userUseCase.createUser(createUserDTO);
+    return {
+      authTokenPair: await this.login({
+        ...user,
+        accessScopes: [],
+      }),
+    };
   }
 
-  async login(user: UserAuthInfo): Promise<TokenPairDTO> {
+  async login(user: UserAuthInfo): Promise<AuthTokenPairDTO> {
     const newSessionUUID = uuid();
 
     await this.whitelistedSessionStore.updateSessionsOf(user.id, {
@@ -88,7 +88,7 @@ export class AuthUseCase {
 
   async useRefreshTokenAndGetNewTokenPair(
     refreshToken: string,
-  ): Promise<TokenPairDTO> {
+  ): Promise<AuthTokenPairDTO> {
     const {
       sessionUUID: uuidOfSessionToRemove,
       user: { id: userId },

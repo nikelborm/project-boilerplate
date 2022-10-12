@@ -1,24 +1,5 @@
-/* eslint-disable max-classes-per-file */
-export class UserFromFindManyUsersResponseDTO {
-  id!: number;
-
-  firstName!: string;
-
-  lastName!: string;
-
-  patronymic!: string;
-
-  gender!: string;
-
-  email!: string;
-
-  phone?: string;
-
-  createdAt!: Date;
-
-  updatedAt?: Date;
-}
+import { BasicUserInfoWithIdDTO } from '../../basicUserInfoWithId.dto';
 
 export class FindManyUsersResponseDTO {
-  users!: UserFromFindManyUsersResponseDTO[];
+  users!: BasicUserInfoWithIdDTO[];
 }

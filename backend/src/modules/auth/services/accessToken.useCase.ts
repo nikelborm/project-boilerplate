@@ -1,26 +1,25 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { messages } from 'src/config';
 import { TokenExpiredError } from 'jsonwebtoken';
 import {
   ConfigKeys,
   IAppConfigMap,
-  UserAuthInfo,
-  UserAccessTokenPayload,
-} from 'src/types';
+  messages,
+  TypedConfigService,
+} from 'src/config';
+import { UserAccessTokenPayload, UserAuthInfo } from 'src/types';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 
 @Injectable()
 export class AccessTokenUseCase {
-  private JWT_SECRET: string;
+  private readonly AUTH_JWT_SECRET: string;
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
-    private readonly configService: ConfigService<IAppConfigMap, true>,
+    private readonly configService: TypedConfigService<IAppConfigMap>,
   ) {
-    this.JWT_SECRET = this.configService.get(ConfigKeys.JWT_SECRET);
+    this.AUTH_JWT_SECRET = this.configService.get(ConfigKeys.AUTH_JWT_SECRET);
   }
 
   getAccessToken(user: UserAuthInfo, sessionUUID: string): string {
@@ -55,7 +54,7 @@ export class AccessTokenUseCase {
 
     try {
       this.jwtService.verify(accessToken, {
-        secret: this.JWT_SECRET,
+        secret: this.AUTH_JWT_SECRET,
         ignoreExpiration: false,
       });
     } catch (error) {

@@ -1,5 +1,6 @@
 import type { MockDataUseCase } from 'src/mock';
-import { BootstrapModeType, ConfigKeys, IAppConfigMap } from 'src/types';
+import type { BootstrapModeType, IAppConfigMap } from './types';
+import { ConfigKeys } from './types';
 
 // TODO: config types validation
 export const appConfig: () => IAppConfigMap = () => ({
@@ -15,7 +16,7 @@ export const appConfig: () => IAppConfigMap = () => ({
     keyof MockDataUseCase,
     'executeMock'
   >,
-  [ConfigKeys.JWT_SECRET]: process.env.JWT_SECRET as string,
+  [ConfigKeys.AUTH_JWT_SECRET]: process.env.AUTH_JWT_SECRET as string,
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: process.env
     .USER_PASSWORD_HASH_SALT as string,
   [ConfigKeys.INVITE_USERS_SIGN_KEY]: process.env

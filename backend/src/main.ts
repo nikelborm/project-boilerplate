@@ -1,17 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { json, urlencoded } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { WsAdapter } from '@nestjs/platform-ws';
-import { logConfig } from './tools';
-import { ConfigKeys, IAppConfigMap } from './types';
-import 'reflect-metadata';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { MockDataUseCase } from './mock';
-import { writeFile } from 'fs/promises';
+import { json, urlencoded } from 'express';
 import { existsSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
+import 'reflect-metadata';
+import { AppModule } from './app.module';
+import { ConfigKeys, IAppConfigMap, TypedConfigService } from './config';
+import { MockDataUseCase } from './mock';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -20,15 +18,16 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('/api');
 
-  const configService: ConfigService<IAppConfigMap, true> =
-    app.get(ConfigService);
+  const configService: TypedConfigService<IAppConfigMap> =
+    app.get(TypedConfigService);
 
-  logConfig(configService);
+  configService.logToConsole();
 
-  const mode = configService.get(ConfigKeys.BOOTSTRAP_MODE, { infer: true });
+  const mode = configService.get(ConfigKeys.BOOTSTRAP_MODE);
 
   const markerFilePath = join(resolve(), 'wasMockScriptCalledOnStartup');
 
+  // const wasMockScriptCalledOnStartup = false;
   const wasMockScriptCalledOnStartup = existsSync(markerFilePath);
   console.log('wasMockScriptCalledOnStartup: ', wasMockScriptCalledOnStartup);
 
@@ -38,9 +37,7 @@ async function bootstrap(): Promise<void> {
   ) {
     const mockUseCase = app.get(MockDataUseCase);
 
-    const scriptName = configService.get(ConfigKeys.MOCK_SCRIPT_NAME, {
-      infer: true,
-    });
+    const scriptName = configService.get(ConfigKeys.MOCK_SCRIPT_NAME);
 
     await mockUseCase.executeMock(scriptName);
 
@@ -48,9 +45,9 @@ async function bootstrap(): Promise<void> {
   }
 
   if (mode === 'endpoints' || mode === 'mockAndEndpoints') {
-    const port = configService.get(ConfigKeys.SERVER_PORT, { infer: true });
+    const port = configService.get(ConfigKeys.SERVER_PORT);
 
-    if (configService.get(ConfigKeys.IS_DEVELOPMENT, { infer: true })) {
+    if (configService.get(ConfigKeys.IS_DEVELOPMENT)) {
       const config = new DocumentBuilder()
         .setTitle('Project API')
         .setVersion('1.0')

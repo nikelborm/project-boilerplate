@@ -5,4 +5,5 @@ export * from './CenteredAuthFormHeader';
 export * from './LoginFormFields';
 export * from './RegistrationFormFields';
 export * from './renderAuthFallbackRoute';
+export * from './UniversalAuthFormFields';
 export * from './VirtualTable';

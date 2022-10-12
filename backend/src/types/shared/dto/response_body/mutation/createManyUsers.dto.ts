@@ -1,5 +1,5 @@
-import { ClearedInsertedUserDTO } from '../../clearedInsertedUser.dto';
+import { CreateOneUserResponse } from './createOneUser.dto';
 
 export class CreateManyUsersResponseDTO {
-  users!: ClearedInsertedUserDTO[];
+  responses!: CreateOneUserResponse[];
 }

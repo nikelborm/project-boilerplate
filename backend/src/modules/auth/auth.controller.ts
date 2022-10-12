@@ -2,14 +2,15 @@ import { Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiController, AuthorizedOnly, ValidatedBody } from 'src/tools';
 import {
   AuthedRequest,
+  AuthTokenPairDTO,
   CreateUserDTO,
   EmptyResponseDTO,
   RefreshTokenDTO,
+  RegisterUserResponseDTO,
   UserAuthInfo,
-  TokenPairDTO,
 } from 'src/types';
-import { AuthUseCase } from './services';
 import { LocalAuthGuard } from './guards';
+import { AuthUseCase } from './services';
 
 @ApiController('auth')
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
     @Query('email') email: string,
     @Query('password') password: string,
     @Request() req: { user: UserAuthInfo },
-  ): Promise<TokenPairDTO> {
+  ): Promise<AuthTokenPairDTO> {
     return await this.authUseCase.login(req.user);
   }
 
@@ -30,7 +31,7 @@ export class AuthController {
   async register(
     @ValidatedBody
     createUserDTO: CreateUserDTO,
-  ): Promise<TokenPairDTO> {
+  ): Promise<RegisterUserResponseDTO> {
     return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
   }
 
@@ -56,7 +57,7 @@ export class AuthController {
   async refreshTokens(
     @ValidatedBody
     { refreshToken }: RefreshTokenDTO,
-  ): Promise<TokenPairDTO> {
+  ): Promise<AuthTokenPairDTO> {
     return await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
       refreshToken,
     );

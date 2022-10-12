@@ -11,7 +11,6 @@ export * from './insertInChunks';
 export * from './intersectionOfArrays';
 export * from './isQueryFailedError';
 export * from './iterateInChunks';
-export * from './logConfig';
 export * from './pipes';
 export * from './pluralForm';
 export * from './remapToIndexedObject';

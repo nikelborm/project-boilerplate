@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { plainToInstance, Type } from 'class-transformer';
 import {
   IsBoolean,

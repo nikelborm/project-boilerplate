@@ -5,7 +5,7 @@ import { ISession } from 'types';
 import {
   UserAccessTokenPayload,
   UserRefreshTokenPayload,
-  TokenPairDTO,
+  AuthTokenPairDTO,
 } from 'backendTypes';
 import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from 'constant';
 // eslint-disable-next-line import/no-cycle
@@ -23,7 +23,7 @@ class AuthStore {
     }
   }
 
-  private lastTokenPairRefreshPromise: Promise<TokenPairDTO | null> | null =
+  private lastTokenPairRefreshPromise: Promise<AuthTokenPairDTO | null> | null =
     null;
 
   private automaticTokenPairRefreshingInterval: NodeJS.Timer | undefined;
@@ -60,7 +60,7 @@ class AuthStore {
     if (!tokenPair) return null;
 
     if (!this.lastTokenPairRefreshPromise) {
-      this.lastTokenPairRefreshPromise = customFetch<TokenPairDTO>(
+      this.lastTokenPairRefreshPromise = customFetch<AuthTokenPairDTO>(
         'auth/refresh',
         {
           method: 'POST',
@@ -116,7 +116,7 @@ export function useSession() {
   return useContext(SessionContext);
 }
 
-export function updateTokenPair(tokenPair: TokenPairDTO | null) {
+export function updateTokenPair(tokenPair: AuthTokenPairDTO | null) {
   const prevTokenPair = getLastSavedTokenPair();
 
   const areTokenPairsEqual =
@@ -161,7 +161,7 @@ export function SessionProvider({ children }) {
   );
 }
 
-function setTokenPair(tokenPair: TokenPairDTO | null): void {
+function setTokenPair(tokenPair: AuthTokenPairDTO | null): void {
   tokenPairUpdatingEventTarget.dispatchEvent(
     new Event(TOKEN_PAIR_UPDATED_EVENT),
   );
@@ -174,12 +174,20 @@ function setTokenPair(tokenPair: TokenPairDTO | null): void {
   );
 }
 
+//! uncomment in development. It will let you in without registration
+// setTokenPair({
+//   accessToken:
+//     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uVVVJRCI6IjEyMzQ1Njc4OTAiLCJ1c2VyIjp7ImlkIjoxMjN9fQ.smJFD1t3LyPvSd2HAT09_se_cWlJ65CmUl1Xtc7TEM8',
+//   refreshToken:
+//     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uVVVJRCI6IjEyMzQ1Njc4OTAiLCJ1c2VyIjp7ImlkIjoxMjN9fQ.smJFD1t3LyPvSd2HAT09_se_cWlJ65CmUl1Xtc7TEM8',
+// });
+
 function getLastSavedSession() {
   return convertTokenPairToSession(getLastSavedTokenPair());
 }
 
-function getLastSavedTokenPair(): TokenPairDTO | null {
-  let tokenPair: TokenPairDTO | null;
+function getLastSavedTokenPair(): AuthTokenPairDTO | null {
+  let tokenPair: AuthTokenPairDTO | null;
   try {
     tokenPair =
       JSON.parse(
@@ -191,7 +199,9 @@ function getLastSavedTokenPair(): TokenPairDTO | null {
   return tokenPair;
 }
 
-function convertTokenPairToSession(tokenPair: TokenPairDTO | null): ISession {
+function convertTokenPairToSession(
+  tokenPair: AuthTokenPairDTO | null,
+): ISession {
   if (!tokenPair) return { isAuthed: false };
 
   const accessTokenPayload = decodeJWT<UserAccessTokenPayload>(

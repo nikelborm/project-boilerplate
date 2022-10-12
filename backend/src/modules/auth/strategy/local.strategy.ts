@@ -12,12 +12,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     private readonly authUseCase: AuthUseCase,
     private readonly userRepo: repo.UserRepo,
   ) {
-    super({ usernameField: 'email' });
+    super({ usernameField: 'email', passwordField: 'password' });
   }
 
   async validate(email: string, password: string): Promise<UserAuthInfo> {
     const userModel =
-      await this.userRepo.findOneByEmailWithAccessScopesAndPassword(email);
+      await this.userRepo.findOneByEmailWithAccessScopesAndPasswordHash(email);
 
     if (!userModel)
       throw new UnauthorizedException(messages.auth.incorrectUser);

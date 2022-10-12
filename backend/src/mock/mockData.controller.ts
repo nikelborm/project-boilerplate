@@ -1,7 +1,7 @@
 import { Get, Query } from '@nestjs/common';
-import { MockDataUseCase } from './mockData.useCase';
-import { EmptyResponseDTO } from 'src/types';
 import { ApiController, DevelopmentOnly } from 'src/tools';
+import { EmptyResponseDTO } from 'src/types';
+import { MockDataUseCase } from './mockData.useCase';
 
 @ApiController('mock')
 export class MockDataController {

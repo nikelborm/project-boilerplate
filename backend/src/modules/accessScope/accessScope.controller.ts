@@ -1,11 +1,14 @@
-import { Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { AccessScopeUseCase } from './accessScope.useCase';
+import { Post } from '@nestjs/common';
+import {
+  AccessEnum,
+  AllowedFor,
+  ApiController,
+  ValidatedBody,
+} from 'src/tools';
 import { EmptyResponseDTO, UpdateAccessScopeDTO } from 'src/types';
-import { AccessEnum, AllowedFor, ValidatedBody } from 'src/tools';
+import { AccessScopeUseCase } from './accessScope.useCase';
 
-@ApiTags('accessScope')
-@Controller()
+@ApiController('accessScope')
 export class AccessScopeController {
   constructor(private readonly accessScopeUseCase: AccessScopeUseCase) {}
 

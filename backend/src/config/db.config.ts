@@ -1,5 +1,6 @@
-import { ConfigKeys, IDatabaseConfigMap } from 'src/types';
 import { dataSourceConfig } from './databaseConnectionOptions';
+import type { IDatabaseConfigMap } from './types';
+import { ConfigKeys } from './types';
 
 // TODO: config types validation
 export const dbConfig: () => IDatabaseConfigMap = () => ({

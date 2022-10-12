@@ -1,11 +1,16 @@
 import { LockOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Input } from 'antd';
-import { LoginFormFields } from './LoginFormFields';
+import {
+  BasicAuthFormField,
+  EmailFormField,
+  PasswordFormField,
+} from './UniversalAuthFormFields';
 
 export function RegistrationFormFields() {
   return (
     <>
-      <LoginFormFields />
+      <EmailFormField />
+      <PasswordFormField />
       <Form.Item
         name="confirm"
         label="Confirm Password"
@@ -32,34 +37,30 @@ export function RegistrationFormFields() {
           spellCheck={false}
         />
       </Form.Item>
-      <Form.Item
+      <BasicAuthFormField
         name="firstName"
         label="First name"
-        rules={[{ type: 'string', min: 2, required: true }]}
-      >
-        <Input placeholder="John" prefix={<UserOutlined />} />
-      </Form.Item>
-      <Form.Item
+        placeholder="John"
+        icon={<UserOutlined />}
+      />
+      <BasicAuthFormField
         name="lastName"
         label="Last name"
-        rules={[{ type: 'string', min: 2, required: true }]}
-      >
-        <Input placeholder="Doe" prefix={<UserOutlined />} />
-      </Form.Item>
-      <Form.Item
+        placeholder="Doe"
+        icon={<UserOutlined />}
+      />
+      <BasicAuthFormField
         name="patronymic"
         label="Patronymic"
-        rules={[{ type: 'string', min: 2, required: true }]}
-      >
-        <Input placeholder="Sergeevich" prefix={<UserOutlined />} />
-      </Form.Item>
-      <Form.Item
+        placeholder="Sergeevich"
+        icon={<UserOutlined />}
+      />
+      <BasicAuthFormField
         name="gender"
         label="Gender"
-        rules={[{ type: 'string', required: true }]}
-      >
-        <Input placeholder="Female|Male|other" prefix={<SmileOutlined />} />
-      </Form.Item>
+        placeholder="Female|Male|other"
+        icon={<SmileOutlined />}
+      />
     </>
   );
 }

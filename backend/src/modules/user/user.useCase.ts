@@ -1,24 +1,28 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { model, repo } from '../infrastructure';
 import { createHash, randomBytes } from 'crypto';
-import { ConfigService } from '@nestjs/config';
-import { messages } from 'src/config';
 import {
-  ClearedInsertedUserDTO,
   ConfigKeys,
   IAppConfigMap,
-  InputUser,
+  messages,
+  TypedConfigService,
+} from 'src/config';
+import { isQueryFailedError } from 'src/tools';
+import {
+  BasicUserInfoDTO,
+  BasicUserInfoWithIdDTO,
+  CreateOneUserResponse,
+  CreateUserDTO,
   PG_UNIQUE_CONSTRAINT_VIOLATION,
 } from 'src/types';
-import { isQueryFailedError } from 'src/tools';
+import { model, repo } from '../infrastructure';
 
 @Injectable()
 export class UserUseCase {
-  private USER_PASSWORD_HASH_SALT: string;
+  private readonly USER_PASSWORD_HASH_SALT: string;
 
   constructor(
     private readonly userRepo: repo.UserRepo,
-    private readonly configService: ConfigService<IAppConfigMap, true>,
+    private readonly configService: TypedConfigService<IAppConfigMap>,
   ) {
     this.USER_PASSWORD_HASH_SALT = this.configService.get(
       ConfigKeys.USER_PASSWORD_HASH_SALT,
@@ -29,29 +33,34 @@ export class UserUseCase {
     return await this.userRepo.findMany(search);
   }
 
-  async createManyUsers(users: InputUser[]): Promise<ClearedInsertedUserDTO[]> {
-    return await this.userRepo.createManyWithRelations(
-      users.map((user) => this.createUserModel(user)),
-    );
+  async createManyUsers(
+    users: CreateUserDTO[],
+  ): Promise<CreateOneUserResponse[]> {
+    return await Promise.all(users.map(this.createUser));
   }
 
-  async createUser(user: InputUser): Promise<ClearedInsertedUserDTO> {
-    /* eslint-disable @typescript-eslint/no-unused-vars, prettier/prettier */
-    let userWithoutSensitiveData: ClearedInsertedUserDTO;
-
+  async createUser(user: CreateUserDTO): Promise<CreateOneUserResponse> {
+    let userWithoutSensitiveDataWithId: BasicUserInfoWithIdDTO;
     try {
-      userWithoutSensitiveData = (({ passwordHash, salt, ...rest }): ClearedInsertedUserDTO => rest)(
+      userWithoutSensitiveDataWithId = (({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passwordHash,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        salt,
+        ...rest
+      }: InsertedUserModel): BasicUserInfoWithIdDTO => rest)(
         await this.userRepo.createOneWithRelations(this.createUserModel(user)),
       );
     } catch (error: any) {
-      if(isQueryFailedError(error))
+      if (isQueryFailedError(error))
         if (error.code === PG_UNIQUE_CONSTRAINT_VIOLATION)
           throw new BadRequestException(messages.user.exists);
       throw error;
     }
 
-    return userWithoutSensitiveData;
-    /* eslint-enable @typescript-eslint/no-unused-vars, prettier/prettier */
+    return {
+      user: userWithoutSensitiveDataWithId,
+    };
   }
 
   async setUserPassword(id: number, password: string): Promise<void> {
@@ -61,10 +70,13 @@ export class UserUseCase {
     return await this.userRepo.updateOnePlain({ id, ...updatedUser });
   }
 
-  private createUserModel({ password, ...rest }: InputUser): UserModelToInsert {
+  private createUserModel({
+    password,
+    ...restUser
+  }: CreateUserDTO): UserModelToInsert {
     const salt = randomBytes(64).toString('hex');
     return {
-      ...rest,
+      ...restUser,
       salt,
       passwordHash: createHash('sha256')
         .update(salt)
@@ -79,7 +91,11 @@ export class UserUseCase {
   }
 }
 
-type UserModelToInsert = Omit<InputUser, 'password'> & {
+type UserModelToInsert = BasicUserInfoDTO & {
   salt: string;
   passwordHash: string;
+};
+
+type InsertedUserModel = UserModelToInsert & {
+  id: number;
 };

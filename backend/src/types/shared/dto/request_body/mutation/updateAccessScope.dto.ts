@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class UpdatedUserDTO {
+export class UserToHaveAccessScopeDTO {
   @IsPositive()
   id!: number;
 }
@@ -19,6 +19,6 @@ export class UpdateAccessScopeDTO {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => UpdatedUserDTO)
-  usersWithThatAccessScope?: UpdatedUserDTO[];
+  @Type(() => UserToHaveAccessScopeDTO)
+  usersWithThatAccessScope?: UserToHaveAccessScopeDTO[];
 }

@@ -1,26 +1,25 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
 import {
   ConfigKeys,
   IAppConfigMap,
-  UserAuthInfo,
-  UserRefreshTokenPayload,
-} from 'src/types';
-import { JwtService } from '@nestjs/jwt';
+  messages,
+  TypedConfigService,
+} from 'src/config';
+import { UserAuthInfo, UserRefreshTokenPayload } from 'src/types';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
-import { messages } from 'src/config';
 
 @Injectable()
 export class RefreshTokenUseCase {
-  private JWT_SECRET: string;
+  private readonly AUTH_JWT_SECRET: string;
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
-    private readonly configService: ConfigService<IAppConfigMap, true>,
+    private readonly configService: TypedConfigService<IAppConfigMap>,
   ) {
-    this.JWT_SECRET = this.configService.get(ConfigKeys.JWT_SECRET);
+    this.AUTH_JWT_SECRET = this.configService.get(ConfigKeys.AUTH_JWT_SECRET);
   }
 
   getRefreshToken(user: UserAuthInfo, sessionUUID: string): string {
@@ -35,7 +34,7 @@ export class RefreshTokenUseCase {
   ): Promise<UserRefreshTokenPayload> {
     try {
       this.jwtService.verify(refreshToken, {
-        secret: this.JWT_SECRET,
+        secret: this.AUTH_JWT_SECRET,
         ignoreExpiration: false,
       });
     } catch (error) {

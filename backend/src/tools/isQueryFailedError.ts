@@ -1,5 +1,5 @@
-import { QueryFailedError } from 'typeorm';
 import { DatabaseError } from 'pg-protocol';
+import { QueryFailedError } from 'typeorm';
 
 export const isQueryFailedError = (
   err: unknown,

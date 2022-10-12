@@ -1,4 +1,5 @@
-export * from './app.config';
-export * from './db.config';
 export * from './messages';
 export * from './mockUseCaseMethodsAllowedToBeExecuted';
+export * from './typedConfig.module';
+export * from './typedConfig.service';
+export * from './types';

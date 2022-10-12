@@ -1,13 +1,13 @@
+import { AccessScopeType } from 'src/types';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  Entity,
   ManyToMany,
   OneToMany,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AccessScopeType } from 'src/types';
 import { User, UserToAccessScope } from '.';
 
 @Entity({ name: 'access_scope' })
