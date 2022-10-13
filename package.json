@@ -1,8 +1,4 @@
 {
-  "scripts": {
-    "mount": "sudo mount --bind ./backend/src/types/shared ./frontend/src/backendTypes",
-    "psql": ". env/dev; docker-compose -f docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"
-  },
   "engineStrict": true,
   "engines": {
     "npm": ">=8.5.0",

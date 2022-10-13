@@ -46,6 +46,7 @@ export PGADMIN_DEFAULT_PASSWORD='password'
 
 # development ports
 export DEV_BACKEND_DEBUGGER_PORT='9229'
+export DATABASE_PORT_EXPOSED_TO_DEV_LOCALHOST='5433'
 
 
 #universal ports

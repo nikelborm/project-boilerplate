@@ -24,12 +24,36 @@
       "promptOnClose": true
     },
     {
+      "label": "psql dev",
+      "type": "shell",
+      "command": ". env/dev; docker-compose -f docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "Mount backendTypes in native fs",
+      "type": "shell",
+      "command": "sudo mount --bind ./backend/src/types/shared ./frontend/src/backendTypes",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
       "label": "Restart dev",
       "type": "shell",
       "dependsOn": [
         "Use docker builder"
       ],
       "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml restart",
+      "problemMatcher": [],
+      "promptOnClose": true
+    },
+    {
+      "label": "Stop dev",
+      "type": "shell",
+      "dependsOn": [
+        "Use docker builder"
+      ],
+      "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml stop",
       "problemMatcher": [],
       "promptOnClose": true
     },
@@ -74,7 +98,7 @@
       "promptOnClose": true
     },
     {
-      "label": "ormgen dev database",
+      "label": "Ormgen dev database",
       "type": "shell",
       "dependsOn": [
         "Run dev"
@@ -84,7 +108,7 @@
       "promptOnClose": true
     },
     {
-      "label": "migrate dev database",
+      "label": "Migrate dev database",
       "type": "shell",
       "dependsOn": [
         "Run dev"
@@ -94,7 +118,7 @@
       "promptOnClose": true
     },
     {
-      "label": "drop dev database",
+      "label": "Drop dev database",
       "type": "shell",
       "dependsOn": [
         "Run dev"
@@ -104,7 +128,7 @@
       "promptOnClose": true
     },
     {
-      "label": "recreate dev database",
+      "label": "Recreate dev database",
       "type": "shell",
       "dependsOn": [
         "Run dev"

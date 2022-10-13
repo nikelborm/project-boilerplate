@@ -115,6 +115,8 @@ services:
     # do not mount anything. dev container should drop database on every recreate
     # tmpfs:
     #   - /var/lib/postgresql/data
+    ports:
+      - ${DATABASE_PORT_EXPOSED_TO_DEV_LOCALHOST}:${DATABASE_PORT}
     networks:
       back-db-net:
       db-pgadmin-net:
