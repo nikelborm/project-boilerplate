@@ -1,5 +1,5 @@
 import { IsPositive } from 'class-validator';
-import { BasicUserInfoDTO } from './request_body';
+import { BasicUserInfoDTO } from './basicUserInfo.dto';
 
 export class BasicUserInfoWithIdDTO extends BasicUserInfoDTO {
   @IsPositive()

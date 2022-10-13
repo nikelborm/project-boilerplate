@@ -1,5 +1,4 @@
 export * from './accessScopeType';
-export * from './authTokenPair.dto';
 export * from './currency';
 export * from './dto';
 export * from './language';
