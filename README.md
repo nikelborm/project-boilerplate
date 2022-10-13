@@ -44,3 +44,5 @@ yarn psql
 [ ] add redis as session token store
 
 [ ] update customFetch in frontend to use latest version made in tda project
+
+[ ] make universal data repo and way of typing so it will require to initialize this.repo only once in constructor
