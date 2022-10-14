@@ -1,16 +1,16 @@
 {
   "folders": [
     {
+      "name": "project-root",
+      "path": "."
+    },
+    {
       "name": "backend",
-      "path": "./backend"
+      "path": "backend"
     },
     {
       "name": "frontend",
-      "path": "./frontend"
-    },
-    {
-      "name": "project-root",
-      "path": "./"
+      "path": "frontend"
     }
   ],
   "tasks": {
@@ -52,7 +52,7 @@
           "close": true,
           "showReuseMessage": false,
           "clear": true
-        },
+        }
       },
       {
         "label": "Mount backendTypes in native fs",
@@ -68,7 +68,7 @@
           "close": true,
           "showReuseMessage": false,
           "clear": true
-        },
+        }
       },
       {
         "label": "Restart dev",
@@ -184,7 +184,7 @@
           "close": true,
           "showReuseMessage": false,
           "clear": true
-        },
+        }
       },
       {
         "label": "Upgrade frontend dependencies",
@@ -200,7 +200,7 @@
           "close": true,
           "showReuseMessage": false,
           "clear": true
-        },
+        }
       },
       {
         "label": "Build docker node container",
@@ -251,16 +251,119 @@
     },
     "sqltools.connections": [
       {
-        "previewLimit": 50,
-        "server": "localhost",
-        "port": 5432,
         "driver": "PostgreSQL",
-        "name": "local project pg",
-        "database": "database string",
-        "username": "username string",
-        "password": "password string"
+        "name": "Project's PostgreSQL docker container",
+        "server": "localhost",
+        "port": 5433,
+        "username": "pgdockeruser",
+        "password": "pgdockerpass",
+        "database": "pgdockerdatabase",
+        "previewLimit": 50
       }
-    ]
+    ],
+    "editor.suggestSelection": "recentlyUsed",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "git.autofetch": true,
+    "json.maxItemsComputed": 30000,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": true,
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "indentRainbow.ignoreLinePatterns": [
+        "/^[ \\t]* [ ]*/g",
+        "/[ \\t]+[/]{2}/g"
+    ],
+    "editor.fontLigatures": true,
+    "workbench.startupEditor": "none",
+    "gitlens.advanced.messages": {
+        "suppressCreatePullRequestPrompt": true
+    },
+    "editor.tabSize": 2,
+    "zenMode.restore": false,
+    "gitlens.gitCommands.skipConfirmations": [
+        "fetch:command",
+        "switch:command",
+        "stash-push:command"
+    ],
+    "javascript.preferences.quoteStyle": "single",
+    "git.suggestSmartCommit": false,
+    "git.confirmSync": false,
+    "typescript.preferences.quoteStyle": "single",
+    "editor.foldingImportsByDefault": true,
+    "diffEditor.maxComputationTime": 0,
+    "workbench.colorCustomizations": {},
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "workbench.editor.enablePreview": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "terminal.integrated.scrollback": 100000,
+    "[sql]": {
+        "editor.defaultFormatter": "mtxr.sqltools"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "debug.showBreakpointsInOverviewRuler": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "sqltools.useNodeRuntime": true,
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "redhat.telemetry.enabled": false,
+    "[nginx]": {
+        "editor.defaultFormatter": "raynigon.nginx-formatter"
+    },
+    "scm.countBadge": "focused",
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "yaml.schemas": {
+        "file:///home/nikel/.vscode/extensions/atlassian.atlascode-2.10.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+    },
+    "atlascode.bitbucket.enabled": true,
+    "atlascode.showWelcomeOnInstall": false,
+    "atlascode.helpExplorerEnabled": false,
+    "git.postCommitCommand": "sync",
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "typescript.inlayHints.enumMemberValues.enabled": true,
+    "typescript.inlayHints.parameterNames.enabled": "all",
+    "typescript.inlayHints.parameterTypes.enabled": true,
+    "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+    "typescript.inlayHints.variableTypes.enabled": true,
+    "javascript.inlayHints.enumMemberValues.enabled": true,
+    "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "javascript.inlayHints.parameterNames.enabled": "all",
+    "javascript.inlayHints.parameterTypes.enabled": true,
+    "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+    "javascript.inlayHints.variableTypes.enabled": true,
+    "breadcrumbs.enabled": false,
+    "debug.toolBarLocation": "docked",
+    "editor.cursorBlinking": "smooth",
+    "files.trimTrailingWhitespace": true,
+    "[plaintext]": {
+        "editor.unicodeHighlight.ambiguousCharacters": true,
+        "editor.unicodeHighlight.invisibleCharacters": true
+    },
+    "[markdown]": {
+        "editor.unicodeHighlight.ambiguousCharacters": true,
+        "editor.unicodeHighlight.invisibleCharacters": true
+    },
+    "editor.unicodeHighlight.nonBasicASCII": true,
+    "editor.unicodeHighlight.includeComments": true,
+    "githubPullRequests.pullBranch": "never",
+    "editor.inlayHints.enabled": "off",
+    "editor.stickyScroll.enabled": true,
+    "rapidapi.terminalLink.enabled": false
   },
   "launch": {
     "version": "0.2.0",
