@@ -28,14 +28,32 @@
       "type": "shell",
       "command": ". env/dev; docker-compose -f docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
       "problemMatcher": [],
-      "promptOnClose": true
+      "promptOnClose": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
     },
     {
       "label": "Mount backendTypes in native fs",
       "type": "shell",
       "command": "sudo mount --bind ./backend/src/types/shared ./frontend/src/backendTypes",
       "problemMatcher": [],
-      "promptOnClose": true
+      "promptOnClose": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
     },
     {
       "label": "Restart dev",
@@ -142,14 +160,32 @@
       "type": "shell",
       "command": "cd backend/; yarn upgrade-interactive --emoji true",
       "promptOnClose": false,
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
     },
     {
       "label": "Upgrade frontend dependencies",
       "type": "shell",
       "command": "cd frontend/; yarn upgrade-interactive --emoji true",
       "promptOnClose": false,
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "close": true,
+        "showReuseMessage": false,
+        "clear": true
+      },
     },
     {
       "label": "Build docker node container",
@@ -178,7 +214,7 @@
     {
       "label": "clear docker",
       "type": "shell",
-      "command": "docker stop $(docker ps -a -q);docker rm $(docker ps -a -q);docker volume prune;docker rmi $(docker images -a -q);",
+      "command": "docker stop $(docker ps -a -q); docker rm --force $(docker ps -a -q); docker volume prune --force; docker rmi --force $(docker images -a -q); docker system prune -a -f --volumes; docker builder prune -a -f",
       "promptOnClose": false,
       "problemMatcher": []
     }

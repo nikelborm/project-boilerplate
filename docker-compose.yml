@@ -67,7 +67,7 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
     volumes:
-      - type: bind
+      - type: bind # for running migrate script inside existing backend container
         source: ./backend/src/modules/infrastructure/
         target: /app/src/modules/infrastructure/
     networks:

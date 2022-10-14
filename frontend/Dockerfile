@@ -1,3 +1,6 @@
+# please remember that context of this Dockerfile is project root where compose.yaml is placed
+# so you need to add ./frontend/ prefix to file names
+
 FROM nikelborm/node as dev_front
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
@@ -30,12 +33,20 @@ COPY ./frontend/scripts scripts/
 
 COPY ./frontend/src src/
 
-# backendTypes inside docker container could have files, when we native mounted it, and it copied by previous command
-# and also it could be empty when we didn't mount it natively and there will be only empty directory as mount point
-# so I firstly delete either an empty folder or folder with files
+# and copied them to container's fs by previous command
+
+# if we WILL NOT mount backendTypes/ natively
+# then initial fs will have ./frontend/src/backendTypes/ dir with mounted files from real ./backend/src/types/shared/
+# then /app/frontend/src/backendTypes/ dir in container's fs after copying ./frontend/src/ dir from local fs WILL HAVE FILES
+
+# if we WILL mount backendTypes/ natively
+# then initial fs will have empty ./frontend/src/backendTypes/ dir
+# then /app/frontend/src/backendTypes/ dir in container's fs after copying ./frontend/src/ dir from local fs WILL BE EMPTY DIR
+
+# in both cases I firstly delete either an empty folder or folder with files
 RUN rm src/backendTypes
 
-# and then we copy without any conflicts
+# and then I copy backendTypes without any conflicts
 COPY ./backend/src/types/shared/ src/backendTypes
 
 ARG REACT_APP_NAME
