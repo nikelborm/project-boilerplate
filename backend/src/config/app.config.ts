@@ -1,8 +1,7 @@
 import type { MockDataUseCase } from 'src/mock';
-import type { BootstrapModeType, IAppConfigMap } from './types';
+import type { BootstrapMode, IAppConfigMap } from './types';
 import { ConfigKeys } from './types';
 
-// TODO: config types validation
 export const appConfig: () => IAppConfigMap = () => ({
   [ConfigKeys.IS_DEVELOPMENT]: process.env.NODE_ENV === 'development',
   [ConfigKeys.IS_PRODUCTION]: process.env.NODE_ENV === 'production',
@@ -11,7 +10,7 @@ export const appConfig: () => IAppConfigMap = () => ({
     process.env.WEB_SOCKET_SERVER_PORT || '2999',
     10,
   ),
-  [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as BootstrapModeType,
+  [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as BootstrapMode,
   [ConfigKeys.MOCK_SCRIPT_NAME]: process.env.MOCK_SCRIPT_NAME as Exclude<
     keyof MockDataUseCase,
     'executeMock'

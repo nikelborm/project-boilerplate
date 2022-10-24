@@ -1,1 +1,5 @@
-export type BootstrapModeType = 'mock' | 'endpoints' | 'mockAndEndpoints';
+export enum BootstrapMode {
+  MOCK = 'mock',
+  ENDPOINTS = 'endpoints',
+  MOCK_AND_ENDPOINTS = 'mockAndEndpoints',
+}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { mockUseCaseMethodsAllowedToBeExecuted } from 'src/config';
+import { assertMockScriptNameIsCorrect } from 'src/config';
 import { repo, UserUseCase } from 'src/modules';
 import { AccessScopeType } from 'src/types';
 
@@ -12,15 +12,7 @@ export class MockDataUseCase {
   ) {}
 
   async executeMock(scriptName?: string): Promise<void> {
-    if (!scriptName)
-      throw new Error(
-        `Method name (mock/execute?mockScriptName=) of MockDataUseCase name was not specified`,
-      );
-
-    if (!mockUseCaseMethodsAllowedToBeExecuted.has(scriptName))
-      throw new Error(
-        `'${scriptName}' was not found in allowed method names of MockDataUseCase to be executed`,
-      );
+    assertMockScriptNameIsCorrect(scriptName);
 
     console.log(`\n\n\nFILLING STARTED: ${scriptName}\n`);
 

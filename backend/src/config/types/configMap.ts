@@ -1,10 +1,10 @@
 import type { MockDataUseCase } from 'src/mock';
 import type { LoggerOptions } from 'typeorm';
-import type { BootstrapModeType } from './bootstrapMode';
+import type { BootstrapMode } from './bootstrapMode';
 import type { ConfigKeys } from './configKeys';
 
 export type IAppConfigMap = {
-  [ConfigKeys.BOOTSTRAP_MODE]: BootstrapModeType;
+  [ConfigKeys.BOOTSTRAP_MODE]: BootstrapMode;
   [ConfigKeys.IS_DEVELOPMENT]: boolean;
   [ConfigKeys.IS_PRODUCTION]: boolean;
   [ConfigKeys.MOCK_SCRIPT_NAME]: Exclude<keyof MockDataUseCase, 'executeMock'>;

@@ -8,7 +8,12 @@ import { writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
-import { ConfigKeys, IAppConfigMap, TypedConfigService } from './config';
+import {
+  BootstrapMode,
+  ConfigKeys,
+  IAppConfigMap,
+  TypedConfigService,
+} from './config';
 import { MockDataUseCase } from './mock';
 
 async function bootstrap(): Promise<void> {
@@ -32,7 +37,7 @@ async function bootstrap(): Promise<void> {
   console.log('wasMockScriptCalledOnStartup: ', wasMockScriptCalledOnStartup);
 
   if (
-    (mode === 'mock' || mode === 'mockAndEndpoints') &&
+    [BootstrapMode.MOCK, BootstrapMode.MOCK_AND_ENDPOINTS].includes(mode) &&
     !wasMockScriptCalledOnStartup
   ) {
     const mockUseCase = app.get(MockDataUseCase);
@@ -44,7 +49,9 @@ async function bootstrap(): Promise<void> {
     await writeFile(markerFilePath, '');
   }
 
-  if (mode === 'endpoints' || mode === 'mockAndEndpoints') {
+  if (
+    [BootstrapMode.ENDPOINTS, BootstrapMode.MOCK_AND_ENDPOINTS].includes(mode)
+  ) {
     const port = configService.get(ConfigKeys.SERVER_PORT);
 
     if (configService.get(ConfigKeys.IS_DEVELOPMENT)) {

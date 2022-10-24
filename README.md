@@ -23,26 +23,26 @@ yarn psql
 
 ## TODO
 
-[ ] password recovery|reset
+- [ ] password recovery|reset
 
-[ ] connect testing libraries
+- [ ] connect testing libraries
 
-[ ] Move dependencies one level higher
+- [ ] Move dependencies one level higher
 
-[ ] Merge typescript, prettier and eslint configs and place it in project root directory
+- [ ] Merge typescript, prettier and eslint configs and place it in project root directory
 
-[ ] write script for fast adding new modules and connecting it to app module
+- [ ] write script for fast adding new modules and connecting it to app module
 
-[ ] write script for getting sql from all migrations into one .sql file which then will be fed to dbml documentation generator
+- [ ] write script for getting sql from all migrations into one .sql file which then will be fed to dbml documentation generator
 
-[ ] add healthcheck
+- [ ] add healthcheck
 
-[ ] wrap mock into transaction
+- [ ] wrap mock into transaction
 
-[ ] add removing expired tokens from whitelisted store
+- [ ] add removing expired tokens from whitelisted store
 
-[ ] add redis as session token store
+- [ ] add redis as session token store
 
-[ ] update customFetch in frontend to use latest version made in tda project
+- [ ] update customFetch in frontend to use latest version made in tda project
 
-[ ] make universal data repo and way of typing so it will require to initialize this.repo only once in constructor
+- [ ] make universal data repo and way of typing so it will require to initialize this.repo only once in constructor

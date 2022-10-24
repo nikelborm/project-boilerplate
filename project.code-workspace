@@ -475,7 +475,8 @@
       "mohamed-nouri.websocket-client",
       "ms-vscode-remote.remote-wsl",
       "redhat.vscode-yaml",
-      "slevesque.vscode-zipexplorer"
+      "slevesque.vscode-zipexplorer",
+      "mattlott.copy-github-url"
     ]
   }
 }
