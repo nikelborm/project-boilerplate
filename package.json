@@ -1,0 +1,7 @@
+{
+  "engineStrict": true,
+  "engines": {
+    "npm": ">=8.5.0",
+    "node": ">=16.14.2"
+  }
+}

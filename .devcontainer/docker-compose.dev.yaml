@@ -1,0 +1,172 @@
+version: '3.9'
+services:
+  vscode-devcontainer:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    command: sleep infinity
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+      - TSC_WATCHFILE=UseFsEvents
+    volumes:
+      - type: bind
+        source: ../
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}"
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}/frontend/src/types/shared"
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}/backend/src/types/shared"
+        consistency: delegated
+    networks:
+      vscode-back-net:
+      vscode-db-net:
+      vscode-front-net:
+
+  nginx-dev:
+    image: "${COMPOSE_PROJECT_NAME}-nginx-dev"
+    restart: unless-stopped
+    depends_on:
+      - backend-dev
+      - postgres-admin-dev
+      - frontend-dev
+    build:
+      context: ../
+      dockerfile: ./frontend/Dockerfile
+      target: dev_nginx
+    environment:
+      - TZ=${TZ}
+      - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
+      - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+      - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+    ports:
+      - ${EXTERNAL_NGINX_HTTP_PORT}:80/tcp
+    networks:
+      nginx-front-net:
+      nginx-back-net:
+      nginx-pgadmin-net:
+
+  frontend-dev:
+    image: "${COMPOSE_PROJECT_NAME}-frontend-dev"
+    restart: unless-stopped
+    build:
+      context: ../
+      dockerfile: ./frontend/Dockerfile
+      target: dev_front
+      args:
+        - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+    environment:
+      - TZ=${TZ}
+      - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
+      - DANGEROUSLY_DISABLE_HOST_CHECK=${DANGEROUSLY_DISABLE_HOST_CHECK}
+      - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
+      - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - TSC_WATCHFILE=UseFsEvents
+    volumes:
+      - type: bind
+        source: ../frontend/src
+        target: /app/src
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: /app/src/types/shared
+        consistency: delegated
+    networks:
+      nginx-back-net:
+      nginx-pgadmin-net:
+
+  backend-dev:
+    image: "${COMPOSE_PROJECT_NAME}-backend-dev"
+    restart: unless-stopped
+    depends_on:
+      - postgres-dev
+    build:
+      context: ../
+      dockerfile: ./backend/Dockerfile
+      target: development
+      args:
+        - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+        - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+        - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
+      - TZ=${TZ}
+      - NODE_ENV=development
+      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
+      - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
+      - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
+      - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
+      - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
+
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
+
+      - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+      - SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
+      - WEB_SOCKET_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+    ports:
+      - ${DEV_BACKEND_DEBUGGER_PORT}:${DEV_BACKEND_DEBUGGER_PORT}
+    volumes:
+      - type: bind
+        source: ../backend/src
+        target: /app/src
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: /app/src/types/shared
+        consistency: delegated
+    networks:
+      nginx-back-net:
+      back-db-net:
+
+  postgres-dev:
+    image: postgres
+    restart: unless-stopped
+    command: "-c default_text_search_config=pg_catalog.russian"
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_DB=${DATABASE_NAME}
+    # do not mount anything. dev container should drop database on every recreate
+    # tmpfs:
+    #   - /var/lib/postgresql/data
+    ports:
+      - ${DATABASE_PORT_EXPOSED_TO_DEV_LOCALHOST}:${DATABASE_PORT}
+    networks:
+      back-db-net:
+      db-pgadmin-net:
+
+  postgres-admin-dev:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    depends_on:
+      - postgres-dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      nginx-pgadmin-net:
+      db-pgadmin-net:
+
+networks:
+  nginx-front-net: {}
+  nginx-back-net: {}
+  nginx-pgadmin-net: {}
+
+  back-db-net: {}
+  db-pgadmin-net: {}
+
+  vscode-back-net: {}
+  vscode-db-net: {}
+  vscode-front-net: {}

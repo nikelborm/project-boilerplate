@@ -1,0 +1,6 @@
+{
+  "dockerComposeFile": "docker-compose.built.yml",
+  "service": "vscode-devcontainer",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"initializeCommand": "docker compose --env-file env/dev.env -f .devcontainer/docker-compose.dev.yaml convert > .devcontainer/docker-compose.built.yml"
+}

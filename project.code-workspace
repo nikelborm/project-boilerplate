@@ -1,0 +1,483 @@
+{
+  "folders": [
+    {
+      "name": "project-root",
+      "path": "."
+    },
+    {
+      "name": "backend",
+      "path": "backend"
+    },
+    {
+      "name": "frontend",
+      "path": "frontend"
+    }
+  ],
+  "tasks": {
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Up dev",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml up",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Up dev with rebuiling",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "psql dev",
+        "type": "shell",
+        "command": ". env/dev; docker-compose -f docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": true,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Mount types/shared in native fs",
+        "type": "shell",
+        "command": "sudo mount --bind ./shared ./frontend/src/types/shared; sudo mount --bind ./shared ./backend/src/types/shared",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": true,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Restart dev",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml restart",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Stop dev",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml stop",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Down dev",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml down",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Up prod",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/prod; docker-compose -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d; echo; echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):80",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Down prod",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/prod; docker-compose -f ./docker-compose.yaml down",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Build multiplatform production",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": ". env/prod; docker buildx bake -f docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Ormgen dev database",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Migrate dev database",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Drop dev database",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Recreate dev database",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Upgrade backend dependencies",
+        "type": "shell",
+        "command": "cd backend/; yarn upgrade-interactive --emoji true",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": true,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Upgrade frontend dependencies",
+        "type": "shell",
+        "command": "cd frontend/; yarn upgrade-interactive --emoji true",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": true,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Build docker node container",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "cat ./node.Dockerfile; docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < node.Dockerfile",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Create new docker builder",
+        "type": "shell",
+        "command": "docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx create --name mybuilder --platform=linux/arm64,linux/amd64",
+        "promptOnClose": false,
+        "problemMatcher": []
+      },
+      {
+        "label": "Use docker builder",
+        "type": "shell",
+        "command": "docker buildx use mybuilder",
+        "promptOnClose": false,
+        "problemMatcher": []
+      },
+      {
+        "label": "clear docker",
+        "type": "shell",
+        "command": "docker stop $(docker ps -a -q); docker rm --force $(docker ps -a -q); docker volume prune --force; docker rmi --force $(docker images -a -q); docker system prune -a -f --volumes; docker builder prune -a -f",
+        "promptOnClose": false,
+        "problemMatcher": []
+      }
+    ]
+  },
+  "settings": {
+    "eslint.workingDirectories": ["./frontend", "./backend"],
+    "eslint.format.enable": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "search.exclude": {
+      ".git": true,
+      ".eslintcache": true,
+      "node_modules": true,
+      "npm-debug.log.*": true,
+      "package-lock.json": true,
+      "yarn.lock": true
+    },
+    "sqltools.connections": [
+      {
+        "driver": "PostgreSQL",
+        "name": "Project's PostgreSQL docker container",
+        "server": "localhost",
+        "port": 5433,
+        "username": "pgdockeruser",
+        "password": "pgdockerpass",
+        "database": "pgdockerdatabase",
+        "previewLimit": 50
+      }
+    ],
+    "editor.suggestSelection": "recentlyUsed",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "git.autofetch": true,
+    "json.maxItemsComputed": 30000,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": true,
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "indentRainbow.ignoreLinePatterns": [
+        "/^[ \\t]* [ ]*/g",
+        "/[ \\t]+[/]{2}/g"
+    ],
+    "editor.fontLigatures": true,
+    "workbench.startupEditor": "none",
+    "gitlens.advanced.messages": {
+        "suppressCreatePullRequestPrompt": true
+    },
+    "editor.tabSize": 2,
+    "zenMode.restore": false,
+    "gitlens.gitCommands.skipConfirmations": [
+        "fetch:command",
+        "switch:command",
+        "stash-push:command"
+    ],
+    "javascript.preferences.quoteStyle": "single",
+    "git.suggestSmartCommit": false,
+    "git.confirmSync": false,
+    "typescript.preferences.quoteStyle": "single",
+    "editor.foldingImportsByDefault": true,
+    "diffEditor.maxComputationTime": 0,
+    "workbench.colorCustomizations": {},
+    "editor.linkedEditing": true,
+    "editor.minimap.enabled": false,
+    "workbench.editor.enablePreview": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "terminal.integrated.scrollback": 100000,
+    "[sql]": {
+        "editor.defaultFormatter": "mtxr.sqltools"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "debug.showBreakpointsInOverviewRuler": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "sqltools.useNodeRuntime": true,
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "redhat.telemetry.enabled": false,
+    "[nginx]": {
+        "editor.defaultFormatter": "raynigon.nginx-formatter"
+    },
+    "scm.countBadge": "focused",
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "yaml.schemas": {
+        "file:///home/nikel/.vscode/extensions/atlassian.atlascode-2.10.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+    },
+    "atlascode.bitbucket.enabled": true,
+    "atlascode.showWelcomeOnInstall": false,
+    "atlascode.helpExplorerEnabled": false,
+    "git.postCommitCommand": "sync",
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "typescript.inlayHints.enumMemberValues.enabled": true,
+    "typescript.inlayHints.parameterNames.enabled": "all",
+    "typescript.inlayHints.parameterTypes.enabled": true,
+    "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+    "typescript.inlayHints.variableTypes.enabled": true,
+    "javascript.inlayHints.enumMemberValues.enabled": true,
+    "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "javascript.inlayHints.parameterNames.enabled": "all",
+    "javascript.inlayHints.parameterTypes.enabled": true,
+    "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+    "javascript.inlayHints.variableTypes.enabled": true,
+    "breadcrumbs.enabled": false,
+    "debug.toolBarLocation": "docked",
+    "editor.cursorBlinking": "smooth",
+    "files.trimTrailingWhitespace": true,
+    "[plaintext]": {
+        "editor.unicodeHighlight.ambiguousCharacters": true,
+        "editor.unicodeHighlight.invisibleCharacters": true
+    },
+    "[markdown]": {
+        "editor.unicodeHighlight.ambiguousCharacters": true,
+        "editor.unicodeHighlight.invisibleCharacters": true
+    },
+    "editor.unicodeHighlight.nonBasicASCII": true,
+    "editor.unicodeHighlight.includeComments": true,
+    "githubPullRequests.pullBranch": "never",
+    "editor.inlayHints.enabled": "off",
+    "editor.stickyScroll.enabled": true,
+    "rapidapi.terminalLink.enabled": false
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "firefox",
+        "request": "launch",
+        "reAttach": true,
+        "name": "Debug React front with firefox",
+        "url": "http://localhost:5001/",
+        "keepProfileChanges": true,
+        "profile": "default",
+        "webRoot": "${workspaceFolder}/frontend/src",
+        "pathMappings": [
+          {
+            "url": "file:///app/src",
+            "path": "${workspaceFolder}/frontend/src"
+          }
+        ]
+      },
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Debug Nest back with VS Code",
+        "sourceMaps": true,
+        "remoteRoot": "/app",
+        "localRoot": "${workspaceFolder}/backend",
+        "port": 9229,
+        "restart": {
+          "maxAttempts": 10,
+          "delay": 1000
+        },
+        "showAsyncStacks": true,
+        "skipFiles": [
+          "<node_internals>/**"
+        ]
+      }
+    ],
+    "compounds": []
+  },
+  "extensions": {
+    "recommendations": [
+      "formulahendry.auto-close-tag",
+      "formulahendry.auto-rename-tag",
+      "aaron-bond.better-comments",
+      "raidou.calc",
+      "akamud.vscode-caniuse",
+      "wmaurer.change-case",
+      "alexshen.classdiagram-ts",
+      "bierner.color-info",
+      "anseki.vscode-color",
+      "duynvu.dbml-language",
+      "firefox-devtools.vscode-firefox-debug",
+      "ms-vscode-remote.remote-containers",
+      "ms-azuretools.vscode-docker",
+      "mikestead.dotenv",
+      "janisdd.vscode-edit-csv",
+      "dsznajder.es7-react-js-snippets",
+      "dbaeumer.vscode-eslint",
+      "grapecity.gc-excelviewer",
+      "sleistner.vscode-fileutils",
+      "github.vscode-pull-request-github",
+      "michelemelluso.gitignore",
+      "eamodio.gitlens",
+      "graphql.vscode-graphql",
+      "graphql.vscode-graphql-syntax",
+      "nhoizey.gremlins",
+      "vincaslt.highlight-matching-tag",
+      "sidthesloth.html5-boilerplate",
+      "kisstkondoros.vscode-gutter-preview",
+      "oderwat.indent-rainbow",
+      "visualstudioexptteam.vscodeintellicode",
+      "visualstudioexptteam.intellicode-api-usage-examples",
+      "zignd.html-css-class-completion",
+      "atlassian.atlascode",
+      "ahadcove.js-quick-console",
+      "kleach.kb-layout-switcher",
+      "yzhang.markdown-all-in-one",
+      "davidanson.vscode-markdownlint",
+      "philsinatra.nested-comments",
+      "william-voyek.vscode-nginx",
+      "ahmadalli.vscode-nginx-conf",
+      "raynigon.nginx-formatter",
+      "christian-kohler.npm-intellisense",
+      "ibm.output-colorizer",
+      "christian-kohler.path-intellisense",
+      "esbenp.prettier-vscode",
+      "mechatroner.rainbow-csv",
+      "rapidapi.vscode-rapidapi-client",
+      "xabikos.reactsnippets",
+      "chrmarti.regex",
+      "natqe.reload",
+      "ms-vscode-remote.remote-ssh",
+      "ms-vscode-remote.remote-ssh-edit",
+      "foxundermoon.shell-format",
+      "mtxr.sqltools",
+      "mtxr.sqltools-driver-mysql",
+      "mtxr.sqltools-driver-pg",
+      "mtxr.sqltools-driver-sqlite",
+      "cssho.vscode-svgviewer",
+      "rangav.vscode-thunder-client",
+      "gruntfuggly.todo-tree",
+      "britesnow.vscode-toggle-quotes",
+      "shardulm94.trailing-spaces",
+      "kingwl.ts-string-literal-enum-plugin",
+      "tomoki1207.pdf",
+      "jaspernorth.vscode-pigments",
+      "styled-components.vscode-styled-components",
+      "mohamed-nouri.websocket-client",
+      "ms-vscode-remote.remote-wsl",
+      "redhat.vscode-yaml",
+      "slevesque.vscode-zipexplorer",
+      "mattlott.copy-github-url",
+      "wallabyjs.console-ninja"
+    ]
+  }
+}
