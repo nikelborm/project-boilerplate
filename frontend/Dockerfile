@@ -1,15 +1,17 @@
 # please remember that context of this Dockerfile is project root
 # so you need to add ./frontend/ prefix to file names
 
-FROM nikelborm/node as dev_front
+FROM nikelborm/node as prepare_front
 
-COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
+COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./frontend/public ./
+
+
+
+
+FROM prepare_front as dev_front
+
 # see node.Dockerfile for this RUN details
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000
-
-COPY ./frontend/config config/
-COPY ./frontend/public public/
-COPY ./frontend/scripts scripts/
 
 # src and types/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
@@ -23,19 +25,13 @@ CMD ["node", "scripts/start.js"]
 
 
 
-FROM nikelborm/node as build
+FROM prepare_front as build
 
-COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
 # see node.Dockerfile for this RUN details
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --production
 
-COPY ./frontend/config config/
-COPY ./frontend/public public/
-COPY ./frontend/scripts scripts/
-
 COPY ./frontend/src /app/src/
-
-# we should copy it even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
+# we should copy ./shared/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
 # so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared
 COPY ./shared/ /app/src/types/shared
 

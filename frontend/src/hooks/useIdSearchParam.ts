@@ -9,7 +9,7 @@ export function useIdSearchParam(fallback: RoutesEnum) {
   const id = parseInt(searchParams.get('id') as string, 10);
   useEffect(() => {
     if (Number.isNaN(id)) navigate(`/account/${fallback}`);
-  }, [id]);
+  }, [id, fallback]);
 
   return id;
 }
