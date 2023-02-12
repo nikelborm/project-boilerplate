@@ -1,5 +1,7 @@
 **/bin
+**/types/shared
 **/dist
+**/build
 **/node_modules
 .git
 npm-debug.log

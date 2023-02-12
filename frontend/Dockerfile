@@ -4,7 +4,7 @@
 FROM nikelborm/node as dev_front
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
-RUN yarn --network-timeout 600000
+RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000
 
 COPY ./frontend/config config/
 COPY ./frontend/public public/
@@ -25,26 +25,16 @@ CMD ["node", "scripts/start.js"]
 FROM nikelborm/node as build
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
-RUN yarn --production --network-timeout 600000 && yarn cache clean
+RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000 --production
 
 COPY ./frontend/config config/
 COPY ./frontend/public public/
 COPY ./frontend/scripts scripts/
 
-COPY ./frontend/src src/
+COPY ./frontend/src /app/src/
 
-# if we WILL NOT mount types/shared/ natively before building docker container
-# then initial fs will have WORKSPACE_DIR/frontend/src/types/shared/ dir with mounted files from real WORKSPACE_DIR/shared/
-# then /app/src/types/shared/ dir in container's fs (after copying WORKSPACE_DIR/frontend/src/ dir from local fs) WILL HAVE FILES
-
-# if we WILL mount types/shared/ natively before building docker container
-# then initial fs will have empty WORKSPACE_DIR/frontend/src/types/shared/ dir
-# then /app/src/types/shared/ dir in container's fs (after copying WORKSPACE_DIR/frontend/src/ dir from local fs) WILL BE EMPTY DIR
-
-# in both cases I firstly delete either an empty folder or folder with files
-RUN rm -rf /app/src/types/shared
-
-# and then I copy types/shared without any conflicts
+# we should copy it even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
+# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared
 COPY ./shared/ /app/src/types/shared
 
 ARG REACT_APP_NAME

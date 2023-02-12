@@ -11,22 +11,12 @@ COPY ./backend/scripts scripts/
 
 FROM prepare as production
 
-RUN yarn --production --network-timeout 600000 && yarn cache clean
+RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000 --production
 
-COPY ./backend/src src/
+COPY ./backend/src /app/src/
 
-# if we WILL NOT mount types/shared/ natively before building docker container
-# then initial fs will have WORKSPACE_DIR/backend/src/types/shared/ dir with mounted files from real WORKSPACE_DIR/shared/
-# then /app/src/types/shared/ dir in container's fs (after copying WORKSPACE_DIR/backend/src/ dir from local fs) WILL HAVE FILES
-
-# if we WILL mount types/shared/ natively before building docker container
-# then initial fs will have empty WORKSPACE_DIR/backend/src/types/shared/ dir
-# then /app/src/types/shared/ dir in container's fs (after copying WORKSPACE_DIR/backend/src/ dir from local fs) WILL BE EMPTY DIR
-
-# in both cases I firstly delete either an empty folder or folder with files
-RUN rm -rf /app/src/types/shared
-
-# and then I copy types/shared without any conflicts
+# we should copy it even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
+# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared
 COPY ./shared/ /app/src/types/shared
 
 RUN nest build
@@ -43,7 +33,8 @@ CMD [ "node", "dist/main" ]
 
 
 FROM prepare as development
-RUN yarn --network-timeout 600000
+
+RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000
 
 # src and types/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
