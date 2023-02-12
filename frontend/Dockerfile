@@ -3,8 +3,8 @@
 
 FROM nikelborm/node as prepare_front
 
-COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./frontend/public ./
-
+COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
+COPY ./frontend/public public/
 
 
 
@@ -20,7 +20,7 @@ ARG DEV_INNER_FRONTEND_DEBUGGER_PORT
 EXPOSE ${DEV_INNER_FRONTEND_DEBUGGER_PORT}
 ENV PORT=${DEV_INNER_FRONTEND_DEBUGGER_PORT}
 
-CMD ["node", "scripts/start.js"]
+CMD ["yarn", "start"]
 
 
 
@@ -37,7 +37,7 @@ COPY ./shared/ /app/src/types/shared
 
 ARG REACT_APP_NAME
 ENV REACT_APP_NAME=${REACT_APP_NAME}
-RUN node scripts/build.js
+RUN yarn build
 
 
 

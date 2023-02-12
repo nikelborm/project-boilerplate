@@ -297,7 +297,7 @@
     "editor.linkedEditing": true,
     "editor.minimap.enabled": false,
     "workbench.editor.enablePreview": false,
-    "diffEditor.ignoreTrimWhitespace": false,
+    "diffEditor.ignoreTrimWhitespace": true,
     "terminal.integrated.scrollback": 100000,
     "[sql]": {
         "editor.defaultFormatter": "mtxr.sqltools"
