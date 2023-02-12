@@ -28,7 +28,7 @@ services:
       vscode-front-net:
 
   nginx-dev:
-    image: "${COMPOSE_PROJECT_NAME}-nginx-dev"
+    image: "nikelborm/private:${COMPOSE_PROJECT_NAME}-nginx-dev"
     restart: unless-stopped
     depends_on:
       - backend-dev
@@ -53,7 +53,7 @@ services:
       nginx-pgadmin-net:
 
   frontend-dev:
-    image: "${COMPOSE_PROJECT_NAME}-frontend-dev"
+    image: "nikelborm/private:${COMPOSE_PROJECT_NAME}-frontend-dev"
     restart: unless-stopped
     build:
       context: ../
@@ -82,7 +82,7 @@ services:
       nginx-pgadmin-net:
 
   backend-dev:
-    image: "${COMPOSE_PROJECT_NAME}-backend-dev"
+    image: "nikelborm/private:${COMPOSE_PROJECT_NAME}-backend-dev"
     restart: unless-stopped
     depends_on:
       - postgres-dev

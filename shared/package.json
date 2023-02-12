@@ -1,8 +1,8 @@
 {
-  "name": "backend_types",
+  "name": "shared_types",
   "version": "0.0.1",
   "private": true,
-  "description": "project frontend",
+  "description": "shared types",
   "license": "UNLICENSED",
   "author": {
     "name": "nikelborm",

@@ -1,4 +1,4 @@
+/* eslint-disable */
 export * from './private';
-// @ts-expect-error here will be mounted folder
-// eslint-disable-next-line import/extensions
+// @ts-ignore
 export * from './shared';

@@ -24,24 +24,24 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml up",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml up",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
-        "label": "Up dev with rebuiling",
+        "label": "Up dev with rebuilding",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "psql dev",
         "type": "shell",
-        "command": ". env/dev; docker-compose -f docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -76,7 +76,7 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml restart",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml restart",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -86,7 +86,7 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml stop",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml stop",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -96,7 +96,7 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml down",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml down",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -106,7 +106,7 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/prod; docker-compose -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d; echo; echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):80",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d; echo; echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):80",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -116,27 +116,27 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/prod; docker-compose -f ./docker-compose.yaml down",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml down",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
-        "label": "Build multiplatform production",
+        "label": "Build multi platform (arm64, amd64) production",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": ". env/prod; docker buildx bake -f docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
-        "label": "Ormgen dev database",
+        "label": "ORM migration generation for dev database (ormgen)",
         "type": "shell",
         "dependsOn": [
           "Run dev"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -146,7 +146,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -156,7 +156,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -166,7 +166,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": ". env/dev; docker-compose -f ./docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -208,21 +208,21 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "cat ./node.Dockerfile; docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < node.Dockerfile",
+        "command": "cat ./node.Dockerfile; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < node.Dockerfile",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Create new docker builder",
         "type": "shell",
-        "command": "docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx create --name mybuilder --platform=linux/arm64,linux/amd64",
+        "command": "docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx create --name my_builder --platform=linux/arm64,linux/amd64",
         "promptOnClose": false,
         "problemMatcher": []
       },
       {
         "label": "Use docker builder",
         "type": "shell",
-        "command": "docker buildx use mybuilder",
+        "command": "docker buildx use my_builder",
         "promptOnClose": false,
         "problemMatcher": []
       },
@@ -363,7 +363,32 @@
     "githubPullRequests.pullBranch": "never",
     "editor.inlayHints.enabled": "off",
     "editor.stickyScroll.enabled": true,
-    "rapidapi.terminalLink.enabled": false
+    "rapidapi.terminalLink.enabled": false,
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/node_modules": true,
+      "**/.nvmrc": true,
+      "**/.prettierrc": true,
+      "**/tsconfig.build.json": true,
+      "**/yarn.lock": true,
+      "**/ormconfig.json": true,
+      "**/nest-cli.json": true,
+      ".env": true,
+      "**/.dockerignore": true,
+      "**/.htpasswd": true,
+      "**/.htpasswd_example": true,
+      "**/dev.nginx.template.conf": true,
+      "**/prod.nginx.template.conf": true,
+      "frontend/scripts": true,
+      "frontend/config": true,
+      "**/.github": true
+    },
+    "explorerExclude.backup": {}
   },
   "launch": {
     "version": "0.2.0",
@@ -463,7 +488,6 @@
       "mtxr.sqltools-driver-mysql",
       "mtxr.sqltools-driver-pg",
       "mtxr.sqltools-driver-sqlite",
-      "cssho.vscode-svgviewer",
       "rangav.vscode-thunder-client",
       "gruntfuggly.todo-tree",
       "britesnow.vscode-toggle-quotes",
