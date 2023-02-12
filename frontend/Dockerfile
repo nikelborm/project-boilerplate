@@ -4,7 +4,8 @@
 FROM nikelborm/node as dev_front
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
-RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000
+# see node.Dockerfile for this RUN details
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000
 
 COPY ./frontend/config config/
 COPY ./frontend/public public/
@@ -25,7 +26,8 @@ CMD ["node", "scripts/start.js"]
 FROM nikelborm/node as build
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
-RUN --mount=type=cache,target=/usr/local/yarn-cache YARN_CACHE_FOLDER=/usr/local/yarn-cache yarn install --network-timeout 600000 --production
+# see node.Dockerfile for this RUN details
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --production
 
 COPY ./frontend/config config/
 COPY ./frontend/public public/
