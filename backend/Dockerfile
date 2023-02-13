@@ -3,7 +3,7 @@
 
 FROM nikelborm/node as prepare
 
-COPY ./backend/package.json ./backend/yarn.lock ./backend/tsconfig.json ./backend/.prettierrc ./backend/tsconfig.build.json ./backend/.eslintrc.js ./
+COPY ./backend/package.json ./backend/yarn.lock ./backend/tsconfig.json ./backend/tsconfig.build.json ./backend/.prettierrc ./backend/.eslintrc.js ./backend/nest-cli.json ./
 
 COPY ./backend/scripts scripts/
 

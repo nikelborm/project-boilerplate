@@ -41,7 +41,7 @@
       {
         "label": "psql dev",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U pgdockeruser -d pgdockerdatabase",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -171,25 +171,9 @@
         "promptOnClose": true
       },
       {
-        "label": "Upgrade backend dependencies",
+        "label": "Upgrade yarn dependencies",
         "type": "shell",
-        "command": "cd backend/; yarn upgrade-interactive --emoji true",
-        "promptOnClose": false,
-        "problemMatcher": [],
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "focus": true,
-          "panel": "new",
-          "close": true,
-          "showReuseMessage": false,
-          "clear": true
-        }
-      },
-      {
-        "label": "Upgrade frontend dependencies",
-        "type": "shell",
-        "command": "cd frontend/; yarn upgrade-interactive --emoji true",
+        "command": "yarn upgrade-interactive --emoji true --latest --cwd shared; yarn upgrade-interactive --emoji true --latest --cwd backend; yarn upgrade-interactive --emoji true --latest --cwd frontend",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {

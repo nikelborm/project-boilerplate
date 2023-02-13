@@ -4,3 +4,4 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"initializeCommand": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml convert > .devcontainer/docker-compose.built.yml"
 }
+// https://containers.dev/implementors/json_reference/
