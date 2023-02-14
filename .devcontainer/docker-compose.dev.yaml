@@ -22,6 +22,10 @@ services:
         source: ../shared
         target: "/workspaces/${COMPOSE_PROJECT_NAME}/backend/src/types/shared"
         consistency: delegated
+    # uncomment when dev containers will support profiles
+    # https://github.com/microsoft/vscode-remote-release/issues/5795
+    # profiles:
+    #   - use_dev_container
     networks:
       vscode-back-net:
       vscode-db-net:
@@ -32,7 +36,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend-dev
-      - postgres-admin-dev
       - frontend-dev
     build:
       context: ../
@@ -50,7 +53,8 @@ services:
     networks:
       nginx-front-net:
       nginx-back-net:
-      nginx-pgadmin-net:
+      nginx-pgadmin-net-dev:
+        ipv4_address: 10.5.0.2
 
   frontend-dev:
     image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-frontend-dev"
@@ -78,8 +82,7 @@ services:
         target: /app/src/types/shared
         consistency: delegated
     networks:
-      nginx-back-net:
-      nginx-pgadmin-net:
+      nginx-front-net:
 
   backend-dev:
     image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-backend-dev"
@@ -138,34 +141,43 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_DB=${DATABASE_NAME}
-    # do not mount anything. dev container should drop database on every recreate
-    # tmpfs:
-    #   - /var/lib/postgresql/data
+    # In standard dockerfile of postgres there is special instruction that assigns a volume to /var/lib/postgresql/data
+    # I want to get fresh database every time I restart it.
+    tmpfs:
+      - /var/lib/postgresql/data
     ports:
       - ${DATABASE_PORT_EXPOSED_TO_DEV_LOCALHOST}:${DATABASE_PORT}
     networks:
       back-db-net:
-      db-pgadmin-net:
+      pgadmin-db-net:
 
   postgres-admin-dev:
     image: dpage/pgadmin4:latest
     restart: unless-stopped
     depends_on:
       - postgres-dev
+    profiles:
+      - use_pg_admin_tool
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     networks:
-      nginx-pgadmin-net:
-      db-pgadmin-net:
+      nginx-pgadmin-net-dev:
+        ipv4_address: 10.5.0.3
+      pgadmin-db-net:
 
 networks:
   nginx-front-net: {}
   nginx-back-net: {}
-  nginx-pgadmin-net: {}
+  nginx-pgadmin-net-dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
 
   back-db-net: {}
-  db-pgadmin-net: {}
+  pgadmin-db-net: {}
 
   vscode-back-net: {}
   vscode-db-net: {}

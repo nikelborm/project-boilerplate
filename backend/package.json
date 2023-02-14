@@ -8,7 +8,6 @@
   "scripts": {
     "dbdoc": "rm -rf src/modules/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/modules/infrastructure/migration/all_migrations.sql -o src/modules/infrastructure/migration/all_migrations.dbml --postgres",
     "dbdoc:publish": "dbdocs build src/modules/infrastructure/migration/all_migrations.dbml --project Smarthouse",
-    "psql": "docker-compose -f ../docker-compose.dev.yaml exec postgres-dev psql --username=${DATABASE_USERNAME} --dbname=${DATABASE_NAME}",
     "pgrmhard": "sudo rm -rf ~/smarthouse_gateway_pgdocker"
   },
   "engineStrict": true,

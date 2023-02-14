@@ -5,7 +5,6 @@ services:
     restart: always
     depends_on:
       - backend-prod
-      - postgres-admin-prod
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
@@ -23,9 +22,8 @@ services:
       - ${EXTERNAL_NGINX_HTTPS_PORT}:443/tcp
     networks:
       nginx-back-net:
-      nginx-pgadmin-net:
-      # external-net:
-      #   ipv4_address: 192.168.55.10
+      nginx-pgadmin-net-prod:
+        ipv4_address: 10.5.0.2
 
     # volumes:
     #   - ./data/certbot/conf:/etc/letsencrypt
@@ -90,19 +88,22 @@ services:
         target: /var/lib/postgresql/data
     networks:
       back-db-net:
-      db-pgadmin-net:
+      pgadmin-db-net:
 
   postgres-admin-prod:
     image: dpage/pgadmin4:latest
     restart: always
     depends_on:
       - postgres-prod
+    profiles:
+      - use_pg_admin_tool
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     networks:
-      nginx-pgadmin-net:
-      db-pgadmin-net:
+      nginx-pgadmin-net-prod:
+        ipv4_address: 10.5.0.3
+      pgadmin-db-net:
 
 volumes:
   postgres-prod-data:
@@ -117,13 +118,11 @@ volumes:
 
 networks:
   nginx-back-net: {}
+  nginx-pgadmin-net-prod:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
   back-db-net: {}
-  nginx-pgadmin-net: {}
-  db-pgadmin-net: {}
-  # external-net:
-  #   driver: bridge
-  #   ipam:
-  #     driver: default
-  #     config:
-  #       - subnet: 192.168.55.0/24
-  #         gateway: 192.168.55.1
+  pgadmin-db-net: {}
