@@ -26,6 +26,10 @@ If you want to develop inside a container
 
 1. Call task in VS code: `psql dev`
 
+## Endpoint to execute mock
+
+<http://localhost/api/mock/execute?mockScriptName=fillDBScript>
+
 ## TODO
 
 - [ ] password recovery|reset
