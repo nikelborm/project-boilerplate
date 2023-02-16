@@ -55,6 +55,8 @@ export class User {
   @JoinTable({
     name: 'user_to_access_scope',
     joinColumn: { name: 'user_id' },
+    // synchronize is important flag! Without it your migrations will have two conflicting declarations for question_to_category table
+    // from https://github.com/typeorm/typeorm/blob/master/docs/decorator-reference.md#jointable
     synchronize: false,
     inverseJoinColumn: { name: 'access_scope_id' },
   })
