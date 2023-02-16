@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1665235648266 implements MigrationInterface {
-  name = 'Initial1665235648266';
+export class UserAndAccessScopes1676580094477 implements MigrationInterface {
+  name = 'UserAndAccessScopes1676580094477';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -29,7 +29,7 @@ export class Initial1665235648266 implements MigrationInterface {
       )
     `);
     await queryRunner.query(`
-      CREATE TYPE "public"."access_scope_type_enum" AS ENUM('superAdmin')
+      CREATE TYPE "public"."access_scope_type_enum" AS ENUM('superAdmin', 'admin')
     `);
     await queryRunner.query(`
       CREATE TABLE "access_scope" (
@@ -39,12 +39,6 @@ export class Initial1665235648266 implements MigrationInterface {
         "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         CONSTRAINT "PK_26acb7cf35e5f4a08a85d937b6e" PRIMARY KEY ("access_scope_id")
       )
-    `);
-    await queryRunner.query(`
-      CREATE INDEX "IDX_e507f0edbfbe11f2552fe977fc" ON "user_to_access_scope" ("user_id")
-    `);
-    await queryRunner.query(`
-      CREATE INDEX "IDX_25a021e06c12cff03ca9414964" ON "user_to_access_scope" ("access_scope_id")
     `);
     await queryRunner.query(`
       ALTER TABLE "user_to_access_scope"
@@ -62,12 +56,6 @@ export class Initial1665235648266 implements MigrationInterface {
     `);
     await queryRunner.query(`
       ALTER TABLE "user_to_access_scope" DROP CONSTRAINT "FK_e507f0edbfbe11f2552fe977fc3"
-    `);
-    await queryRunner.query(`
-      DROP INDEX "public"."IDX_25a021e06c12cff03ca9414964"
-    `);
-    await queryRunner.query(`
-      DROP INDEX "public"."IDX_e507f0edbfbe11f2552fe977fc"
     `);
     await queryRunner.query(`
       DROP TABLE "access_scope"

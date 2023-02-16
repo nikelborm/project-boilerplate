@@ -172,7 +172,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec -w /app/scripts backend-dev sh ./ormgen.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -182,7 +182,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec -w /app/scripts backend-dev sh ./migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -192,7 +192,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec -w /app/scripts backend-dev sh ./drop.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -202,7 +202,7 @@
         "dependsOn": [
           "Run dev"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec -w /app/scripts backend-dev sh ./recreate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
