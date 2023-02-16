@@ -55,6 +55,7 @@ export class User {
   @JoinTable({
     name: 'user_to_access_scope',
     joinColumn: { name: 'user_id' },
+    synchronize: false,
     inverseJoinColumn: { name: 'access_scope_id' },
   })
   accessScopes!: AccessScope[];

@@ -3,9 +3,7 @@ import { AccessScope, User } from '.';
 
 @Entity({ name: 'user_to_access_scope' })
 export class UserToAccessScope {
-  @ManyToOne(() => User, (user) => user.userToAccessScopeRelations, {
-    nullable: false,
-  })
+  @ManyToOne(() => User, (user) => user.userToAccessScopeRelations)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
@@ -19,7 +17,6 @@ export class UserToAccessScope {
   @ManyToOne(
     () => AccessScope,
     (accessScope) => accessScope.userToAccessScopeRelations,
-    { nullable: false },
   )
   @JoinColumn({ name: 'access_scope_id' })
   accessScope!: AccessScope;
