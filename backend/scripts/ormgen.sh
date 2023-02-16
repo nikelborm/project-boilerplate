@@ -1,7 +1,7 @@
 echo -e '\normgen script\n';
 
 echo -e '\ninner call of recreate.sh started\n';
-. ./recreate.sh
+. ./scripts/recreate.sh
 echo -e '\ninner call of recreate.sh finished\n';
 
 echo;
@@ -14,5 +14,5 @@ echo -e '\napply rights to migration \n';
 chown 1000:1000 src/modules/infrastructure/migration/*
 
 echo -e '\ninner call of migrate.sh started\n';
-. ./migrate.sh
+. ./scripts/migrate.sh
 echo -e '\ninner call of migrate.sh finished\n';

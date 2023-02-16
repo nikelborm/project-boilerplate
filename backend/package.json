@@ -6,9 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "dbdoc": "rm -rf src/modules/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/modules/infrastructure/migration/all_migrations.sql -o src/modules/infrastructure/migration/all_migrations.dbml --postgres",
-    "dbdoc:publish": "dbdocs build src/modules/infrastructure/migration/all_migrations.dbml --project Smarthouse",
-    "pgrmhard": "sudo rm -rf ~/smarthouse_gateway_pgdocker"
+    "dbdocs": "rm -rf src/modules/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/modules/infrastructure/migration/all_migrations.sql -o src/modules/infrastructure/migration/all_migrations.dbml --postgres",
+    "dbdocs:publish": "dbdocs build src/modules/infrastructure/migration/all_migrations.dbml --project Smarthouse"
   },
   "engineStrict": true,
   "engines": {
