@@ -11,7 +11,7 @@ COPY ./frontend/public public/
 FROM prepare_front as dev_front
 
 # see node.Dockerfile for this RUN details
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile
 
 # src and types/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
@@ -28,7 +28,7 @@ CMD ["yarn", "start"]
 FROM prepare_front as build
 
 # see node.Dockerfile for this RUN details
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --production
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
 
 COPY ./frontend/src /app/src/
 # we should copy ./shared/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore

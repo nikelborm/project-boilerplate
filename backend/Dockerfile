@@ -11,7 +11,7 @@ COPY ./backend/scripts scripts/
 
 FROM prepare as production
 # see node.Dockerfile for this RUN details
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --production
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
 
 COPY ./backend/src /app/src/
 
@@ -34,7 +34,7 @@ CMD [ "node", "dist/main" ]
 
 FROM prepare as development
 # see node.Dockerfile for this RUN details
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile
 
 # src and types/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
