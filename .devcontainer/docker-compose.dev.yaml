@@ -122,6 +122,7 @@ services:
       back-db-net-dev:
       pgadmin-db-net-dev:
       vscode-db-net-dev:
+      pgcli-db-net-dev:
 
   postgres-admin-dev:
     image: dpage/pgadmin4:latest
@@ -138,6 +139,16 @@ services:
         ipv4_address: 10.5.0.3
       pgadmin-db-net-dev:
 
+  pgcli-dev:
+    image: daxart/pgcli:latest
+    profiles:
+      - use_pgcli
+    command:
+      - postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@postgres-dev/${DATABASE_NAME}
+    networks:
+      pgcli-db-net-dev:
+
+
 networks:
   nginx-front-net-dev: {}
   nginx-back-net-dev: {}
@@ -150,6 +161,7 @@ networks:
 
   back-db-net-dev: {}
   pgadmin-db-net-dev: {}
+  pgcli-db-net-dev: {}
 
   vscode-back-net-dev: {}
   vscode-db-net-dev: {}

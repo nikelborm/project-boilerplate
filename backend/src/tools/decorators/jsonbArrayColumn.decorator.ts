@@ -11,7 +11,7 @@ export function JsonbArrayColumn(
       select: !disableSelect,
       type: 'jsonb',
       array: false,
-      default: () => "'[]'",
+      default: () => "'[]'::jsonb",
       nullable: false,
     }),
   );

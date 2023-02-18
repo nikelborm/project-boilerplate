@@ -55,6 +55,22 @@
         }
       },
       {
+        "label": "pgcli (psql better analog) dev",
+        "type": "shell",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml --profile use_pgcli run pgcli-dev",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": false,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
         "label": "Mount types/shared in native fs",
         "type": "shell",
         "command": "sudo mount --bind ./shared ./frontend/src/types/shared; sudo mount --bind ./shared ./backend/src/types/shared",

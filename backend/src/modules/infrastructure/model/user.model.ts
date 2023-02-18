@@ -1,3 +1,4 @@
+import { PrimaryIdentityColumn } from 'src/tools';
 import {
   Column,
   CreateDateColumn,
@@ -5,14 +6,13 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AccessScope, UserToAccessScope } from '.';
 
 @Entity({ name: 'user' })
 export class User {
-  @PrimaryGeneratedColumn({ name: 'user_id' })
+  @PrimaryIdentityColumn('user_id')
   id!: number;
 
   @Column({

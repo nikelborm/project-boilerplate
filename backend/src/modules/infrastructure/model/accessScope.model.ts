@@ -1,3 +1,4 @@
+import { PrimaryIdentityColumn } from 'src/tools';
 import { AccessScopeType } from 'src/types';
 import {
   Column,
@@ -5,14 +6,13 @@ import {
   Entity,
   ManyToMany,
   OneToMany,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User, UserToAccessScope } from '.';
 
 @Entity({ name: 'access_scope' })
 export class AccessScope {
-  @PrimaryGeneratedColumn({ name: 'access_scope_id' })
+  @PrimaryIdentityColumn('access_scope_id')
   id!: number;
 
   @Column({
