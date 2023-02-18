@@ -11,7 +11,7 @@ export function JsonbArrayColumn(
       select: !disableSelect,
       type: 'jsonb',
       array: false,
-      default: () => "'[]'::jsonb",
+      default: () => "'[]'", // do not add ::jsonb, because it will mess in your migrations
       nullable: false,
     }),
   );
