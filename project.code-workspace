@@ -271,6 +271,22 @@
         }
       },
       {
+        "label": "Apply default mock to database",
+        "type": "shell",
+        "command": "curl http://localhost/api/mock/execute?mockScriptName=fillDBScript; echo",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": false,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
         "label": "Build docker node container",
         "type": "shell",
         "dependsOn": [

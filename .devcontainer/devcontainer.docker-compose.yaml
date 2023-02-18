@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  vscode-devcontainer:
+    image: mcr.microsoft.com/devcontainers/typescript-node:18
+    command: sleep infinity
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+      - TSC_WATCHFILE=UseFsEvents
+    volumes:
+      - type: bind
+        source: ../
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}"
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}/frontend/src/types/shared"
+        consistency: delegated
+      - type: bind
+        source: ../shared
+        target: "/workspaces/${COMPOSE_PROJECT_NAME}/backend/src/types/shared"
+        consistency: delegated
+    networks:
+      vscode-back-net-dev:
+      vscode-db-net-dev:
+      vscode-front-net-dev:
+networks:
+  vscode-back-net-dev: {}
+  vscode-db-net-dev: {}
+  vscode-front-net-dev: {}

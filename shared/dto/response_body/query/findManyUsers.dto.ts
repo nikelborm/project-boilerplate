@@ -1,4 +1,4 @@
-import { BasicUserInfoWithIdDTO } from '../../basicUserInfoWithId.dto';
+import { BasicUserInfoWithIdDTO } from '../../other/basicUserInfoWithId.dto';
 
 export class FindManyUsersResponseDTO {
   users!: BasicUserInfoWithIdDTO[];

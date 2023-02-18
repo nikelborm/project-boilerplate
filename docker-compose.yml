@@ -21,7 +21,7 @@ services:
       - ${EXTERNAL_NGINX_HTTP_PORT}:80/tcp
       - ${EXTERNAL_NGINX_HTTPS_PORT}:443/tcp
     networks:
-      nginx-back-net:
+      nginx-back-net-prod:
       nginx-pgadmin-net-prod:
         ipv4_address: 10.5.0.2
 
@@ -70,8 +70,8 @@ services:
         source: ./backend/src/modules/infrastructure/
         target: /app/src/modules/infrastructure/
     networks:
-      nginx-back-net:
-      back-db-net:
+      nginx-back-net-prod:
+      back-db-net-prod:
 
   postgres-prod:
     image: postgres
@@ -87,8 +87,8 @@ services:
         source: postgres-prod-data
         target: /var/lib/postgresql/data
     networks:
-      back-db-net:
-      pgadmin-db-net:
+      back-db-net-prod:
+      pgadmin-db-net-prod:
 
   postgres-admin-prod:
     image: dpage/pgadmin4:latest
@@ -103,7 +103,7 @@ services:
     networks:
       nginx-pgadmin-net-prod:
         ipv4_address: 10.5.0.3
-      pgadmin-db-net:
+      pgadmin-db-net-prod:
 
 volumes:
   postgres-prod-data:
@@ -117,12 +117,12 @@ volumes:
 # https://www.losant.com/blog/how-to-access-serial-devices-in-docker
 
 networks:
-  nginx-back-net: {}
+  nginx-back-net-prod: {}
   nginx-pgadmin-net-prod:
     driver: bridge
     ipam:
       config:
         - subnet: 10.5.0.0/16
           gateway: 10.5.0.1
-  back-db-net: {}
-  pgadmin-db-net: {}
+  back-db-net-prod: {}
+  pgadmin-db-net-prod: {}
