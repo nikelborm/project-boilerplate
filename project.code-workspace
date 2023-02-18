@@ -273,7 +273,23 @@
       {
         "label": "Generate Many-to-Many (mtm) boilerplate",
         "type": "shell",
-        "command": "node backend/scripts/generateManyToManyBoilerplate/",
+        "command": " . ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateManyToManyBoilerplate/",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": false,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Generate One-to-Many (otm) boilerplate",
+        "type": "shell",
+        "command": " . ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateOneToManyBoilerplate/",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
