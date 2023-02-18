@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class UserAndAccessScopes1676580094477 implements MigrationInterface {
-  name = 'UserAndAccessScopes1676580094477';
+export class Initial1676699752045 implements MigrationInterface {
+  name = 'Initial1676699752045';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE "user" (
-        "user_id" SERIAL NOT NULL,
+        "user_id" integer GENERATED ALWAYS AS IDENTITY NOT NULL,
         "first_name" character varying NOT NULL,
         "last_name" character varying NOT NULL,
         "email" character varying NOT NULL,
@@ -33,7 +33,7 @@ export class UserAndAccessScopes1676580094477 implements MigrationInterface {
     `);
     await queryRunner.query(`
       CREATE TABLE "access_scope" (
-        "access_scope_id" SERIAL NOT NULL,
+        "access_scope_id" integer GENERATED ALWAYS AS IDENTITY NOT NULL,
         "type" "public"."access_scope_type_enum" NOT NULL,
         "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
