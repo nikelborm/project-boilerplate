@@ -73,7 +73,7 @@
       {
         "label": "Mount types/shared in native fs",
         "type": "shell",
-        "command": "sudo mount --bind ./shared ./frontend/src/types/shared; sudo mount --bind ./shared ./backend/src/types/shared",
+        "command": "mkdir -p ./frontend/src/types/shared; mkdir -p ./backend/src/types/shared; sudo mount --bind ./shared ./frontend/src/types/shared; sudo mount --bind ./shared ./backend/src/types/shared",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
