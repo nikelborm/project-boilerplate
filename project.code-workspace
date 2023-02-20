@@ -504,7 +504,8 @@
       "frontend/config": true,
       "**/.github": true
     },
-    "explorerExclude.backup": {}
+    "explorerExclude.backup": {},
+    "window.title": "${dirty}${activeEditorLong}${separator}${profileName}"
   },
   "launch": {
     "version": "0.2.0",
