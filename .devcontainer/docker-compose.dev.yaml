@@ -66,6 +66,7 @@ services:
       args:
         - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
         - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+        - WEB_SOCKET_SERVER_PATH=${WEB_SOCKET_SERVER_PATH}
         - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
     environment:
       - TSC_WATCHFILE=UseFsEvents
@@ -87,6 +88,7 @@ services:
       - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
       - SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
       - WEB_SOCKET_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
+      - WEB_SOCKET_SERVER_PATH=${WEB_SOCKET_SERVER_PATH}
     ports:
       - ${DEV_BACKEND_DEBUGGER_PORT}:${DEV_BACKEND_DEBUGGER_PORT}
     volumes:
@@ -123,6 +125,7 @@ services:
       pgadmin-db-net-dev:
       vscode-db-net-dev:
       pgcli-db-net-dev:
+      apache_superset_network:
 
   postgres-admin-dev:
     image: dpage/pgadmin4:latest
@@ -158,6 +161,8 @@ networks:
       config:
         - subnet: 10.5.0.0/16
           gateway: 10.5.0.1
+  apache_superset_network:
+    external: true
 
   back-db-net-dev: {}
   pgadmin-db-net-dev: {}
