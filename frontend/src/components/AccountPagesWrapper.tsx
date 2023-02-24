@@ -15,7 +15,7 @@ export function AccountPagesWrapper({
   deepestPathPart,
   pathParts,
 }: AccountPageWrapperProps) {
-  const [isMenuCollapsed, setCollapsedMenu] = useState(false);
+  const [isMenuCollapsed, setCollapsedMenu] = useState(true);
   const { updateTokenPair } = useTokenPairUpdater();
 
   if (!session.isAuthed)
@@ -61,8 +61,14 @@ export function AccountPagesWrapper({
           ]}
         />
       </Sider>
-      <Layout>
-        <Header style={{ background: '#fff', padding: 0 }}>
+      <Layout style={{ height: '100vh' }}>
+        <Header
+          style={{
+            background: '#fff',
+            padding: 0,
+            borderBottom: '1px solid #ddd',
+          }}
+        >
           <PageHeader
             {...(() => {
               const Extras =
@@ -78,15 +84,17 @@ export function AccountPagesWrapper({
             }
           />
         </Header>
-        <div style={{ margin: '16px', opacity: '0' }} />
-        <div style={{ height: '85vh', overflowX: 'scroll' }}>
-          <Content style={{ margin: '0 16px' }}>
-            <div style={{ background: '#fff', padding: 24, minHeight: 360 }}>
-              <Outlet />
-            </div>
-          </Content>
-        </div>
-        <Footer style={{ textAlign: 'center' }}>
+        <Content
+          style={{
+            background: '#fff',
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+            padding: '10px',
+          }}
+        >
+          <Outlet />
+        </Content>
+        <Footer style={{ textAlign: 'center', height: '64px' }}>
           Made with ❤️ by nikelborm
         </Footer>
       </Layout>
