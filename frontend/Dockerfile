@@ -5,6 +5,7 @@ FROM nikelborm/node as prepare_front
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/.eslintrc.json ./frontend/.prettierrc ./frontend/tsconfig.json ./
 COPY ./frontend/public public/
+COPY ./frontend/config-overrides config-overrides/
 
 
 

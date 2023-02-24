@@ -4,8 +4,10 @@ import { FindManyUsersResponseDTO } from 'types/shared';
 
 export function useAllUsersQuery() {
   const { isLoading, isError, isSuccess, data } = useQuery('useAllUsers', () =>
-    customFetch<FindManyUsersResponseDTO>('user/all', {
+    customFetch('user/all', {
       method: 'GET',
+      needsJsonResponseBodyParsing: true,
+      responseDTOclass: FindManyUsersResponseDTO,
       needsAccessToken: true,
     }),
   );

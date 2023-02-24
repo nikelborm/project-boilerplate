@@ -1,18 +1,24 @@
 import { API_PATH } from 'constant';
+
 // eslint-disable-next-line import/no-cycle
 import { authStore } from './authStore';
+import { validate } from './validate';
 
-interface CustomFetchOptions {
-  method?: string;
-  headers?: object;
-  body?: object;
-  params?: Record<string, string | number | boolean>;
-  needsAccessToken?: boolean;
-  needsParsing?: boolean;
-  baseUrl?: string;
-}
+export function customFetch<TRequest>(
+  target: RequestInfo,
+  customFetchOptions: CustomFetchOptions<TRequest, 'notParse'>,
+): Promise<Response>;
 
-export async function customFetch<TResponse>(
+export function customFetch<TRequest, TResponse>(
+  target: RequestInfo,
+  customFetchOptions: CustomFetchOptions<
+    TRequest,
+    'parseJsonBodyAndValidateIfSchemaDTOProvided',
+    TResponse
+  >,
+): Promise<TResponse>;
+
+export async function customFetch<TRequest, TResponse>(
   target: RequestInfo,
   {
     method,
@@ -20,10 +26,15 @@ export async function customFetch<TResponse>(
     body,
     params,
     needsAccessToken = true,
-    needsParsing = true,
+    needsJsonResponseBodyParsing,
+    requestDTOclass,
+    responseDTOclass,
     baseUrl = API_PATH, // Project-specific
-  }: CustomFetchOptions = {},
-) {
+  }: CustomFetchOptionsBase<TRequest> & {
+    needsJsonResponseBodyParsing: boolean;
+    responseDTOclass?: new () => TResponse;
+  },
+): CustomFetchResponse<TResponse> {
   const nextHeaders: HeadersInit = { ...headers };
 
   const options: RequestInit = {};
@@ -36,6 +47,18 @@ export async function customFetch<TResponse>(
   }
 
   if (body) {
+    if (requestDTOclass) {
+      const { errors, payloadInstance } = validate(body, requestDTOclass);
+      if (errors.length) {
+        // eslint-disable-next-line no-console
+        console.error([payloadInstance, errors]);
+        throw new Error(
+          `Validation error: request body schema does not match DTO schema: ${JSON.stringify(
+            [payloadInstance, errors],
+          )}`,
+        );
+      }
+    }
     options.body = JSON.stringify(body);
   }
 
@@ -59,16 +82,71 @@ export async function customFetch<TResponse>(
   }
 
   const responseData = await fetch(urlToFetch.href, options).then(
-    needsParsing ? parseJSONResponse : (response) => response,
+    getResponseParsingFn(needsJsonResponseBodyParsing, responseDTOclass),
   );
 
-  return responseData as TResponse;
+  return responseData;
 }
 
-async function parseJSONResponse(res: Response) {
-  const parsed = await res.json();
+function getResponseParsingFn<TResponse>(
+  shouldParseJsonBody: boolean,
+  validationModelDTO?: new () => TResponse,
+): (res: Response) => CustomFetchResponse<TResponse> {
+  if (!shouldParseJsonBody) return async (response) => response;
 
-  if (res.ok) return parsed;
+  return async (
+    res: Response,
+  ): Promise<
+    [TResponse] extends [undefined] ? Record<string, any> : TResponse
+  > => {
+    const parsed = await res.json();
 
-  throw parsed ?? res.statusText;
+    if (!res.ok) throw parsed ?? res.statusText;
+
+    if (!validationModelDTO) return parsed;
+
+    const { errors, payloadInstance } = validate(parsed, validationModelDTO);
+    if (errors.length) {
+      console.error([payloadInstance, errors]);
+      throw new Error(
+        `Validation error: response body schema does not match DTO schema: ${JSON.stringify(
+          [payloadInstance, errors],
+        )}`,
+      );
+    }
+    return payloadInstance;
+  };
 }
+
+type CustomFetchOptionsBase<TRequest> = {
+  method?: string;
+  headers?: object;
+  body?: TRequest;
+  params?: Record<string, string | number | boolean>;
+  needsAccessToken?: boolean;
+  baseUrl?: string;
+  requestDTOclass?: new () => TRequest;
+};
+
+type CustomFetchOptions<
+  TRequest,
+  ResponseBodyParsingMode extends
+    | 'notParse'
+    | 'parseJsonBodyAndValidateIfSchemaDTOProvided',
+  TResponse = Record<string, any>,
+> = [ResponseBodyParsingMode] extends ['notParse']
+  ? CustomFetchOptionsBase<TRequest> & {
+      needsJsonResponseBodyParsing: false;
+    }
+  : [ResponseBodyParsingMode] extends [
+      'parseJsonBodyAndValidateIfSchemaDTOProvided',
+    ]
+  ? CustomFetchOptionsBase<TRequest> & {
+      needsJsonResponseBodyParsing: true;
+      responseDTOclass?: new () => TResponse;
+    }
+  : never;
+
+type CustomFetchResponse<TResponse> = Promise<
+  Response | Record<string, any> | TResponse
+>;

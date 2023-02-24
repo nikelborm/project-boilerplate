@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class UserToHaveAccessScopeDTO {
+class UserToHaveAccessScopeDTO {
   @IsPositive()
   id!: number;
 }

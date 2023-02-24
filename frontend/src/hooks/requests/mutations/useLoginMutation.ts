@@ -1,14 +1,17 @@
 import { useMutation } from 'react-query';
 import { customFetch, useTokenPairUpdater } from 'utils';
-import { AuthTokenPairDTO } from 'types/shared';
+import { AuthTokenPairDTO, LoginUserRequestDTO } from 'types/shared';
 
 export function useLoginMutation() {
   const { updateTokenPair } = useTokenPairUpdater();
   const { mutate, isLoading, isError, isSuccess } = useMutation(
-    (credentials: { email: string; password: string }) =>
-      customFetch<AuthTokenPairDTO>('auth/local/login', {
+    (credentials: LoginUserRequestDTO) =>
+      customFetch('auth/local/login', {
         method: 'POST',
         needsAccessToken: false,
+        needsJsonResponseBodyParsing: true,
+        requestDTOclass: LoginUserRequestDTO,
+        responseDTOclass: AuthTokenPairDTO,
         body: credentials,
       }).then(updateTokenPair),
   );

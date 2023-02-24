@@ -17,14 +17,14 @@ export function useInviteLinkMutation(onError: (err: any) => void) {
   const { requestTokenPairRefreshing } = useTokenPairUpdater();
   const { mutate, isLoading, isError, isSuccess } = useMutation(
     (inviteLinkPayload: UseInviteLinkDTO) =>
-      validate(inviteLinkPayload, UseInviteLinkDTO).length
-        ? Promise.reject(new Error('Validation error'))
-        : customFetch<EmptyResponseDTO>('accounts/useInvite', {
-            method: 'POST',
-            body: inviteLinkPayload,
-          })
-            // .then(invalidatePassthrough(queryClient, 'something'))
-            .then(requestTokenPairRefreshing),
+      customFetch('accounts/useInvite', {
+        needsJsonResponseBodyParsing: false,
+        requestDTOclass: UseInviteLinkDTO,
+        method: 'POST',
+        body: inviteLinkPayload,
+      })
+        // .then(invalidatePassthrough(queryClient, 'something'))
+        .then(requestTokenPairRefreshing),
     {
       onSuccess: () => void message.success('You were sucessfully invited'),
       onError,

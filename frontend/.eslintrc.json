@@ -36,8 +36,8 @@
       "always"
     ],
     "@typescript-eslint/lines-between-class-members": "warn",
-    "max-classes-per-file": "warn",
     "no-restricted-syntax": "off",
+    "max-classes-per-file": "off",
     "react/require-default-props": "off",
     "camelcase": "warn",
     "no-sequences": "off",

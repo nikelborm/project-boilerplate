@@ -6,6 +6,7 @@ import {
   UserAccessTokenPayload,
   UserRefreshTokenPayload,
   AuthTokenPairDTO,
+  RefreshTokenDTO,
 } from 'types/shared';
 import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from 'constant';
 // eslint-disable-next-line import/no-cycle
@@ -60,16 +61,17 @@ class AuthStore {
     if (!tokenPair) return null;
 
     if (!this.lastTokenPairRefreshPromise) {
-      this.lastTokenPairRefreshPromise = customFetch<AuthTokenPairDTO>(
-        'auth/refresh',
-        {
-          method: 'POST',
-          needsAccessToken: false,
-          body: {
-            refreshToken: tokenPair.refreshToken,
-          },
+      this.lastTokenPairRefreshPromise = customFetch('auth/refresh', {
+        needsJsonResponseBodyParsing: true,
+        requestDTOclass: RefreshTokenDTO,
+        responseDTOclass: AuthTokenPairDTO,
+        method: 'POST',
+        needsAccessToken: false,
+
+        body: {
+          refreshToken: tokenPair.refreshToken,
         },
-      )
+      })
         .then((newTokenPair) => {
           setTokenPair(newTokenPair);
           this.lastTokenPairRefreshPromise = null;

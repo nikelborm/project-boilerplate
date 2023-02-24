@@ -13,9 +13,12 @@ const validateConfig = {
 export function validate<P>(
   payload: P,
   payloadClass: { new (): P },
-): ValidationError[] {
+): { payloadInstance: P; errors: ValidationError[] } {
   const payloadInstance = plainToInstance(payloadClass, payload);
   // eslint-disable-next-line no-console
   console.log('payloadInstance: ', payloadInstance);
-  return validateSync(payloadInstance as any, validateConfig);
+  return {
+    payloadInstance,
+    errors: validateSync(payloadInstance as any, validateConfig),
+  };
 }

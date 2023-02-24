@@ -103,6 +103,22 @@
         }
       },
       {
+        "label": "shallow clone apache superset ",
+        "type": "shell", // https://superset.apache.org/docs/installation/installing-superset-using-docker-compose/
+        "command": "git clone --depth 1 -b master https://github.com/apache/superset.git; cd superset;",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": true,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
         "label": "Restart dev",
         "type": "shell",
         "dependsOn": [
@@ -412,7 +428,7 @@
     "workbench.colorCustomizations": {},
     "editor.linkedEditing": true,
     "editor.minimap.enabled": false,
-    "workbench.editor.enablePreview": true,
+    "workbench.editor.enablePreview": false,
     "diffEditor.ignoreTrimWhitespace": true,
     "terminal.integrated.scrollback": 100000,
     "[sql]": {
@@ -504,7 +520,30 @@
       "frontend/config": false,
       "**/.github": false
     },
-    "explorerExclude.backup": {},
+    "explorerExclude.backup": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/node_modules": true,
+      "**/.nvmrc": true,
+      "**/.prettierrc": true,
+      "**/tsconfig.build.json": true,
+      "**/yarn.lock": true,
+      "**/ormconfig.json": true,
+      "**/nest-cli.json": true,
+      ".env": true,
+      "**/.dockerignore": true,
+      "**/.htpasswd": true,
+      "**/.htpasswd_example": true,
+      "**/dev.nginx.template.conf": true,
+      "**/prod.nginx.template.conf": true,
+      "frontend/scripts": true,
+      "frontend/config": true,
+      "**/.github": true
+    },
     "window.title": "${dirty}${activeEditorLong}${separator}${profileName}"
   },
   "launch": {

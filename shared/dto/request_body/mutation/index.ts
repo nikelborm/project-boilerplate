@@ -1,4 +1,3 @@
-export * from './createUser.dto';
 export * from './createUsers.dto';
 export * from './deleteEntityById.dto';
 export * from './refreshToken.dto';
