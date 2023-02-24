@@ -12,6 +12,7 @@ export type IAppConfigMap = {
   [ConfigKeys.USER_PASSWORD_HASH_SALT]: string;
   [ConfigKeys.SERVER_PORT]: number;
   [ConfigKeys.WEB_SOCKET_SERVER_PORT]: number;
+  [ConfigKeys.WEB_SOCKET_SERVER_PATH]: string;
   [ConfigKeys.INVITE_USERS_SIGN_KEY]: string;
 };
 

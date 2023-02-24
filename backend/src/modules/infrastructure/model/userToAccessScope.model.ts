@@ -1,8 +1,9 @@
+import { IUserToAccessScope } from 'src/types';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { AccessScope, User } from '.';
 
 @Entity({ name: 'user_to_access_scope' })
-export class UserToAccessScope {
+export class UserToAccessScope implements IUserToAccessScope {
   @ManyToOne(() => User, (user) => user.userToAccessScopeRelations)
   @JoinColumn({ name: 'user_id' })
   user!: User;

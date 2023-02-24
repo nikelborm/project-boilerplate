@@ -10,6 +10,8 @@ export const appConfig: () => IAppConfigMap = () => ({
     process.env.WEB_SOCKET_SERVER_PORT || '2999',
     10,
   ),
+  [ConfigKeys.WEB_SOCKET_SERVER_PATH]:
+    process.env.WEB_SOCKET_SERVER_PATH || '/api/ws',
   [ConfigKeys.BOOTSTRAP_MODE]: process.env.BOOTSTRAP_MODE as BootstrapMode,
   [ConfigKeys.MOCK_SCRIPT_NAME]: process.env.MOCK_SCRIPT_NAME as Exclude<
     keyof MockDataUseCase,

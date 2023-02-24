@@ -37,7 +37,7 @@ export class UserController {
   @Post('create')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
-    @ValidatedBody
+    @ValidatedBody()
     createUserDTO: CreateUserDTO,
   ): Promise<CreateOneUserResponse> {
     return await this.userUseCase.createUser(createUserDTO);
@@ -46,7 +46,7 @@ export class UserController {
   @Post('createMany')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
-    @ValidatedBody
+    @ValidatedBody()
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
     return {
@@ -58,7 +58,7 @@ export class UserController {
   @AuthorizedOnly()
   async setMyPassword(
     @Req() { user }: AuthedRequest,
-    @ValidatedBody
+    @ValidatedBody()
     { password }: SetMyPasswordDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.setUserPassword(user.id, password);
@@ -68,7 +68,7 @@ export class UserController {
   @Post('deleteById')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async deleteUser(
-    @ValidatedBody
+    @ValidatedBody()
     { id }: DeleteEntityByIdDTO,
   ): Promise<EmptyResponseDTO> {
     await this.userUseCase.deleteOne(id);

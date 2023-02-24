@@ -1,5 +1,5 @@
 import { PrimaryIdentityColumn } from 'src/tools';
-import { AccessScopeType } from 'src/types';
+import { AccessScopeType, IAccessScope } from 'src/types';
 import {
   Column,
   CreateDateColumn,
@@ -11,7 +11,7 @@ import {
 import { User, UserToAccessScope } from '.';
 
 @Entity({ name: 'access_scope' })
-export class AccessScope {
+export class AccessScope implements IAccessScope {
   @PrimaryIdentityColumn('access_scope_id')
   id!: number;
 

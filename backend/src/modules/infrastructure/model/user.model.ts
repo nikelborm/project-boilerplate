@@ -1,4 +1,5 @@
 import { PrimaryIdentityColumn } from 'src/tools';
+import { IUser } from 'src/types';
 import {
   Column,
   CreateDateColumn,
@@ -11,7 +12,7 @@ import {
 import { AccessScope, UserToAccessScope } from '.';
 
 @Entity({ name: 'user' })
-export class User {
+export class User implements IUser {
   @PrimaryIdentityColumn('user_id')
   id!: number;
 

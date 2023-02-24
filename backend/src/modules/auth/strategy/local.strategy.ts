@@ -12,7 +12,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     private readonly authUseCase: AuthUseCase,
     private readonly userRepo: repo.UserRepo,
   ) {
-    super({ usernameField: 'email', passwordField: 'password' });
+    super({
+      usernameField: 'email',
+      passwordField: 'password',
+      session: false,
+    });
   }
 
   async validate(email: string, password: string): Promise<UserAuthInfo> {

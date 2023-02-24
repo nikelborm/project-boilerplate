@@ -1,7 +1,19 @@
-import { Body, ValidationPipe } from '@nestjs/common';
+import {
+  applyDecorators,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  ValidationPipeOptions,
+} from '@nestjs/common';
+import { validationPipeConfig } from 'src/config';
+import { WSMessageValidationPipe } from '../pipes';
 
-export const ValidatedBody: ParameterDecorator = (...args) => {
-  return Body(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-  )(...args);
-};
+export const ValidatedBody: (
+  options?: ValidationPipeOptions,
+) => ParameterDecorator = (options) =>
+  Body(new ValidationPipe({ ...validationPipeConfig, ...options }));
+
+export const UseWSMessageValidationPipe = (
+  options?: ValidationPipeOptions,
+): MethodDecorator =>
+  applyDecorators(UsePipes(new WSMessageValidationPipe(options)));

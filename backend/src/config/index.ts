@@ -4,3 +4,4 @@ export * from './mockUseCaseMethodsAllowedToBeExecuted';
 export * from './typedConfig.module';
 export * from './typedConfig.service';
 export * from './types';
+export * from './validationPipe.config';

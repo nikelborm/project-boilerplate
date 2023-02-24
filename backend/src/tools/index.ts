@@ -18,3 +18,4 @@ export * from './repo';
 export * from './upperCaseFirstLetter';
 export * from './validate';
 export * from './validateIdExisting';
+export * from './websocketGatewayAdapter';

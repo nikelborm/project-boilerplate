@@ -15,7 +15,7 @@ export class AccessScopeController {
   @Post('updateAccessScope')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async updateAccessScope(
-    @ValidatedBody
+    @ValidatedBody()
     accessScope: UpdateAccessScopeDTO,
   ): Promise<EmptyResponseDTO> {
     await this.accessScopeUseCase.updateOne(accessScope);

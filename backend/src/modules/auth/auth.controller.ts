@@ -1,10 +1,11 @@
-import { Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Post, Request, UseGuards } from '@nestjs/common';
 import { ApiController, AuthorizedOnly, ValidatedBody } from 'src/tools';
 import {
   AuthedRequest,
   AuthTokenPairDTO,
   CreateUserDTO,
   EmptyResponseDTO,
+  LoginUserRequestDTO,
   RefreshTokenDTO,
   RegisterUserResponseDTO,
   UserAuthInfo,
@@ -19,9 +20,10 @@ export class AuthController {
   @Post('local/login')
   @UseGuards(LocalAuthGuard)
   async login(
-    // leave here for documentation generation
-    @Query('email') email: string,
-    @Query('password') password: string,
+    // this argument was left here for documentation generation
+    // the real processing of this handled by passport local strategy
+    @ValidatedBody()
+    loginUserRequestDTO: LoginUserRequestDTO,
     @Request() req: { user: UserAuthInfo },
   ): Promise<AuthTokenPairDTO> {
     return await this.authUseCase.login(req.user);
@@ -29,7 +31,7 @@ export class AuthController {
 
   @Post('local/register')
   async register(
-    @ValidatedBody
+    @ValidatedBody()
     createUserDTO: CreateUserDTO,
   ): Promise<RegisterUserResponseDTO> {
     return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
@@ -55,7 +57,7 @@ export class AuthController {
 
   @Post('refresh')
   async refreshTokens(
-    @ValidatedBody
+    @ValidatedBody()
     { refreshToken }: RefreshTokenDTO,
   ): Promise<AuthTokenPairDTO> {
     return await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
