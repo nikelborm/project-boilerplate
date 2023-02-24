@@ -107,6 +107,7 @@ function getResponseParsingFn<TResponse>(
 
     const { errors, payloadInstance } = validate(parsed, validationModelDTO);
     if (errors.length) {
+      // eslint-disable-next-line no-console
       console.error([payloadInstance, errors]);
       throw new Error(
         `Validation error: response body schema does not match DTO schema: ${JSON.stringify(

@@ -7,9 +7,8 @@ import {
   // invalidatePassthrough,
   // useSession,
   useTokenPairUpdater,
-  validate,
 } from 'utils';
-import { UseInviteLinkDTO, EmptyResponseDTO } from 'types/shared';
+import { UseInviteLinkDTO } from 'types/shared';
 import { message } from 'antd';
 
 export function useInviteLinkMutation(onError: (err: any) => void) {
@@ -26,7 +25,7 @@ export function useInviteLinkMutation(onError: (err: any) => void) {
         // .then(invalidatePassthrough(queryClient, 'something'))
         .then(requestTokenPairRefreshing),
     {
-      onSuccess: () => void message.success('You were sucessfully invited'),
+      onSuccess: () => void message.success('You were successfully invited'),
       onError,
     },
   );

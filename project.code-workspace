@@ -39,6 +39,16 @@
         "promptOnClose": true
       },
       {
+        "label": "Show dev live logs",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml logs -f -n 100",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
         "label": "psql dev",
         "type": "shell",
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U pgdockeruser -d pgdockerdatabase",
