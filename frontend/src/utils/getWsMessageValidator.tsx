@@ -5,7 +5,7 @@ export function getWsMessageValidator<T>(dto: new () => T) {
     const { errors, payloadInstance } = validate<T>(message, dto);
     if (errors.length) {
       throw new Error(
-        `WS incoming message validation error: ${JSON.stringify(errors)}`
+        `WS incoming message validation error: ${JSON.stringify(errors)}`,
       );
     }
     return payloadInstance;

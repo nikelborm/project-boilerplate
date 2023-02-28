@@ -19,7 +19,7 @@ services:
       - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
     ports:
       - ${EXTERNAL_NGINX_HTTP_PORT}:80/tcp
-      - ${EXTERNAL_NGINX_HTTPS_PORT}:443/tcp
+#      - ${EXTERNAL_NGINX_HTTPS_PORT}:443/tcp
     networks:
       nginx-back-net-prod:
       nginx-pgadmin-net-prod:
@@ -87,6 +87,8 @@ services:
       - type: volume
         source: postgres-prod-data
         target: /var/lib/postgresql/data
+#    ports:
+#      - 5400:${DATABASE_PORT}
     networks:
       back-db-net-prod:
       pgadmin-db-net-prod:

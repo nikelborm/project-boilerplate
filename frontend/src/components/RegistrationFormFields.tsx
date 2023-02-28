@@ -50,6 +50,12 @@ export function RegistrationFormFields() {
         icon={<UserOutlined />}
       />
       <BasicAuthFormField
+        name="nickname"
+        label="Nickname"
+        placeholder="nikelborm"
+        icon={<SmileOutlined />}
+      />
+      <BasicAuthFormField
         name="patronymic"
         label="Patronymic"
         placeholder="Sergeevich"

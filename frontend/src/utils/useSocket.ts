@@ -1,7 +1,7 @@
 import { Manager } from 'socket.io-client';
 import { useEffect } from 'react';
 
-export const socketManager = new Manager({
+const socketManager = new Manager({
   transports: ['websocket', 'polling'],
   path: '/api/ws',
   autoConnect: false,

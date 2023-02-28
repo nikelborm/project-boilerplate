@@ -29,6 +29,12 @@ export class User implements IUser {
   lastName!: string;
 
   @Column({
+    name: 'nickname',
+    nullable: false,
+  })
+  nickname!: string;
+
+  @Column({
     name: 'email',
     nullable: false,
     unique: true,
@@ -48,6 +54,12 @@ export class User implements IUser {
     nullable: false,
   })
   passwordHash!: string;
+
+  @Column({
+    name: 'avatar_url',
+    nullable: true,
+  })
+  avatarURL?: string;
 
   @ManyToMany(
     () => AccessScope,

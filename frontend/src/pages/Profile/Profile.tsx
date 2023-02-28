@@ -13,4 +13,3 @@ const MainWrapper = styled.div`
   height: 100%;
   overflow-y: hidden;
 `;
-

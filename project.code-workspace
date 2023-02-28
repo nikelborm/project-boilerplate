@@ -36,7 +36,10 @@
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "Show dev live logs",
@@ -159,12 +162,22 @@
         "promptOnClose": true
       },
       {
-        "label": "Up prod",
+        "label": "Up prod with pulling",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d; echo; echo $(docker inspect -f \"{{(index .NetworkSettings.Networks \\`${COMPOSE_PROJECT_NAME}_nginx-back-net\\`).IPAddress}}\" ${COMPOSE_PROJECT_NAME}_nginx-prod_1):80",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull --remove-orphans --force-recreate -d",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Up prod with rebuilding",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -184,9 +197,12 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/amd64,linux/arm64/v8 --pull --push",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "Build amd64 production",
@@ -194,9 +210,13 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yml --set *.platform=linux/amd64 --pull --push",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/amd64 --pull --push",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
       },
       {
         "label": "Build arm64 production",
@@ -204,9 +224,12 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yml --set *.platform=linux/arm64/v8 --pull --push",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/arm64/v8 --pull --push",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "ORM migration generation for dev database (ormgen)",
@@ -225,6 +248,13 @@
           "Run dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Migrate prod database",
+        "type": "shell",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./docker-compose.yaml exec backend-prod sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -352,21 +382,30 @@
         ],
         "command": "cat ./node.Dockerfile; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx build --push --platform=linux/amd64,linux/arm64/v8 -t nikelborm/node - < node.Dockerfile",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "Create new docker builder",
         "type": "shell",
         "command": "docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx create --name my_builder --platform=linux/arm64,linux/amd64",
         "promptOnClose": false,
-        "problemMatcher": []
+        "problemMatcher": [],
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "Use docker builder",
         "type": "shell",
         "command": "docker buildx use my_builder",
         "promptOnClose": false,
-        "problemMatcher": []
+        "problemMatcher": [],
+        "group": {
+          "kind": "build"
+        }
       },
       {
         "label": "clear docker",
@@ -470,7 +509,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "yaml.schemas": {
-        "file:///home/nikel/.vscode/extensions/atlassian.atlascode-2.10.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+        "file:///home/nikel/.vscode/extensions/atlassian.atlascode-2.10.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yaml"
     },
     "atlascode.bitbucket.enabled": true,
     "atlascode.showWelcomeOnInstall": false,
@@ -507,30 +546,6 @@
     "editor.stickyScroll.enabled": true,
     "rapidapi.terminalLink.enabled": false,
     "files.exclude": {
-      "**/.git": false,
-      "**/.svn": false,
-      "**/.hg": false,
-      "**/CVS": false,
-      "**/.DS_Store": false,
-      "**/Thumbs.db": false,
-      "**/node_modules": false,
-      "**/.nvmrc": false,
-      "**/.prettierrc": false,
-      "**/tsconfig.build.json": false,
-      "**/yarn.lock": false,
-      "**/ormconfig.json": false,
-      "**/nest-cli.json": false,
-      ".env": false,
-      "**/.dockerignore": false,
-      "**/.htpasswd": false,
-      "**/.htpasswd_example": false,
-      "**/dev.nginx.template.conf": false,
-      "**/prod.nginx.template.conf": false,
-      "frontend/scripts": false,
-      "frontend/config": false,
-      "**/.github": false
-    },
-    "explorerExclude.backup": {
       "**/.git": true,
       "**/.svn": true,
       "**/.hg": true,
