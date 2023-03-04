@@ -6,7 +6,7 @@ export function Profile() {
     namespace: '/test',
     handlers: {},
   });
-  return <MainWrapper>as</MainWrapper>;
+  return <MainWrapper>text</MainWrapper>;
 }
 
 const MainWrapper = styled.div`

@@ -11,6 +11,8 @@ services:
       target: prod_nginx_with_front_static
       args:
         - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
+        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
+        - INNER_NGINX_HTTPS_PORT=${INNER_NGINX_HTTPS_PORT}
     environment:
       - TZ=${TZ}
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
@@ -88,8 +90,8 @@ services:
       - type: volume
         source: postgres-prod-data
         target: /var/lib/postgresql/data
-#    ports:
-#      - 5400:${DATABASE_PORT}
+    ports:
+      - 5400:${DATABASE_PORT}
     networks:
       back-db-net-prod:
       pgadmin-db-net-prod:

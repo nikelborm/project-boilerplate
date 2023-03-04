@@ -172,7 +172,7 @@
         "promptOnClose": true
       },
       {
-        "label": "Up prod with pulling",
+        "label": "Up prod with pulling from registry",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
@@ -184,12 +184,22 @@
       {
         "label": "docker stats",
         "type": "shell",
-        "command": "docker network ls; echo; docker stats --no-stream",
+        "command": "docker network ls; echo; docker stats --no-stream; echo; docker ps",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
-        "label": "Up prod with rebuilding",
+        "label": "Up prod with pulling from local",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull never --remove-orphans --force-recreate -d",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "Up prod with rebuilding local",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
@@ -209,7 +219,7 @@
         "promptOnClose": true
       },
       {
-        "label": "Build multi platform (arm64, amd64) production",
+        "label": "Build multi platform (arm64, amd64) production for registry",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
@@ -222,12 +232,12 @@
         }
       },
       {
-        "label": "Build amd64 production",
+        "label": "Build amd64 production for local use",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/amd64 --pull --push",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/amd64 --pull --load",
         "problemMatcher": [],
         "promptOnClose": true,
         "group": {
@@ -236,7 +246,20 @@
         }
       },
       {
-        "label": "Build arm64 production",
+        "label": "Build amd64 production for registry",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.yaml --set *.platform=linux/amd64 --pull --push",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
+      },
+      {
+        "label": "Build arm64 production for registry",
         "type": "shell",
         "dependsOn": [
           "Use docker builder"

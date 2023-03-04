@@ -10,6 +10,8 @@ services:
       context: ../
       dockerfile: ./frontend/Dockerfile
       target: dev_nginx
+      args:
+        - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
     environment:
       - TZ=${TZ}
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}

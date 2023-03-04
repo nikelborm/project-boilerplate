@@ -45,7 +45,8 @@ RUN yarn build
 
 FROM nginx:1.18.0-alpine as default_nginx
 
-EXPOSE 80
+ARG INNER_NGINX_HTTP_PORT
+EXPOSE ${INNER_NGINX_HTTP_PORT}
 RUN rm -rf /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ./frontend/.htpasswd /etc/nginx/.htpasswd
@@ -55,7 +56,8 @@ COPY ./frontend/.htpasswd /etc/nginx/.htpasswd
 
 FROM default_nginx as prod_nginx_with_front_static
 
-EXPOSE 443
+ARG INNER_NGINX_HTTPS_PORT
+EXPOSE ${INNER_NGINX_HTTPS_PORT}
 COPY ./frontend/prod.nginx.template.conf /etc/nginx/templates/nginx.conf.template
 COPY --from=build /app/build /usr/share/nginx/html/
 
