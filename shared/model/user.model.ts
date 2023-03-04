@@ -17,11 +17,15 @@ export class IUser {
 
   userToAccessScopeRelations!: IUserToAccessScope[];
 
+  phone?: string;
+
   patronymic!: string;
 
   gender!: string;
 
-  phone?: string;
+  avatarURL?: string;
+
+  nickname!: string;
 
   createdAt!: Date;
 

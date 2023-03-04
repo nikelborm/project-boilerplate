@@ -33,6 +33,8 @@ export class MockDataUseCase {
       lastName: 'Такой-тов',
       firstName: 'Такой-то',
       patronymic: 'Такой-тович',
+      nickname: 'asdasdasd',
+      avatarURL: 'http://google.com',
       gender: 'male',
       password: 'asdasdasd',
     });

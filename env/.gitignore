@@ -3,5 +3,6 @@
 
 # But not these files...
 !.gitignore
-!template.env
+!dev.template.env
+!prod.template.env
 !dev.env

@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     environment:
       - TZ=${TZ}
-      - DEV_INNER_FRONTEND_DEBUGGER_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT=${INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT}
       - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
       - TSC_WATCHFILE=UseFsEvents
     volumes:

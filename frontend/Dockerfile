@@ -17,9 +17,9 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private ya
 # src and types/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
 
-ARG DEV_INNER_FRONTEND_DEBUGGER_PORT
-EXPOSE ${DEV_INNER_FRONTEND_DEBUGGER_PORT}
-ENV PORT=${DEV_INNER_FRONTEND_DEBUGGER_PORT}
+ARG INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT
+EXPOSE ${INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT}
+ENV PORT=${INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT}
 
 CMD ["yarn", "start"]
 

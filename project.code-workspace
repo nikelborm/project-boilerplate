@@ -52,6 +52,16 @@
         "promptOnClose": true
       },
       {
+        "label": "Show prod live logs",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml logs -f -n 100",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
         "label": "psql dev",
         "type": "shell",
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U pgdockeruser -d pgdockerdatabase",
@@ -167,7 +177,14 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull --remove-orphans --force-recreate -d",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull always --remove-orphans --force-recreate -d",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
+        "label": "docker stats",
+        "type": "shell",
+        "command": "docker network ls; echo; docker stats --no-stream",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -254,7 +271,7 @@
       {
         "label": "Migrate prod database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./docker-compose.yaml exec backend-prod sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-prod sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -346,6 +363,22 @@
         "label": "Generate One-to-Many (otm) boilerplate",
         "type": "shell",
         "command": " . ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateOneToManyBoilerplate/",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new",
+          "close": false,
+          "showReuseMessage": false,
+          "clear": true
+        }
+      },
+      {
+        "label": "Create empty migration",
+        "type": "shell",
+        "command": " . ${HOME}/.nvm/nvm.sh; cd ./backend; ./scripts/createEmptyMigration.sh",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {

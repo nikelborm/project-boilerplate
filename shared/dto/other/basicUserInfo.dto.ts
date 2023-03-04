@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -27,6 +28,11 @@ export class BasicUserInfoDTO {
   @MaxLength(50)
   gender!: string;
 
+  @IsString()
+  @MinLength(2)
+  @MaxLength(50)
+  nickname!: string;
+
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -37,4 +43,9 @@ export class BasicUserInfoDTO {
   @MinLength(2)
   @MaxLength(50)
   email!: string;
+
+  @IsOptional()
+  @IsUrl()
+  @MinLength(2)
+  avatarURL?: string;
 }
