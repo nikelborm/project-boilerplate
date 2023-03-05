@@ -8,7 +8,7 @@ export interface UserAuthInfo {
   patronymic: string;
   gender: string;
   phone?: string | undefined;
-  avatarURL?: string;
+  avatarURL?: string | undefined;
   nickname: string;
   accessScopes: {
     id: number;

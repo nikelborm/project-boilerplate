@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { useSocket } from 'utils';
+// import { useSocket } from 'utils';
 
 export function Profile() {
-  useSocket({
-    namespace: '/test',
-    handlers: {},
-  });
+  // useSocket({
+  //   namespace: '/test', // will  fail because there is no gateway on backend
+  //   handlers: {},
+  // });
   return <MainWrapper>text</MainWrapper>;
 }
 
