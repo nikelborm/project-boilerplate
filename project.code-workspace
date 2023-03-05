@@ -71,8 +71,8 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -87,7 +87,7 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
+          "panel": "shared",
           "close": false,
           "showReuseMessage": false,
           "clear": true
@@ -103,8 +103,8 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -119,8 +119,8 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -135,8 +135,8 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -177,14 +177,14 @@
         "dependsOn": [
           "Use docker builder"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull always --remove-orphans --force-recreate -d",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml pull; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull always --remove-orphans --force-recreate -d",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "docker stats",
         "type": "shell",
-        "command": "docker network ls; echo; docker stats --no-stream; echo; docker ps",
+        "command": "docker network ls; echo; docker ps; echo; docker stats --no-stream",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -321,15 +321,15 @@
       {
         "label": "Upgrade yarn dependencies",
         "type": "shell",
-        "command": "yarn upgrade-interactive --emoji true --latest --cwd shared; yarn upgrade-interactive --emoji true --latest --cwd backend; yarn upgrade-interactive --emoji true --latest --cwd frontend",
+        "command": ". ${HOME}/.nvm/nvm.sh; yarn upgrade-interactive --emoji true --latest --cwd shared; yarn upgrade-interactive --emoji true --latest --cwd backend; yarn upgrade-interactive --emoji true --latest --cwd frontend",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -337,15 +337,15 @@
       {
         "label": "Install yarn dependencies",
         "type": "shell",
-        "command": "yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate",
+        "command": ". ${HOME}/.nvm/nvm.sh; yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -360,8 +360,8 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
-          "close": true,
+          "panel": "shared",
+          "close": false,
           "showReuseMessage": false,
           "clear": true
         }
@@ -369,14 +369,14 @@
       {
         "label": "Generate Many-to-Many (mtm) boilerplate",
         "type": "shell",
-        "command": " . ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateManyToManyBoilerplate/",
+        "command": ". ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateManyToManyBoilerplate/",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
+          "panel": "shared",
           "close": false,
           "showReuseMessage": false,
           "clear": true
@@ -392,7 +392,7 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
+          "panel": "shared",
           "close": false,
           "showReuseMessage": false,
           "clear": true
@@ -408,7 +408,7 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
+          "panel": "shared",
           "close": false,
           "showReuseMessage": false,
           "clear": true
@@ -424,7 +424,7 @@
           "echo": true,
           "reveal": "always",
           "focus": true,
-          "panel": "new",
+          "panel": "shared",
           "close": false,
           "showReuseMessage": false,
           "clear": true
