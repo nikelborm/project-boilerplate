@@ -49,7 +49,7 @@ services:
         target: /app/src
         consistency: delegated
       - type: bind
-        source: ../shared
+        source: ../shared/src
         target: /app/src/types/shared
         consistency: delegated
     networks:
@@ -97,7 +97,7 @@ services:
         target: /app/src
         consistency: delegated
       - type: bind
-        source: ../shared
+        source: ../shared/src
         target: /app/src/types/shared
         consistency: delegated
     networks:

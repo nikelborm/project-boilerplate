@@ -32,9 +32,9 @@ FROM prepare_front as build
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
 
 COPY ./frontend/src /app/src/
-# we should copy ./shared/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
-# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared
-COPY ./shared/ /app/src/types/shared
+# we should copy ./shared/src/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared/src) is in .dockerignore
+# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared/src
+COPY ./shared/src/ /app/src/types/shared
 
 ARG REACT_APP_NAME
 ENV REACT_APP_NAME=${REACT_APP_NAME}

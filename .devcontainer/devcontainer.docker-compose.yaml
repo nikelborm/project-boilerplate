@@ -15,11 +15,11 @@ services:
         target: "/workspaces/${COMPOSE_PROJECT_NAME}"
         consistency: delegated
       - type: bind
-        source: ../shared
+        source: ../shared/src
         target: "/workspaces/${COMPOSE_PROJECT_NAME}/frontend/src/types/shared"
         consistency: delegated
       - type: bind
-        source: ../shared
+        source: ../shared/src
         target: "/workspaces/${COMPOSE_PROJECT_NAME}/backend/src/types/shared"
         consistency: delegated
     networks:

@@ -15,9 +15,9 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private ya
 
 COPY ./backend/src /app/src/
 
-# we should copy it even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared) is in .dockerignore
-# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared
-COPY ./shared/ /app/src/types/shared
+# we should copy ./shared/src/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared/src) is in .dockerignore
+# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared/src
+COPY ./shared/src/ /app/src/types/shared
 
 RUN nest build
 
