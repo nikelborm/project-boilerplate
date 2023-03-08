@@ -2,7 +2,11 @@
   "name": "backend",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": {
+    "name": "nikelborm",
+    "email": "kolya007.klass@gmail.com",
+    "url": "https://github.com/nikelborm"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

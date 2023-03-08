@@ -43,8 +43,24 @@ const getMixinToSingleSideOfRelation = () => `
   ${firstCamel}s!: ${firstPascal}[];
 `;
 
+const getMixinToMultipleSideOfRelationInterface = () => `
+  ${secondCamel}!: I${secondPascal};
+
+  ${secondCamel}Id!: number;
+`;
+
+const getMixinToSingleSideOfRelationInterface = () => `
+  ${firstCamel}s!: I${firstPascal}[];
+`;
+
 console.log(`\n------ Mixin for ${firstPascal} model:\n`);
 console.log(getMixinToMultipleSideOfRelation());
 
 console.log(`\n------ Mixin for ${secondPascal} model:\n`);
 console.log(getMixinToSingleSideOfRelation());
+
+console.log(`\n------ Mixin for I${firstPascal} model interface:\n`);
+console.log(getMixinToMultipleSideOfRelationInterface());
+
+console.log(`\n------ Mixin for I${secondPascal} model interface:\n`);
+console.log(getMixinToSingleSideOfRelationInterface());

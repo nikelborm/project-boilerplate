@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /src/types/shared
+/src/tools/shared
 /.pnp
 .pnp.js
 

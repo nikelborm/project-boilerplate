@@ -1,15 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { messages } from 'src/config';
-import {
-  CreatedEntity,
-  createOneWithRelations,
-  NewEntity,
-  UpdateEntity,
-  updateOneWithRelations,
-} from 'src/tools';
 import { Repository } from 'typeorm';
-import { AccessScope } from '../model';
+import { AccessScope, User, UserToAccessScope } from '../model';
 
 @Injectable()
 export class AccessScopeRepo {
@@ -18,7 +11,9 @@ export class AccessScopeRepo {
     private readonly repo: Repository<AccessScope>,
   ) {}
 
-  async getOneById(id: number): Promise<AccessScope> {
+  async getOneById(
+    id: number,
+  ): Promise<Pick<AccessScope, 'id' | 'type' | 'createdAt' | 'updatedAt'>> {
     const accessScope = await this.repo.findOne({ where: { id } });
     if (!accessScope)
       throw new BadRequestException(
@@ -27,22 +22,60 @@ export class AccessScopeRepo {
     return accessScope;
   }
 
-  async updateOneWithRelations(
-    updatedAccessScope: UpdateEntity<AccessScope, 'id'>,
-  ): Promise<AccessScope> {
-    return await updateOneWithRelations<AccessScope, 'id'>(
-      this.repo,
-      updatedAccessScope,
-    );
+  async updateOneWithRelations({
+    id,
+    usersWithThatAccessScope,
+  }: Pick<AccessScope, 'id'> & {
+    usersWithThatAccessScope?: Pick<User, 'id'>[];
+  }): Promise<CreatedAccessScopeWithRelations> {
+    const accessScopeToSave = new AccessScope();
+
+    accessScopeToSave.id = id;
+    if (usersWithThatAccessScope)
+      accessScopeToSave.userToAccessScopeRelations =
+        usersWithThatAccessScope.map(({ id: userId }) => {
+          const relation = new UserToAccessScope();
+          relation.accessScopeId = id;
+          relation.userId = userId;
+          return relation;
+        });
+
+    return await this.repo.save(accessScopeToSave);
   }
 
-  async createOneWithRelations(
-    newAccessScope: NewEntity<AccessScope, 'id'>,
-  ): Promise<CreatedEntity<AccessScope, 'id'>> {
-    return await createOneWithRelations(this.repo, newAccessScope);
+  async createOneWithRelations({
+    type,
+    usersWithThatAccessScope,
+  }: Pick<AccessScope, 'type'> & {
+    usersWithThatAccessScope?: Pick<User, 'id'>[];
+  }): Promise<CreatedAccessScopeWithRelations> {
+    const accessScopeToSave = new AccessScope();
+
+    accessScopeToSave.type = type;
+    if (usersWithThatAccessScope)
+      accessScopeToSave.userToAccessScopeRelations =
+        usersWithThatAccessScope.map(({ id: userId }) => {
+          const relation = new UserToAccessScope();
+          relation.userId = userId;
+          return relation;
+        });
+
+    return await this.repo.save(accessScopeToSave);
   }
 
   async deleteMany(accessScopeIds: number[]): Promise<void> {
     await this.repo.delete(accessScopeIds);
   }
 }
+
+type PlainKeysGeneratedAfterInsert = 'id' | 'createdAt' | 'updatedAt';
+
+type CreatedAccessScopeWithRelations = Pick<
+  AccessScope,
+  'type' | PlainKeysGeneratedAfterInsert
+> & {
+  userToAccessScopeRelations: Pick<
+    UserToAccessScope,
+    'accessScopeId' | 'userId'
+  >[];
+};

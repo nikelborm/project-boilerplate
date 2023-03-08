@@ -14,7 +14,7 @@ import {
   TypedConfigService,
 } from './config';
 import { MockDataUseCase } from './mock';
-import { WebsocketGatewayAdapter } from './tools/websocketGatewayAdapter';
+import { WebsocketGatewayAdapter } from './tools';
 
 const SKIP_MOCK = true;
 
@@ -28,7 +28,8 @@ async function bootstrap(): Promise<void> {
   const configService: TypedConfigService<IAppConfigMap> =
     app.get(TypedConfigService);
 
-  configService.logToConsole();
+  if (configService.get(ConfigKeys.IS_DEVELOPMENT))
+    configService.logToConsole();
 
   const mode = configService.get(ConfigKeys.BOOTSTRAP_MODE);
 

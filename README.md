@@ -28,7 +28,7 @@ If you want to develop inside a container
 
 ## Endpoint to execute mock
 
-<http://localhost/api/mock/execute?mockScriptName=fillDBScript>
+<http://localhost/api/mock/execute?mockScriptName=mockUserAndAdminAccessScope>
 
 ## TODO
 

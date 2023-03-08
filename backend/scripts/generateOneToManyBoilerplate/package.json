@@ -1,5 +1,5 @@
 {
-  "name": "generate_many_to_many_boilerplate",
+  "name": "generate_one_to_many_boilerplate",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

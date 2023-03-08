@@ -1,0 +1,11 @@
+{
+  "name": "generate_entity_with_id",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "change-case": "^4.1.2",
+    "prompts": "^2.4.2"
+  }
+}

@@ -13,7 +13,11 @@ export class UserToAccessScopeRepo {
   async createOne(newUserToAccessScope: {
     userId: number;
     accessScopeId: number;
-  }): Promise<void> {
+  }): Promise<{
+    userId: number;
+    accessScopeId: number;
+  }> {
     await this.repo.insert(newUserToAccessScope);
+    return newUserToAccessScope;
   }
 }

@@ -6,7 +6,7 @@ import {
   displayErrorNotification,
   SessionProvider,
   updateTokenPair,
-} from 'utils';
+} from 'tools';
 
 import './assets/styles/index.css';
 import './types';

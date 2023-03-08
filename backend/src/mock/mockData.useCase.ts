@@ -21,12 +21,13 @@ export class MockDataUseCase {
     console.log('\nDATABASE FILLED SUCCESSFULLY\n\n\n');
   }
 
-  async fillDBScript(): Promise<void> {
-    console.log('fillDBScript called');
+  async mockUserAndAdminAccessScope(): Promise<void> {
+    console.log('mockUserAndAdminAccessScope called');
 
     const systemAdminScope = await this.accessScopeRepo.createOneWithRelations({
       type: AccessScopeType.SYSTEM_ADMIN,
     });
+    console.log('systemAdminScope: ', systemAdminScope);
 
     const { user } = await this.userUseCase.createUser({
       email: 'asd@asd.asd',
@@ -39,9 +40,11 @@ export class MockDataUseCase {
       password: 'asdasdasd',
     });
 
-    await this.userToAccessScopeRepo.createOne({
+    console.log('user: ', user);
+    const userToAccessScope = await this.userToAccessScopeRepo.createOne({
       accessScopeId: systemAdminScope.id,
       userId: user.id,
     });
+    console.log('userToAccessScope: ', userToAccessScope);
   }
 }

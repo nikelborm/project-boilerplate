@@ -11,6 +11,10 @@
     {
       "name": "frontend",
       "path": "frontend"
+    },
+    {
+      "name": "shared",
+      "path": "shared"
     }
   ],
   "tasks": {
@@ -73,7 +77,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -89,14 +93,14 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
       {
-        "label": "Mount types/shared in native fs",
+        "label": "Mount shared types and in native fs",
         "type": "shell",
-        "command": "mkdir -p ./frontend/src/types/shared; mkdir -p ./backend/src/types/shared; sudo mount --bind ./shared/src ./frontend/src/types/shared; sudo mount --bind ./shared/src ./backend/src/types/shared",
+        "command": "mkdir -p ./frontend/src/types/shared/ ./backend/src/types/shared/ ./frontend/src/tools/shared/ ./backend/src/tools/shared/; sudo mount --bind ./shared/src/types/shared/ ./frontend/src/types/shared/; sudo mount --bind ./shared/src/types/shared/ ./backend/src/types/shared/; sudo mount --bind ./shared/src/tools/shared/ ./frontend/src/tools/shared/; sudo mount --bind ./shared/src/tools/shared/ ./backend/src/tools/shared/;",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -105,14 +109,14 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
       {
-        "label": "Unmount types/shared in native fs",
+        "label": "Unmount (umount) types/shared in native fs",
         "type": "shell",
-        "command": "sudo umount ./frontend/src/types/shared; sudo umount ./backend/src/types/shared",
+        "command": "sudo umount ./frontend/src/types/shared ./backend/src/types/shared ./frontend/src/tools/shared ./backend/src/tools/shared",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -121,13 +125,13 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
       {
         "label": "shallow clone apache superset ",
-        "type": "shell", // https://superset.apache.org/docs/installation/installing-superset-using-docker-compose/
+        "type": "shell",
         "command": "git clone --depth 1 -b master https://github.com/apache/superset.git; cd superset;",
         "problemMatcher": [],
         "promptOnClose": true,
@@ -137,7 +141,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -279,7 +283,54 @@
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
-        "promptOnClose": true
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
+      },
+      {
+        "label": "Shell in dev backend",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
+      },
+      {
+        "label": "Remove build folder (rm -rf dist) in dev backend",
+        "type": "shell",
+        "dependsOn": [
+          "Run dev"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev rm -rf ./dist",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
       },
       {
         "label": "Migrate dev database",
@@ -330,14 +381,14 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
       {
         "label": "Install yarn dependencies",
         "type": "shell",
-        "command": ". ${HOME}/.nvm/nvm.sh; yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate",
+        "command": ". ${HOME}/.nvm/nvm.sh; yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate; yarn --cwd backend/scripts/generateOneToManyBoilerplate; yarn --cwd backend/scripts/generateEntityWithId",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
@@ -346,7 +397,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -362,7 +413,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -378,7 +429,23 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
+      },
+      {
+        "label": "Generate empty entity with id boilerplate",
+        "type": "shell",
+        "command": ". ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateEntityWithId/",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -394,7 +461,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -410,14 +477,14 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
       {
         "label": "Apply default mock to database",
         "type": "shell",
-        "command": "curl http://localhost/api/mock/execute?mockScriptName=fillDBScript; echo",
+        "command": "curl http://localhost/api/mock/execute?mockScriptName=mockUserAndAdminAccessScope; echo",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {
@@ -426,7 +493,7 @@
           "focus": true,
           "panel": "shared",
           "close": false,
-          "showReuseMessage": false,
+          "showReuseMessage": true,
           "clear": true
         }
       },
@@ -473,7 +540,7 @@
     ]
   },
   "settings": {
-    "eslint.workingDirectories": ["./frontend", "./backend"],
+    "eslint.workingDirectories": ["./frontend", "./backend", "./shared"],
     "eslint.format.enable": true,
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
@@ -602,6 +669,30 @@
     "editor.stickyScroll.enabled": true,
     "rapidapi.terminalLink.enabled": false,
     "files.exclude": {
+      "**/.git": false,
+      "**/.svn": false,
+      "**/.hg": false,
+      "**/CVS": false,
+      "**/.DS_Store": false,
+      "**/Thumbs.db": false,
+      "**/node_modules": false,
+      "**/.nvmrc": false,
+      "**/.prettierrc": false,
+      "**/tsconfig.build.json": false,
+      "**/yarn.lock": false,
+      "**/ormconfig.json": false,
+      "**/nest-cli.json": false,
+      ".env": false,
+      "**/.dockerignore": false,
+      "**/.htpasswd": false,
+      "**/.htpasswd_example": false,
+      "**/dev.nginx.template.conf": false,
+      "**/prod.nginx.template.conf": false,
+      "frontend/scripts": false,
+      "frontend/config": false,
+      "**/.github": false
+    },
+    "explorerExclude.backup": {
       "**/.git": true,
       "**/.svn": true,
       "**/.hg": true,
@@ -625,7 +716,6 @@
       "frontend/config": true,
       "**/.github": true
     },
-    "explorerExclude.backup": {},
     "window.title": "${dirty}${activeEditorLong}${separator}${profileName}"
   },
   "launch": {

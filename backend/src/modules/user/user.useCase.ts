@@ -29,7 +29,9 @@ export class UserUseCase {
     );
   }
 
-  async findMany(search?: string): Promise<model.User[]> {
+  async findMany(
+    search?: string,
+  ): Promise<Pick<model.User, repo.UsuallyReturnedUserPlainKeys>[]> {
     return await this.userRepo.findMany(search);
   }
 
@@ -49,7 +51,7 @@ export class UserUseCase {
         salt,
         ...rest
       }: InsertedUserModel): BasicUserInfoWithIdDTO => rest)(
-        await this.userRepo.createOneWithRelations(this.createUserModel(user)),
+        await this.userRepo.createOnePlain(this.createUserModel(user)),
       );
     } catch (error: any) {
       if (isQueryFailedError(error))
@@ -64,10 +66,10 @@ export class UserUseCase {
   }
 
   async setUserPassword(id: number, password: string): Promise<void> {
-    const candidate = await this.userRepo.getOneById(id);
+    const candidate = await this.userRepo.getOneById(id); // to check if user exists
 
     const updatedUser = this.createUserModel({ ...candidate, password });
-    return await this.userRepo.updateOnePlain({ id, ...updatedUser });
+    await this.userRepo.updateOnePlain({ id, ...updatedUser });
   }
 
   private createUserModel({

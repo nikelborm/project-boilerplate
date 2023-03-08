@@ -13,11 +13,13 @@ FROM prepare as production
 # see node.Dockerfile for this RUN details
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
 
-COPY ./backend/src /app/src/
+COPY ./backend/src/ /app/src/
 
-# we should copy ./shared/src/ even if it is mounted natively. */src/types/shared (all mounted copies, not original WORKSPACE_DIR/shared/src) is in .dockerignore
-# so when we are forming docker build context */src/types/shared will be ignored and we have to copy it from original WORKSPACE_DIR/shared/src
-COPY ./shared/src/ /app/src/types/shared
+# we should copy DOCKER_CONTEXT_DIR/[frontend|backend]/src/[types|tools]/shared even if they are mounted natively
+# Because pathes of possibly mounted dirs (WORKSPACE_DIR/[frontend|backend]/src/[types|tools]/shared) were added to .dockerignore
+# as a conseqence DOCKER_CONTEXT_DIR/[frontend|backend]/src/[types|tools]/shared will be empty in docker context
+COPY ./shared/src/types/shared/ /app/src/types/shared/
+COPY ./shared/src/tools/shared/ /app/src/tools/shared/
 
 RUN nest build
 
@@ -36,7 +38,7 @@ FROM prepare as development
 # see node.Dockerfile for this RUN details
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile
 
-# src and types/shared are both bind-mounted in docker-compose file before running CMD
+# src and [types|tools]/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd
 
 ARG INNER_BACKEND_HTTP_SERVER_PORT

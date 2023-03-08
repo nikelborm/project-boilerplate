@@ -1,1 +1,1 @@
-export { useTokenPairUpdater } from 'utils';
+export { useTokenPairUpdater } from 'tools';

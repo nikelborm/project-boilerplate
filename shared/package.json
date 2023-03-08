@@ -1,8 +1,8 @@
 {
-  "name": "shared_types",
+  "name": "shared_stuff",
   "version": "0.0.1",
   "private": true,
-  "description": "shared types",
+  "description": "shared stuff",
   "license": "UNLICENSED",
   "author": {
     "name": "nikelborm",
@@ -13,6 +13,24 @@
     "class-transformer": "0.5.1",
     "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-webpack-plugin": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
+    "prettier": "^2.8.4",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
   },
   "engineStrict": true,
   "engines": {

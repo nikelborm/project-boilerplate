@@ -1,4 +1,30 @@
 {
-  "extends": "../backend/tsconfig.json",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+  "compilerOptions": {
+    "target": "es2017",
+    "lib" : ["ESNext", "DOM"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "typeRoots": ["./node_modules/@types"],
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "pretty": true,
+    "baseUrl": "./src",
+    "outDir": "./built"
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "./built/**/*"
+  ]
 }

@@ -1,5 +1,6 @@
 **/bin
 **/types/shared
+**/tools/shared
 **/dist
 **/build
 **/node_modules

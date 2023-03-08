@@ -7,7 +7,7 @@ import {
   // invalidatePassthrough,
   // useSession,
   useTokenPairUpdater,
-} from 'utils';
+} from 'tools';
 import { UseInviteLinkDTO } from 'types/shared';
 import { message } from 'antd';
 

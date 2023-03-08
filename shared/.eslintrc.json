@@ -1,0 +1,79 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["prettier"],
+  "ignorePatterns": ["/config", "/scripts"],
+  "rules": {
+    "indent": "off", // off because it does not work with decorators in backend types. Anyway prettier is implementing the same linting
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "@typescript-eslint/lines-between-class-members": "warn",
+    "no-restricted-syntax": "off",
+    "max-classes-per-file": "off",
+    "camelcase": "warn",
+    "no-sequences": "off",
+    "no-void": "off",
+    "no-nested-ternary": "off",
+    "import/no-unresolved": "off", // this resolves @components, @assets etc.
+    "import/prefer-default-export": "off", // WHY: this rule is not aware of my plans to add more exports in the future
+    "jsx-a11y/label-has-associated-control": "off", // this allows <label>s without "for" attribute (auto-associated)
+    "no-debugger": "warn", // WHY: debuggers should be removed before pushing
+    "no-unused-vars": "off", // WHY: unused variables should be commented out
+    "@typescript-eslint/no-unused-vars": "warn", // WHY: unused variables should be commented out
+    "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true }], // WHY: ts-expect-error should be used instead
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "semi",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ],
+    "max-len": [
+      "warn", // WHY: having max-len as an "error" interrupts coding too much.
+      {
+        "code": 100, // 100 was the default somewhere.
+        "ignoreComments": true, // Ignoring comments speeds things up, and adds some expectable logic.
+        "ignoreStrings": true, // Mostly convenient for imports.
+        "ignoreTemplateLiterals": true, // Template literals can obviously be of any length.
+        "ignoreRegExpLiterals": true // Multiline RegExps may be harder to maintain.
+      }
+    ],
+    "no-return-await": "off",
+    "@typescript-eslint/return-await": ["error", "always"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-use-before-define": "off",
+    "arrow-body-style": [1, "as-needed"] // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
+  }
+}

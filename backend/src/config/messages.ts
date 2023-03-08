@@ -6,7 +6,7 @@ const messagesRepeating = {
   validationError: 'Validation error:',
 };
 
-export const messages = {
+const rawMessages = {
   auth: {
     incorrectUser: 'User with this email was not found',
     incorrectPassword: 'Incorrect password',
@@ -27,7 +27,10 @@ export const messages = {
   },
   user: {
     exists: 'User with this email already exists',
+    cantGetNotFoundByEmail: (email: string): string =>
+      `User with email={${email}} was not found`,
   },
+
   accessScope: {
     notSingleAdminScope: `${messagesRepeating.moreThanOne} Admin access scope in the database`,
     notSingleSuperAdminScope: `${messagesRepeating.moreThanOne} Super Admin access scope in the database`,
@@ -37,11 +40,8 @@ export const messages = {
     shouldBeDate: 'Validation failed. Date should be in ISO format',
   },
   repo: {
-    user: {
-      cantGetNotFoundBy: (email: string): string =>
-        `User with email={${email}} was not found`,
-    },
     common: {
+      // Entity name should always be at the end of the function
       cantCreateWithId: (entity: any, entityName?: string): string =>
         `Can\`t create an ${
           entityName || 'entity'
@@ -108,6 +108,88 @@ export const messages = {
         `Unable to insert ${pluralForm(
           entityName || 'entity',
         )}. JSON: {${JSON.stringify(newEntities)}}`,
-    },
+    } as const,
+  } as const,
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function buildProxy<
+  AllowedEntities extends string,
+  T extends typeof rawMessages,
+  ReturnType extends Omit<T, 'repo'> & {
+    repo: MessagesDotRepoType<T, AllowedEntities>;
   },
+>(messages: T, allowedEntities: Set<AllowedEntities>): ReturnType {
+  return new Proxy(messages, {
+    get(messagesTarget, messagesProp, messagesReceiver): any {
+      if (messagesProp !== 'repo')
+        return Reflect.get(messagesTarget, messagesProp, messagesReceiver);
+
+      return new Proxy(Reflect.get(messagesTarget, 'repo', messagesReceiver), {
+        get(messagesRepoTarget, possiblyEntityName, messagesRepoReceiver): any {
+          const possiblyCommonObject = Reflect.get(
+            messagesRepoTarget,
+            possiblyEntityName,
+            messagesRepoReceiver,
+          );
+          if (
+            possiblyEntityName === 'common' ||
+            !allowedEntities.has(possiblyEntityName as AllowedEntities)
+          )
+            return possiblyCommonObject;
+
+          return new Proxy(possiblyCommonObject as any, {
+            get(
+              messagesRepoCommonTarget,
+              messagesRepoCommonMethodName,
+              messagesRepoCommonReceiver,
+            ): any {
+              const possiblyFunc = Reflect.get(
+                messagesRepoCommonTarget,
+                messagesRepoCommonMethodName,
+                messagesRepoCommonReceiver,
+              );
+              if (typeof possiblyFunc === 'function') {
+                return new Proxy(possiblyFunc, {
+                  apply(methodTarget, thisArg, args): any {
+                    return Reflect.apply(methodTarget, thisArg, [
+                      ...args,
+                      possiblyEntityName,
+                    ]);
+                  },
+                });
+              }
+              return possiblyFunc;
+            },
+          }) as unknown;
+        },
+      });
+    },
+  }) as unknown as ReturnType;
+}
+
+export const messages = buildProxy(
+  rawMessages,
+  new Set(['user', 'reservoir'] as const),
+);
+
+type MessagesDotRepoType<
+  T extends typeof rawMessages,
+  AllowedEntities extends string,
+> = {
+  common: T['repo']['common'];
+} & MessagesDotRepoDotNotCommonType<T, AllowedEntities>;
+
+type MessagesDotRepoDotNotCommonType<
+  T extends typeof rawMessages,
+  AllowedEntities extends string,
+  RepoCommon extends T['repo']['common'] = T['repo']['common'],
+> = {
+  [entityName in AllowedEntities]: {
+    [MethodName in keyof RepoCommon]: RepoCommon[MethodName] extends (
+      ...args: [...infer FunctionArgumentsExceptEntityNameAtTheEnd, any]
+    ) => any
+      ? (...args: FunctionArgumentsExceptEntityNameAtTheEnd) => string
+      : never;
+  };
 };

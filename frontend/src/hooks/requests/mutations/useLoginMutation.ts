@@ -1,5 +1,5 @@
 import { useMutation } from 'react-query';
-import { customFetch, useTokenPairUpdater } from 'utils';
+import { customFetch, useTokenPairUpdater } from 'tools';
 import { AuthTokenPairDTO, LoginUserRequestDTO } from 'types/shared';
 
 export function useLoginMutation() {
