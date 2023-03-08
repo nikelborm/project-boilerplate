@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { assertMockScriptNameIsCorrect } from 'src/config';
 import { repo, UserUseCase } from 'src/modules';
 import { AccessScopeType } from 'src/types';
@@ -12,7 +12,13 @@ export class MockDataUseCase {
   ) {}
 
   async executeMock(scriptName?: string): Promise<void> {
-    assertMockScriptNameIsCorrect(scriptName);
+    try {
+      assertMockScriptNameIsCorrect(scriptName);
+    } catch (error) {
+      if (error instanceof Error)
+        throw new BadRequestException(error.message, { cause: error });
+      else throw error;
+    }
 
     console.log(`\n\n\nFILLING STARTED: ${scriptName}\n`);
 

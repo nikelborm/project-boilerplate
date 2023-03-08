@@ -16,6 +16,7 @@ import { LocalStrategy } from './strategy';
 
 @Module({
   imports: [
+    UserModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: (configService: TypedConfigService<IAppConfigMap>) => ({
@@ -23,8 +24,6 @@ import { LocalStrategy } from './strategy';
       }),
       inject: [TypedConfigService],
     }),
-
-    UserModule,
   ],
   providers: [
     AuthUseCase,

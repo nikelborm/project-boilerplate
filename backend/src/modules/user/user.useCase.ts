@@ -13,8 +13,9 @@ import {
   CreateOneUserResponse,
   CreateUserDTO,
   PG_UNIQUE_CONSTRAINT_VIOLATION,
+  UserAuthInfo,
 } from 'src/types';
-import { model, repo } from '../infrastructure';
+import { repo } from '../infrastructure';
 
 @Injectable()
 export class UserUseCase {
@@ -29,10 +30,17 @@ export class UserUseCase {
     );
   }
 
-  async findMany(
-    search?: string,
-  ): Promise<Pick<model.User, repo.UsuallyReturnedUserPlainKeys>[]> {
+  async findMany(search?: string): Promise<repo.SelectedOnePlainUser[]> {
     return await this.userRepo.findMany(search);
+  }
+
+  async getOneByIdWithAccessScopes(userId: number): Promise<UserAuthInfo> {
+    const user = await this.userRepo.getOneByIdWithAccessScopes(userId);
+    if (!user)
+      throw new BadRequestException(
+        messages.repo.common.cantGetNotFoundById(userId, 'user'),
+      );
+    return user;
   }
 
   async createManyUsers(

@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { messages } from 'src/config';
 import { insertManyPlain, insertOnePlain } from 'src/tools';
-import { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
+import type { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
 import { ILike, Repository } from 'typeorm';
 import { User } from '../model';
 
@@ -17,23 +17,21 @@ export class UserRepo {
     return await this.repo.find();
   }
 
-  async findMany(
-    partOfNameOrEmail?: string,
-  ): Promise<Pick<User, UsuallyReturnedUserPlainKeys>[]> {
+  async findMany(partOfNameOrEmail?: string): Promise<SelectedOnePlainUser[]> {
     return await this.repo.find({
-      where: partOfNameOrEmail
-        ? [
-            { firstName: ILike(`%${partOfNameOrEmail}%`) },
-            { lastName: ILike(`%${partOfNameOrEmail}%`) },
-            { email: ILike(`%${partOfNameOrEmail}%`) },
-            { nickname: ILike(`%${partOfNameOrEmail}%`) },
-          ]
-        : void 0,
+      ...(partOfNameOrEmail && {
+        where: [
+          { firstName: ILike(`%${partOfNameOrEmail}%`) },
+          { lastName: ILike(`%${partOfNameOrEmail}%`) },
+          { email: ILike(`%${partOfNameOrEmail}%`) },
+          { nickname: ILike(`%${partOfNameOrEmail}%`) },
+        ],
+      }),
     });
   }
 
-  async getOneByIdWithAccessScopes(id: number): Promise<UserAuthInfo> {
-    const user = await this.repo.findOne({
+  async getOneByIdWithAccessScopes(id: number): Promise<UserAuthInfo | null> {
+    return await this.repo.findOne({
       where: { id },
       relations: {
         accessScopes: true,
@@ -54,16 +52,9 @@ export class UserRepo {
         },
       },
     });
-    if (!user)
-      throw new BadRequestException(
-        messages.repo.common.cantGetNotFoundById(id, 'user'),
-      );
-    return user;
   }
 
-  async getOneById(
-    id: number,
-  ): Promise<Pick<User, UsuallyReturnedUserPlainKeys>> {
+  async getOneById(id: number): Promise<SelectedOnePlainUser> {
     const user = await this.repo.findOne({
       where: { id },
     });
@@ -76,14 +67,14 @@ export class UserRepo {
 
   async findOneByExactEmail(
     userEmail: string,
-  ): Promise<Pick<User, UsuallyReturnedUserPlainKeys> | null> {
+  ): Promise<SelectedOnePlainUser | null> {
     return await this.repo.findOne({ where: { email: userEmail } });
   }
 
   async findOneByExactName(
     firstName: string,
     lastName: string,
-  ): Promise<Pick<User, UsuallyReturnedUserPlainKeys> | null> {
+  ): Promise<SelectedOnePlainUser | null> {
     return await this.repo.findOne({ where: { firstName, lastName } });
   }
 
@@ -93,25 +84,25 @@ export class UserRepo {
     return await insertOnePlain<CreatedOnePlainUser>(this.repo, newUser);
   }
 
+  async createManyPlain(
+    newUsers: Pick<User, PlainKeysAllowedToModify>[],
+  ): Promise<CreatedOnePlainUser[]> {
+    return await insertManyPlain<CreatedOnePlainUser>(this.repo, newUsers);
+  }
+
   async updateOnePlain({
     id,
     ...existingUser
-  }: Pick<User, PrimaryKeys | PlainKeysAllowedToModify>): Promise<
-    Pick<User, PrimaryKeys | PlainKeysAllowedToModify>
-  > {
-    const updatedUser = await this.repo.update(id, existingUser);
-    console.log('updatedUser: ', updatedUser);
-    updatedUser;
-    return {} as any;
+  }: UpdatedOnePlainUser): Promise<UpdatedOnePlainUser> {
+    await this.repo.update(id, existingUser);
+    return { id, ...existingUser };
   }
 
   async updateManyPlain(
-    existingUsers: Pick<User, PlainKeysAllowedToModify>[],
-  ): Promise<Pick<User, PrimaryKeys | PlainKeysAllowedToModify>[]> {
+    existingUsers: UpdatedOnePlainUser[],
+  ): Promise<UpdatedOnePlainUser[]> {
     const updatedUsers = await this.repo.save(existingUsers);
-    console.log('updatedUsers: ', updatedUsers);
-    updatedUsers;
-    return {} as any;
+    return updatedUsers;
   }
 
   async findOneByEmailWithAccessScopesAndPasswordHash(
@@ -155,7 +146,7 @@ type PlainKeysGeneratedAfterInsert = PrimaryKeys | 'createdAt' | 'updatedAt';
 
 type PlainKeysAllowedToModify = RegularPlainKeys | 'salt' | 'passwordHash';
 
-export type UsuallyReturnedUserPlainKeys =
+type UsuallyReturnedUserPlainKeys =
   | PlainKeysGeneratedAfterInsert
   | RegularPlainKeys;
 
@@ -169,7 +160,12 @@ type RegularPlainKeys =
   | 'gender'
   | 'phone';
 
-type CreatedOnePlainUser = Pick<
+export type CreatedOnePlainUser = Pick<
   User,
   PlainKeysAllowedToModify | PlainKeysGeneratedAfterInsert
 >;
+
+export type UpdatedOnePlainUser = Pick<User, PrimaryKeys> &
+  Partial<Pick<User, PlainKeysAllowedToModify>>;
+
+export type SelectedOnePlainUser = Pick<User, UsuallyReturnedUserPlainKeys>;

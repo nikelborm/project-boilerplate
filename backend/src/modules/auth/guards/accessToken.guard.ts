@@ -5,14 +5,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
+import type { Request } from 'express';
 import {
   ConfigKeys,
   IAppConfigMap,
   messages,
   TypedConfigService,
 } from 'src/config';
-import { repo } from 'src/modules/infrastructure';
+import { UserUseCase } from 'src/modules/user';
 import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
 import {
   AllowedForArgs,
@@ -29,7 +29,7 @@ export class AccessTokenGuard implements CanActivate {
   constructor(
     private readonly configService: TypedConfigService<IAppConfigMap>,
     private readonly accessTokenUseCase: AccessTokenUseCase,
-    private readonly userRepo: repo.UserRepo,
+    private readonly userUseCase: UserUseCase,
     private readonly reflector: Reflector,
   ) {
     this.IS_DEVELOPMENT = this.configService.get(ConfigKeys.IS_DEVELOPMENT);
@@ -68,7 +68,7 @@ export class AccessTokenGuard implements CanActivate {
     );
 
     const userFromDB: UserAuthInfo =
-      await this.userRepo.getOneByIdWithAccessScopes(userId);
+      await this.userUseCase.getOneByIdWithAccessScopes(userId);
 
     request.user = userFromDB;
 

@@ -1,20 +1,23 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { createHash, timingSafeEqual } from 'crypto';
-import { ConfigKeys, IAppConfigMap, messages } from 'src/config';
 import {
+  ConfigKeys,
+  IAppConfigMap,
+  messages,
+  TypedConfigService,
+} from 'src/config';
+import { UserUseCase } from 'src/modules/user';
+import type {
   AuthTokenPairDTO,
   CreateUserDTO,
   RegisterUserResponseDTO,
   UserAuthInfo,
   UserForLoginAttemptValidation,
 } from 'src/types';
-import { repo } from '../../infrastructure';
+import { v4 as uuid } from 'uuid';
 import { AccessTokenUseCase } from './accessToken.useCase';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 import { RefreshTokenUseCase } from './refreshToken.useCase';
-import { TypedConfigService } from 'src/config';
-import { UserUseCase } from 'src/modules/user';
-import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthUseCase {
@@ -24,7 +27,6 @@ export class AuthUseCase {
     private readonly accessTokenUseCase: AccessTokenUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly userUseCase: UserUseCase,
-    private readonly userRepo: repo.UserRepo,
     private readonly configService: TypedConfigService<IAppConfigMap>,
     private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
   ) {
@@ -106,7 +108,7 @@ export class AuthUseCase {
       uuidOfSessionToRemove,
     });
 
-    const user = await this.userRepo.getOneByIdWithAccessScopes(userId);
+    const user = await this.userUseCase.getOneByIdWithAccessScopes(userId);
 
     return {
       accessToken: this.accessTokenUseCase.getAccessToken(user, newSessionUUID),

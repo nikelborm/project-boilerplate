@@ -98,7 +98,7 @@
         }
       },
       {
-        "label": "Mount shared types and in native fs",
+        "label": "Mount shared types and tools in native fs",
         "type": "shell",
         "command": "mkdir -p ./frontend/src/types/shared/ ./backend/src/types/shared/ ./frontend/src/tools/shared/ ./backend/src/tools/shared/; sudo mount --bind ./shared/src/types/shared/ ./frontend/src/types/shared/; sudo mount --bind ./shared/src/types/shared/ ./backend/src/types/shared/; sudo mount --bind ./shared/src/tools/shared/ ./frontend/src/tools/shared/; sudo mount --bind ./shared/src/tools/shared/ ./backend/src/tools/shared/;",
         "problemMatcher": [],
@@ -482,7 +482,7 @@
         }
       },
       {
-        "label": "Apply default mock to database",
+        "label": "Apply user mock to database",
         "type": "shell",
         "command": "curl http://localhost/api/mock/execute?mockScriptName=mockUserAndAdminAccessScope; echo",
         "promptOnClose": false,
