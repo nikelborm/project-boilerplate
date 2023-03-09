@@ -2,7 +2,7 @@
 // @ts-check
 import { camelCase, pascalCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, writeFile, mkdir } from 'fs/promises';
+import { appendFile, writeFile, mkdir, readFile } from 'fs/promises';
 import chalk from 'chalk';
 
 const { entityName, dryRun } = await prompts([
@@ -205,14 +205,36 @@ export class FindMany${pascal}sResponseDTO {
 }
 `;
 
-// getModule
-// getIndex
-// getUseCase
-// getController
+const getNewAppModule = async () => {
+  const appModuleImportsRegexp = /(imports:[ \[\n\A-Za-z,]*,)[ \n]*]/g;
 
-// getCreateOneAndManyRequestDTO
-// getCreateOneAndManyResponseDTO
-// getFindOneOrManyResponseDTO
+  const appModuleEcmascriptImportsRegexp =
+    /(import [ \{\n\A-Za-z,]*,)[ \n]*} *from *'.\/modules';/g;
+
+  let appModuleTsFileContent = (
+    await readFile('./backend/src/app.module.ts')
+  ).toString();
+
+  let { ['1']: group, index } = [
+    ...appModuleTsFileContent.matchAll(appModuleImportsRegexp),
+  ][0];
+  if (!index) throw new Error('appModuleImportsRegexp was not found');
+
+  appModuleTsFileContent = `${appModuleTsFileContent.slice(
+    0,
+    index + group.length,
+  )}
+    ${pascal}Module,${appModuleTsFileContent.slice(index + group.length)}`;
+
+  ({ ['1']: group, index } = [
+    ...appModuleTsFileContent.matchAll(appModuleEcmascriptImportsRegexp),
+  ][0]);
+
+  if (!index) throw new Error('appModuleEcmascriptImportsRegexp was not found');
+
+  return `${appModuleTsFileContent.slice(0, index + group.length)}
+  ${pascal}Module,${appModuleTsFileContent.slice(index + group.length)}`;
+};
 
 if (!dryRun) {
   await mkdir(`./backend/src/modules/${camel}`);
@@ -355,6 +377,15 @@ if (!dryRun) {
       `\n------ index.ts reexport of getOneOrMany${pascal}s.dto was written to disk:\n`,
     ),
   );
+}
+
+console.log(chalk.cyan(`\n------ new AppModule.ts were generated\n`));
+const newAppModule = await getNewAppModule();
+console.log(newAppModule);
+
+if (!dryRun) {
+  await writeFile(`./backend/src/app.module.ts`, newAppModule);
+  console.log(chalk.gray(`\n------ new AppModule.ts was written to disk:\n`));
 }
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));
