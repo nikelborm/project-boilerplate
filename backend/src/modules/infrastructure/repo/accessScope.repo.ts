@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { messages } from 'src/config';
 import { Repository } from 'typeorm';
 import { AccessScope, User, UserToAccessScope } from '../model';
 
@@ -13,13 +12,11 @@ export class AccessScopeRepo {
 
   async getOneById(
     id: number,
-  ): Promise<Pick<AccessScope, 'id' | 'type' | 'createdAt' | 'updatedAt'>> {
-    const accessScope = await this.repo.findOne({ where: { id } });
-    if (!accessScope)
-      throw new BadRequestException(
-        messages.repo.common.cantGetNotFoundById(id, 'accessScope'),
-      );
-    return accessScope;
+  ): Promise<Pick<
+    AccessScope,
+    'id' | 'type' | 'createdAt' | 'updatedAt'
+  > | null> {
+    return await this.repo.findOne({ where: { id } });
   }
 
   async updateOneWithRelations({

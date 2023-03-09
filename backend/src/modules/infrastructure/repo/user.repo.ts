@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { messages } from 'src/config';
 import { insertManyPlain, insertOnePlain } from 'src/tools';
 import type { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
 import { ILike, Repository } from 'typeorm';
@@ -13,7 +12,7 @@ export class UserRepo {
     private readonly repo: Repository<User>,
   ) {}
 
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<SelectedOnePlainUser[]> {
     return await this.repo.find();
   }
 
@@ -54,15 +53,10 @@ export class UserRepo {
     });
   }
 
-  async getOneById(id: number): Promise<SelectedOnePlainUser> {
-    const user = await this.repo.findOne({
+  async findOneById(id: number): Promise<SelectedOnePlainUser | null> {
+    return await this.repo.findOne({
       where: { id },
     });
-    if (!user)
-      throw new BadRequestException(
-        messages.repo.common.cantGetNotFoundById(id, 'user'),
-      );
-    return user;
   }
 
   async findOneByExactEmail(
@@ -107,8 +101,8 @@ export class UserRepo {
 
   async findOneByEmailWithAccessScopesAndPasswordHash(
     email: string,
-  ): Promise<UserForLoginAttemptValidation> {
-    const user = await this.repo
+  ): Promise<UserForLoginAttemptValidation | null> {
+    return await this.repo
       .createQueryBuilder('user')
       .leftJoin('user.accessScopes', 'accessScopes')
       .addSelect([
@@ -129,11 +123,6 @@ export class UserRepo {
       ])
       .where('user.email = :email', { email })
       .getOne();
-    if (!user)
-      throw new BadRequestException(
-        messages.user.cantGetNotFoundByEmail(email),
-      );
-    return user;
   }
 
   async delete(id: number): Promise<void> {
