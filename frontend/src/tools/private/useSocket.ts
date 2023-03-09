@@ -1,5 +1,5 @@
 import { Manager, Socket } from 'socket.io-client';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const socketManager = new Manager({
   transports: ['websocket', 'polling'],
@@ -7,53 +7,95 @@ const socketManager = new Manager({
   autoConnect: false,
 });
 
-export function useSocket(config: {
+export function useSocket({
+  namespace,
+  handlers,
+  onConnect,
+  onDisconnect,
+}: {
   namespace: string;
   handlers: Record<string, (message?: any) => void>;
   onConnect?: (socket: Socket) => void;
   onDisconnect?: (socket: Socket) => void;
 }) {
-  const socket = socketManager.socket(config.namespace, {
-    auth: {
-      // TODO: подключить сюда токен из локалхоста
-      token: '123',
-    },
-  });
+  const socket = useRef<Socket | null>(null);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      config.onConnect?.(socket);
+    const socketToBeCached = socketManager.socket(namespace, {
+      auth: {
+        // TODO: подключить сюда токен из локалхоста
+        token: '123',
+      },
     });
+    socketToBeCached.connect();
 
-    socket.on('disconnect', () => {
-      config.onDisconnect?.(socket);
+    socket.current = socketToBeCached;
+    return () => {
+      socketToBeCached.disconnect();
+    };
+  }, [namespace]);
+
+  useEffect(() => {
+    if (socket.current === null) return () => {};
+    socket.current.on('connect', () => {
+      if (socket.current === null) return;
+      onConnect?.(socket.current);
     });
+    return () => {
+      if (socket.current === null) return;
+      socket.current.off('connect');
+    };
+  }, [namespace, onConnect]);
 
-    for (const [event, handler] of Object.entries(config.handlers)) {
-      socket.on(event, handler);
-    }
+  useEffect(() => {
+    if (socket.current === null) return () => {};
+    socket.current.on('disconnect', () => {
+      if (socket.current === null) return;
+      onDisconnect?.(socket.current);
+    });
+    return () => {
+      if (socket.current === null) return;
+      socket.current.off('disconnect');
+    };
+  }, [namespace, onDisconnect]);
 
-    socket.on('exception', (backendError) => {
+  useEffect(() => {
+    if (socket.current === null) return () => {};
+    socket.current.on('exception', (backendError) => {
       // eslint-disable-next-line no-console
       console.error('error: ', backendError);
     });
-
-    socket.connect();
     return () => {
-      // do not forget to off every new socket.on event handlers
-      socket.off('connect');
-      socket.off('disconnect');
-
-      for (const event of Object.keys(config.handlers)) {
-        socket.off(event);
-      }
-      socket.off('exception');
+      if (socket.current === null) return;
+      socket.current.off('exception');
     };
-  }, []);
+  }, [namespace]);
+
+  useEffect(() => {
+    if (socket.current === null) return () => {};
+    for (const [event, handler] of Object.entries(handlers)) {
+      socket.current.on(event, handler);
+    }
+
+    socket.current.connect();
+    return () => {
+      if (socket.current === null) return;
+      for (const event of Object.keys(handlers)) {
+        socket.current.off(event);
+      }
+    };
+  }, [namespace, handlers]);
+
+  const send = useCallback(
+    (event: string, data: any) => {
+      if (socket.current === null) return;
+      socket.current.emit(event, data);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [namespace],
+  );
 
   return {
-    send: (event: string, data: any) => {
-      socket.emit(event, data);
-    },
+    send,
   };
 }

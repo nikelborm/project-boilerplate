@@ -9,6 +9,7 @@ export function useIdSearchParam(fallback: RoutesEnum) {
   const id = parseInt(searchParams.get('id') as string, 10);
   useEffect(() => {
     if (Number.isNaN(id)) navigate(`/account/${fallback}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, fallback]);
 
   return id;

@@ -144,7 +144,7 @@ export function useTokenPairUpdater() {
 }
 
 export function SessionProvider({ children }) {
-  const rerenderSessionDependencies = useState(1)[1];
+  const [, rerenderSessionDependencies] = useState(1);
 
   useEffect(() => {
     const handle = () => rerenderSessionDependencies(Math.random());

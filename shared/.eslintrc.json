@@ -71,6 +71,7 @@
     "no-return-await": "off",
     "@typescript-eslint/return-await": ["error", "always"],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/dot-notation": "off",
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
     "@typescript-eslint/no-use-before-define": "off",
