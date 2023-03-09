@@ -1,18 +1,18 @@
-import { INestApplicationContext } from '@nestjs/common';
+import type { INestApplicationContext } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions } from 'socket.io';
+import type { ServerOptions } from 'socket.io';
 import { ConfigKeys, IAppConfigMap, TypedConfigService } from 'src/config';
 
 // https://github.com/nestjs/nest/issues/5676#issuecomment-749719792
 export class WebsocketGatewayAdapter extends IoAdapter {
   constructor(
-    private app: INestApplicationContext,
+    app: INestApplicationContext,
     private readonly configService: TypedConfigService<IAppConfigMap>,
   ) {
     super(app);
   }
 
-  createIOServer(
+  override createIOServer(
     _: /* declaration of web socket port which we do ignore */ number,
     options?: ServerOptions & { namespace: string | RegExp },
   ): any {

@@ -1,4 +1,4 @@
-import { IUserToAccessScope } from 'src/types';
+import type { IUserToAccessScope } from 'src/types';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { AccessScope, User } from '.';
 

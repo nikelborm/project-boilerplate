@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { UpdateAccessScopeDTO } from 'src/types';
-import { model, repo } from '../infrastructure';
+import type { UpdateAccessScopeDTO } from 'src/types';
+import { repo } from '../infrastructure';
 
 @Injectable()
 export class AccessScopeUseCase implements OnModuleDestroy, OnModuleInit {

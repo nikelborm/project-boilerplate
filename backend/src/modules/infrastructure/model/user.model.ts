@@ -1,5 +1,5 @@
 import { PrimaryIdentityColumn } from 'src/tools';
-import { IUser } from 'src/types';
+import type { IUser } from 'src/types';
 import {
   Column,
   CreateDateColumn,

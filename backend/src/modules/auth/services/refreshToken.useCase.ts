@@ -7,7 +7,7 @@ import {
   messages,
   TypedConfigService,
 } from 'src/config';
-import { UserAuthInfo, UserRefreshTokenPayload } from 'src/types';
+import type { UserAuthInfo, UserRefreshTokenPayload } from 'src/types';
 import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
 
 @Injectable()

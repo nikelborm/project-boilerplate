@@ -94,9 +94,9 @@ export class InMemoryWhitelistedSessionStore {
     );
   }
 
-  private clearExpiredWhitelistedSessions(): void {
-    return;
-  }
+  // private clearExpiredWhitelistedSessions(): void {
+  //   return;
+  // }
 }
 
 type UserId = number;

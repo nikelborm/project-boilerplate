@@ -1,4 +1,4 @@
-import { DatabaseError } from 'pg-protocol';
+import type { DatabaseError } from 'pg-protocol';
 import { QueryFailedError } from 'typeorm';
 
 export const isQueryFailedError = (

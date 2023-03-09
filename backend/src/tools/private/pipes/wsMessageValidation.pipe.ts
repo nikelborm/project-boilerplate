@@ -12,7 +12,7 @@ export class WSMessageValidationPipe extends ValidationPipe {
     super({ ...validationPipeConfig, ...options });
   }
 
-  async transform(
+  override async transform(
     value: Record<any, any>,
     metadata: ArgumentMetadata,
   ): Promise<any> {

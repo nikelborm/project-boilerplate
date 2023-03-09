@@ -17,7 +17,7 @@ export function remapToIndexedObject<
   U extends T[keyof T],
 >(
   array: T[],
-  getIndexKey = (element: T): E => element.id,
+  getIndexKey = (element: T): E => element['id'],
   getValueForKey: ((element: T) => U) | null = null,
 ): Record<E, U | T> {
   if (getValueForKey === null) {

@@ -1,30 +1,50 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib" : ["ESNext", "DOM"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
+    "module": "commonjs",
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "importsNotUsedAsValues": "error",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "preserveWatchOutput": true,
+    "allowUnusedLabels": false,
+    "outDir": "./dist",
+    "allowUnreachableCode": false,
+    "baseUrl": "./",
+    "incremental": true,
+    "exactOptionalPropertyTypes": true,
+    "allowJs": false,
+    "noErrorTruncation":true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "noEmit": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "strict": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "typeRoots": ["./node_modules/@types"],
-    "experimentalDecorators": true,
-    "noImplicitAny": false,
-    "pretty": true,
-    "baseUrl": "./src",
-    "outDir": "./built"
-  },
-  "include": [
-    "**/*"
-  ],
-  "exclude": [
-    "./built/**/*"
-  ]
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "noUncheckedIndexedAccess":true,
+    "useUnknownInCatchVariables": true,
+    "strictPropertyInitialization": true,
+    "alwaysStrict":true,
+    "noUnusedParameters": false,
+    "noImplicitUseStrict": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "noStrictGenericChecks": false,
+    "plugins": [
+      {
+        "name": "typescript-strict-plugin",
+      }
+    ]
+  }
 }

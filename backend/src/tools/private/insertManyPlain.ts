@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 
 export async function insertManyPlain<Out extends Record<string, any>>(
   repo: Repository<any>,
