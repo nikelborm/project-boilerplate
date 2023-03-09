@@ -533,7 +533,7 @@
       {
         "label": "clear docker",
         "type": "shell",
-        "command": "docker stop $(docker ps -a -q); docker rm --force $(docker ps -a -q); docker volume prune --force; docker rmi --force $(docker images -a -q); docker system prune -a -f --volumes; docker volume rm $(docker volume ls -q); docker builder prune -a -f; docker buildx prune -a -f",
+        "command": "docker stop $(docker ps -a -q); docker builder rm -f my_builder; docker rm --force $(docker ps -a -q); docker volume prune --force; docker rmi --force $(docker images -a -q); docker system prune -a -f --volumes; docker volume rm $(docker volume ls -q); docker builder prune -a -f; docker buildx prune -a -f",
         "promptOnClose": false,
         "problemMatcher": []
       }
