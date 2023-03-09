@@ -2,6 +2,7 @@
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
+import chalk from 'chalk';
 
 const { first, second } = await prompts([
   {
@@ -53,14 +54,22 @@ const getMixinToSingleSideOfRelationInterface = () => `
   ${firstCamel}s!: I${firstPascal}[];
 `;
 
-console.log(`\n------ Mixin for ${firstPascal} model:\n`);
-console.log(getMixinToMultipleSideOfRelation());
+console.log(
+  `\n------ Mixin for ${firstPascal} model (needs to be added manually):\n`,
+);
+console.log(chalk.green(getMixinToMultipleSideOfRelation()));
 
-console.log(`\n------ Mixin for ${secondPascal} model:\n`);
-console.log(getMixinToSingleSideOfRelation());
+console.log(
+  `\n------ Mixin for ${secondPascal} model (needs to be added manually):\n`,
+);
+console.log(chalk.green(getMixinToSingleSideOfRelation()));
 
-console.log(`\n------ Mixin for I${firstPascal} model interface:\n`);
-console.log(getMixinToMultipleSideOfRelationInterface());
+console.log(
+  `\n------ Mixin for I${firstPascal} model interface (needs to be added manually):\n`,
+);
+console.log(chalk.green(getMixinToMultipleSideOfRelationInterface()));
 
-console.log(`\n------ Mixin for I${secondPascal} model interface:\n`);
-console.log(getMixinToSingleSideOfRelationInterface());
+console.log(
+  `\n------ Mixin for I${secondPascal} model interface (needs to be added manually):\n`,
+);
+console.log(chalk.green(getMixinToSingleSideOfRelationInterface()));
