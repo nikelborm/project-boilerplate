@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   nginx-dev:
-    image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-nginx-dev"
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-nginx-dev"
     restart: unless-stopped
     depends_on:
       - backend-dev
@@ -29,7 +29,7 @@ services:
         ipv4_address: 10.5.0.2
 
   frontend-dev:
-    image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-frontend-dev"
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-frontend-dev"
     restart: unless-stopped
     build:
       context: ../
@@ -61,7 +61,7 @@ services:
       vscode-front-net-dev:
 
   backend-dev:
-    image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-backend-dev"
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-dev"
     restart: unless-stopped
     depends_on:
       - postgres-dev

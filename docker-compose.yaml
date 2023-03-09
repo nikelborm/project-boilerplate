@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   nginx-prod:
-    image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-nginx-prod"
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-nginx-prod"
     restart: always
     depends_on:
       - backend-prod
@@ -41,7 +41,7 @@ services:
   #     - ./data/certbot/logs:/var/log/letsencrypt/
 
   backend-prod:
-    image: "${DOCKER_HUB_NICKNAME}/private:${COMPOSE_PROJECT_NAME}-backend-prod"
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-prod"
     restart: always
     depends_on:
       - postgres-prod
