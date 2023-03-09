@@ -55,21 +55,31 @@ const getMixinToSingleSideOfRelationInterface = () => `
 `;
 
 console.log(
-  `\n------ Mixin for ${firstPascal} model (needs to be added manually):\n`,
+  chalk.cyan(
+    `\n------ Mixin for ${firstPascal} model (needs to be added manually):\n`,
+  ),
 );
 console.log(chalk.green(getMixinToMultipleSideOfRelation()));
 
 console.log(
-  `\n------ Mixin for ${secondPascal} model (needs to be added manually):\n`,
+  chalk.cyan(
+    `\n------ Mixin for ${secondPascal} model (needs to be added manually):\n`,
+  ),
 );
 console.log(chalk.green(getMixinToSingleSideOfRelation()));
 
 console.log(
-  `\n------ Mixin for I${firstPascal} model interface (needs to be added manually):\n`,
+  chalk.cyan(
+    `\n------ Mixin for I${firstPascal} model interface (needs to be added manually):\n`,
+  ),
 );
 console.log(chalk.green(getMixinToMultipleSideOfRelationInterface()));
 
 console.log(
-  `\n------ Mixin for I${secondPascal} model interface (needs to be added manually):\n`,
+  chalk.cyan(
+    `\n------ Mixin for I${secondPascal} model interface (needs to be added manually):\n`,
+  ),
 );
 console.log(chalk.green(getMixinToSingleSideOfRelationInterface()));
+
+console.log(chalk.cyan(`\n------ executed successfully\n`));
