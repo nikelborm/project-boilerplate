@@ -162,9 +162,17 @@ if (selectedFilesToGenerate.includes('databaseModel')) {
       `./backend/src/modules/infrastructure/model/${camel}.model.ts`,
       getModel(),
     );
+    console.log(
+      chalk.gray(`\n------ new ${pascal} model was written to disk:\n`),
+    );
     await appendFile(
       `./backend/src/modules/infrastructure/model/index.ts`,
       `export * from './${camel}.model';\n`,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ index.ts reexport of ${pascal} model was written to disk:\n`,
+      ),
     );
   }
 }
@@ -178,9 +186,17 @@ if (selectedFilesToGenerate.includes('interface')) {
       `./shared/src/types/shared/model/${camel}.model.ts`,
       getInterface(),
     );
+    console.log(
+      chalk.gray(`\n------ new I${pascal} interface was written to disk:\n`),
+    );
     await appendFile(
       `./shared/src/types/shared/model/index.ts`,
       `export * from './${camel}.model';\n`,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ index.ts reexport of I${pascal} interface was written to disk:\n`,
+      ),
     );
   }
 }
@@ -194,9 +210,19 @@ if (selectedFilesToGenerate.includes('repository')) {
       `./backend/src/modules/infrastructure/repo/${camel}.repo.ts`,
       getRepo(),
     );
+    console.log(
+      chalk.gray(
+        `\n------ new ${pascal}Repo repository was written to disk:\n`,
+      ),
+    );
     await appendFile(
       `./backend/src/modules/infrastructure/repo/index.ts`,
       `export * from './${camel}.repo';\n`,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ index.ts reexport of ${pascal}Repo repository was written to disk:\n`,
+      ),
     );
   }
 }
