@@ -3,6 +3,7 @@
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import { appendFile, writeFile } from 'fs/promises';
+import chalk from 'chalk';
 
 const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
@@ -13,7 +14,8 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
     type: 'toggle',
     name: 'dryRun',
-    message: 'Dry run? (Should script skip real writes to file?)',
+    message:
+      'Dry run? (Should script skip real writes to file?) [Press Tab to switch mode]',
     initial: false,
     active: 'yes',
     inactive: 'no',
@@ -31,8 +33,6 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
     hint: '- Space to select. Enter to submit',
   },
 ]);
-
-console.log(selectedFilesToGenerate);
 
 const pascal = pascalCase(first);
 const snake = snakeCase(first);
@@ -154,7 +154,7 @@ export type SelectedOnePlain${pascal} = Pick<${pascal}, UsuallyReturned${pascal}
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {
-  console.log(`new ${pascal} model was generated\n`);
+  console.log(chalk.cyan(`\n------ new ${pascal} model was generated\n`));
   console.log(getModel());
 
   if (!dryRun) {
@@ -170,7 +170,7 @@ if (selectedFilesToGenerate.includes('databaseModel')) {
 }
 
 if (selectedFilesToGenerate.includes('interface')) {
-  console.log(`\nnew I${pascal} interface was generated\n`);
+  console.log(chalk.cyan(`\n------ new I${pascal} interface was generated\n`));
   console.log(getInterface());
 
   if (!dryRun) {
@@ -186,7 +186,7 @@ if (selectedFilesToGenerate.includes('interface')) {
 }
 
 if (selectedFilesToGenerate.includes('repository')) {
-  console.log(`new ${pascal}Repo repo was generated\n`);
+  console.log(chalk.cyan(`\n------ new ${pascal}Repo repo was generated\n`));
   console.log(getRepo());
 
   if (!dryRun) {
@@ -200,3 +200,5 @@ if (selectedFilesToGenerate.includes('repository')) {
     );
   }
 }
+
+console.log(chalk.cyan(`\n------ executed successfully\n`));
