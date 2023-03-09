@@ -25,7 +25,7 @@ const snake = snakeCase(first);
 const camel = camelCase(first);
 
 const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
-import { I${pascal} } from 'src/types';
+import type { I${pascal} } from 'src/types';
 import { CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: '${snake}' })

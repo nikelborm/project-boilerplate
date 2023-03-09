@@ -36,9 +36,10 @@ const secondCamel = camelCase(second);
 const getIntermediateModel =
   () => `import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ${secondPascal}, ${firstPascal} } from '.';
+import type { I${firstPascal}To${secondPascal} } from 'src/types';
 
 @Entity({ name: '${firstSnake}_to_${secondSnake}' })
-export class ${firstPascal}To${secondPascal} {
+export class ${firstPascal}To${secondPascal} implements I${firstPascal}To${secondPascal} {
   @ManyToOne(
     () => ${firstPascal},
     (${firstCamel}) => ${firstCamel}.${firstCamel}To${secondPascal}Relations,
@@ -70,7 +71,7 @@ export class ${firstPascal}To${secondPascal} {
 `;
 
 const getIntermediateModelInterface =
-  () => `import { I${secondPascal}, I${firstPascal} } from '.';
+  () => `import type { I${secondPascal}, I${firstPascal} } from '.';
 
 export class I${firstPascal}To${secondPascal} {
   ${firstCamel}!: I${firstPascal};
