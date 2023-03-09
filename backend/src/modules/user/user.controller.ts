@@ -49,8 +49,9 @@ export class UserController {
     @ValidatedBody()
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
+    const responses = await this.userUseCase.createManyUsers(users);
     return {
-      responses: await this.userUseCase.createManyUsers(users),
+      createdUsers: responses.map(({ user }) => user),
     };
   }
 

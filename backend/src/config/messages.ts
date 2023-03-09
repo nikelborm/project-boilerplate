@@ -137,19 +137,20 @@ function buildProxy<
             !allowedEntities.has(possiblyEntityName as AllowedEntities)
           )
             return possiblyCommonObject;
-
-          return new Proxy(possiblyCommonObject as any, {
-            get(
-              messagesRepoCommonTarget,
-              messagesRepoCommonMethodName,
-              messagesRepoCommonReceiver,
-            ): any {
-              const possiblyFunc = Reflect.get(
+          return new Proxy(
+            Reflect.get(messagesRepoTarget, 'common', messagesRepoReceiver),
+            {
+              get(
                 messagesRepoCommonTarget,
                 messagesRepoCommonMethodName,
                 messagesRepoCommonReceiver,
-              );
-              if (typeof possiblyFunc === 'function') {
+              ): any {
+                const possiblyFunc = Reflect.get(
+                  messagesRepoCommonTarget,
+                  messagesRepoCommonMethodName,
+                  messagesRepoCommonReceiver,
+                );
+                if (typeof possiblyFunc !== 'function') return possiblyFunc;
                 return new Proxy(possiblyFunc, {
                   apply(methodTarget, thisArg, args): any {
                     return Reflect.apply(methodTarget, thisArg, [
@@ -158,10 +159,9 @@ function buildProxy<
                     ]);
                   },
                 });
-              }
-              return possiblyFunc;
+              },
             },
-          }) as unknown;
+          ) as unknown;
         },
       });
     },

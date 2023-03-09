@@ -450,6 +450,22 @@
         }
       },
       {
+        "label": "Generate module boilerplate",
+        "type": "shell",
+        "command": ". ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateModuleBoilerplate/",
+        "promptOnClose": false,
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
+      },
+      {
         "label": "Generate One-to-Many (otm) boilerplate",
         "type": "shell",
         "command": " . ${HOME}/.nvm/nvm.sh; node ./backend/scripts/generateOneToManyBoilerplate/",

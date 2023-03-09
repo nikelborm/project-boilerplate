@@ -77,9 +77,7 @@ export class UserUseCase {
     const candidate = await this.userRepo.findOneById(id); // to check if user exists
 
     if (!candidate)
-      throw new BadRequestException(
-        messages.repo.common.cantGetNotFoundById(id, 'user'),
-      );
+      throw new BadRequestException(messages.repo.user.cantGetNotFoundById(id));
 
     const updatedUser = this.createUserModel({ ...candidate, password });
     await this.userRepo.updateOnePlain({ id, ...updatedUser });
