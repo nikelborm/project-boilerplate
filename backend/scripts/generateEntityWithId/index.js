@@ -4,11 +4,19 @@ import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import { appendFile, writeFile } from 'fs/promises';
 
-const { first, selectedFilesToGenerate } = await prompts([
+const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
     type: 'text',
     name: 'first',
     message: 'Entity name (fully lower case) with space delimiter',
+  },
+  {
+    type: 'toggle',
+    name: 'dryRun',
+    message: 'Dry run? (Should script skip real writes to file?)',
+    initial: false,
+    active: 'yes',
+    inactive: 'no',
   },
   {
     type: 'multiselect',
@@ -149,40 +157,46 @@ if (selectedFilesToGenerate.includes('databaseModel')) {
   console.log(`new ${pascal} model was generated\n`);
   console.log(getModel());
 
-  await writeFile(
-    `./backend/src/modules/infrastructure/model/${camel}.model.ts`,
-    getModel(),
-  );
-  await appendFile(
-    `./backend/src/modules/infrastructure/model/index.ts`,
-    `export * from './${camel}.model';\n`,
-  );
+  if (!dryRun) {
+    await writeFile(
+      `./backend/src/modules/infrastructure/model/${camel}.model.ts`,
+      getModel(),
+    );
+    await appendFile(
+      `./backend/src/modules/infrastructure/model/index.ts`,
+      `export * from './${camel}.model';\n`,
+    );
+  }
 }
 
 if (selectedFilesToGenerate.includes('interface')) {
   console.log(`\nnew I${pascal} interface was generated\n`);
   console.log(getInterface());
 
-  await writeFile(
-    `./shared/src/types/shared/model/${camel}.model.ts`,
-    getInterface(),
-  );
-  await appendFile(
-    `./shared/src/types/shared/model/index.ts`,
-    `export * from './${camel}.model';\n`,
-  );
+  if (!dryRun) {
+    await writeFile(
+      `./shared/src/types/shared/model/${camel}.model.ts`,
+      getInterface(),
+    );
+    await appendFile(
+      `./shared/src/types/shared/model/index.ts`,
+      `export * from './${camel}.model';\n`,
+    );
+  }
 }
 
 if (selectedFilesToGenerate.includes('repository')) {
-  console.log(`new ${pascal} repo was generated\n`);
+  console.log(`new ${pascal}Repo repo was generated\n`);
   console.log(getRepo());
 
-  await writeFile(
-    `./backend/src/modules/infrastructure/repo/${camel}.repo.ts`,
-    getRepo(),
-  );
-  await appendFile(
-    `./backend/src/modules/infrastructure/repo/index.ts`,
-    `export * from './${camel}.repo';\n`,
-  );
+  if (!dryRun) {
+    await writeFile(
+      `./backend/src/modules/infrastructure/repo/${camel}.repo.ts`,
+      getRepo(),
+    );
+    await appendFile(
+      `./backend/src/modules/infrastructure/repo/index.ts`,
+      `export * from './${camel}.repo';\n`,
+    );
+  }
 }
