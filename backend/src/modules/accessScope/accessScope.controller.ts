@@ -19,6 +19,6 @@ export class AccessScopeController {
     accessScope: UpdateAccessScopeDTO,
   ): Promise<EmptyResponseDTO> {
     await this.accessScopeUseCase.updateOne(accessScope);
-    return { response: {} };
+    return {};
   }
 }
