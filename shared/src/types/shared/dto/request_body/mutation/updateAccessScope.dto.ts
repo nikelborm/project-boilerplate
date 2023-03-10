@@ -12,5 +12,5 @@ export class UpdateAccessScopeDTO {
   id!: number;
 
   @NestedArrayDTO(() => UserToHaveAccessScopeDTO)
-  usersWithThatAccessScope?: UserToHaveAccessScopeDTO[];
+  usersWithThatAccessScope!: UserToHaveAccessScopeDTO[];
 }
