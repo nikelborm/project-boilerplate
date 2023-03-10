@@ -2,7 +2,7 @@
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, writeFile } from 'fs/promises';
+import { appendFile, readFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
 
 const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
@@ -49,6 +49,21 @@ const firstCamel = camelCase(first);
 const secondPascal = pascalCase(second);
 const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
+
+const writeNewFileWithMixin = async (filename, mixin) => {
+  const regex = /}\n$/gm;
+  let tsFileContent = (await readFile(filename)).toString();
+
+  let { index } = [...tsFileContent.matchAll(regex)][0];
+  if (!index) throw new Error('regex was not found');
+
+  const updatedFile = `${tsFileContent.slice(
+    0,
+    index,
+  )}${mixin}${tsFileContent.slice(index)}`;
+
+  await writeFile(filename, updatedFile);
+};
 
 const getIntermediateModel =
   () => `import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -218,18 +233,31 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     );
   }
 
-  console.log(
-    chalk.cyan(
-      `\n------ Mixin for ${firstPascal} model (needs to be added manually):\n`,
-    ),
-  );
-  console.log(chalk.green(getFirstModelMixin()));
-  console.log(
-    chalk.cyan(
-      `\n------ Mixin for ${secondPascal} model (needs to be added manually):\n`,
-    ),
-  );
-  console.log(chalk.green(getSecondModelMixin()));
+  console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model:\n`));
+  console.log(getFirstModelMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
+      getFirstModelMixin(),
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
+    );
+  }
+
+  console.log(chalk.cyan(`\n------ Mixin for ${secondPascal} model:\n`));
+  console.log(getSecondModelMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
+      getSecondModelMixin(),
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
+    );
+  }
 
   console.log(
     chalk.cyan(
@@ -260,17 +288,38 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
   }
 
   console.log(
-    chalk.cyan(
-      `\n------ Mixin for I${firstPascal} model interface (needs to be added manually):\n`,
-    ),
+    chalk.cyan(`\n------ Mixin for I${firstPascal} model interface:\n`),
   );
-  console.log(chalk.green(getFirstModelInterfaceMixin()));
+  console.log(getFirstModelInterfaceMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${firstCamel}.model.ts`,
+      getFirstModelInterfaceMixin(),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${firstPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
+
   console.log(
-    chalk.cyan(
-      `\n------ Mixin for I${secondPascal} model interface (needs to be added manually):\n`,
-    ),
+    chalk.cyan(`\n------ Mixin for I${secondPascal} model interface:\n`),
   );
-  console.log(chalk.green(getSecondModelInterfaceMixin()));
+  console.log(getSecondModelInterfaceMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${secondCamel}.model.ts`,
+      getSecondModelInterfaceMixin(),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${secondPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
 }
 
 if (selectedFilesToGenerate.includes('repository')) {
