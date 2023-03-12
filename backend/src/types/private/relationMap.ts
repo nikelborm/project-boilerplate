@@ -1,29 +1,31 @@
 // import type { RelationMapMaximizedType } from './relationMapMaximizedType';
 
+//! if you change this file manually, do it very carefully
+
 // uncomment type to enable intellisense
 const RelationMapValue /* : RelationMapMaximizedType */ = {
   AccessScope: {
     identityKeys: ['id'],
     relationToEntityNameMap: {
-      // AccessScope relationToEntityNameMap token
       usersWithThatAccessScope: ['User'],
       userToAccessScopeRelations: ['UserToAccessScope'],
+      // AccessScope relationToEntityNameMap token
     },
   },
   User: {
     identityKeys: ['id'],
     relationToEntityNameMap: {
-      // User relationToEntityNameMap token
       userToAccessScopeRelations: ['UserToAccessScope'],
       accessScopes: ['AccessScope'],
+      // User relationToEntityNameMap token
     },
   },
   UserToAccessScope: {
     identityKeys: ['accessScopeId', 'userId'],
     relationToEntityNameMap: {
-      // UserToAccessScope relationToEntityNameMap token
       accessScope: 'AccessScope',
       user: 'User',
+      // UserToAccessScope relationToEntityNameMap token
     },
   },
   // RelationMapValue end token

@@ -3,9 +3,9 @@
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import chalk from 'chalk';
-import { readFile, writeFile } from 'fs/promises';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
 
-const { first, second, dryRun } = await prompts([
+const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
   {
     type: 'text',
     name: 'first',
@@ -25,6 +25,24 @@ const { first, second, dryRun } = await prompts([
     active: 'yes',
     inactive: 'no',
   },
+  {
+    type: 'multiselect',
+    name: 'selectedFilesToGenerate',
+    message: 'Pick files to generate',
+    choices: [
+      {
+        title: 'Usual mixins',
+        value: 'usualMixins',
+        selected: true,
+      },
+      {
+        title: 'Relation map extension',
+        value: 'relationMapExtension',
+        selected: true,
+      },
+    ],
+    hint: '- Space to select. Enter to submit',
+  },
 ]);
 
 const firstPascal = pascalCase(first);
@@ -33,21 +51,6 @@ const firstCamel = camelCase(first);
 const secondPascal = pascalCase(second);
 const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
-
-const writeNewFileWithMixin = async (filename, mixin) => {
-  const regex = /}\n$/gm;
-  let tsFileContent = (await readFile(filename)).toString();
-
-  let { index } = [...tsFileContent.matchAll(regex)][0];
-  if (!index) throw new Error('regex was not found');
-
-  const updatedFile = `${tsFileContent.slice(
-    0,
-    index,
-  )}${mixin}${tsFileContent.slice(index)}`;
-
-  await writeFile(filename, updatedFile);
-};
 
 const getMixinToMultipleSideOfRelation = () => `
   @ManyToOne(() => ${secondPascal}, (${secondCamel}) => ${secondCamel}.${firstCamel}s)
@@ -59,6 +62,14 @@ const getMixinToMultipleSideOfRelation = () => `
     nullable: false,
   })
   ${secondCamel}Id!: number;
+`;
+
+const getMixinToMultipleSideEntityInRelationMap =
+  () => `${secondCamel}: '${secondPascal}',
+`;
+
+const getMixinToSingleSideEntityInRelationMap =
+  () => `${firstCamel}: ['${firstPascal}'],
 `;
 
 const getMixinToSingleSideOfRelation = () => `
@@ -79,60 +90,111 @@ const getMixinToSingleSideOfRelationInterface = () => `
   ${firstCamel}s!: I${firstPascal}[];
 `;
 
-console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model:\n`));
-console.log(getMixinToMultipleSideOfRelation());
+if (selectedFilesToGenerate.includes('usualMixins')) {
+  console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model:\n`));
+  console.log(getMixinToMultipleSideOfRelation());
 
-if (!dryRun) {
-  await writeNewFileWithMixin(
-    `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
-    getMixinToMultipleSideOfRelation(),
-  );
-  console.log(
-    chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
-  );
-}
-console.log(chalk.cyan(`\n------ Mixin for ${secondPascal} model:\n`));
-console.log(getMixinToSingleSideOfRelation());
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
+      getMixinToMultipleSideOfRelation(),
+      /}\n$/gm,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
+    );
+  }
+  console.log(chalk.cyan(`\n------ Mixin for ${secondPascal} model:\n`));
+  console.log(getMixinToSingleSideOfRelation());
 
-if (!dryRun) {
-  await writeNewFileWithMixin(
-    `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
-    getMixinToSingleSideOfRelation(),
-  );
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
+      getMixinToSingleSideOfRelation(),
+      /}\n$/gm,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
+    );
+  }
   console.log(
-    chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
+    chalk.cyan(`\n------ Mixin for I${firstPascal} model interface:\n`),
   );
-}
-console.log(
-  chalk.cyan(`\n------ Mixin for I${firstPascal} model interface:\n`),
-);
-console.log(getMixinToMultipleSideOfRelationInterface());
+  console.log(getMixinToMultipleSideOfRelationInterface());
 
-if (!dryRun) {
-  await writeNewFileWithMixin(
-    `./shared/src/types/shared/model/${firstCamel}.model.ts`,
-    getMixinToMultipleSideOfRelationInterface(),
-  );
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${firstCamel}.model.ts`,
+      getMixinToMultipleSideOfRelationInterface(),
+      /}\n$/gm,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${firstPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
   console.log(
-    chalk.gray(
-      `\n------ mixin to I${firstPascal} interface was written to disk:\n`,
-    ),
+    chalk.cyan(`\n------ Mixin for I${secondPascal} model interface:\n`),
   );
-}
-console.log(
-  chalk.cyan(`\n------ Mixin for I${secondPascal} model interface:\n`),
-);
-console.log(getMixinToSingleSideOfRelationInterface());
+  console.log(getMixinToSingleSideOfRelationInterface());
 
-if (!dryRun) {
-  await writeNewFileWithMixin(
-    `./shared/src/types/shared/model/${secondCamel}.model.ts`,
-    getMixinToSingleSideOfRelationInterface(),
-  );
-  console.log(
-    chalk.gray(
-      `\n------ mixin to I${secondPascal} interface was written to disk:\n`,
-    ),
-  );
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${secondCamel}.model.ts`,
+      getMixinToSingleSideOfRelationInterface(),
+      /}\n$/gm,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${secondPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
 }
+
+if (selectedFilesToGenerate.includes('relationMapExtension')) {
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${firstPascal} in relation map:\n`),
+  );
+  console.log(getMixinToMultipleSideEntityInRelationMap());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getMixinToMultipleSideEntityInRelationMap(),
+      new RegExp(
+        `      \\/\\/ ${firstPascal} relationToEntityNameMap token`,
+        'gm',
+      ),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${firstPascal} in relation map was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${secondPascal} in relation map:\n`),
+  );
+  console.log(getMixinToSingleSideEntityInRelationMap());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getMixinToSingleSideEntityInRelationMap(),
+      new RegExp(
+        `      \\/\\/ ${secondPascal} relationToEntityNameMap token`,
+        'gm',
+      ),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${secondPascal} in relation map was written to disk:\n`,
+      ),
+    );
+  }
+}
+
 console.log(chalk.cyan(`\n------ executed successfully\n`));

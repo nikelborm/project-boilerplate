@@ -2,8 +2,9 @@
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, readFile, writeFile } from 'fs/promises';
+import { appendFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
 
 const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
   {
@@ -36,8 +37,12 @@ const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
         selected: true,
       },
       { title: 'Repository', value: 'repository', selected: true },
+      {
+        title: 'Relation map extension',
+        value: 'relationMapExtension',
+        selected: true,
+      },
     ],
-    max: 3,
     hint: '- Space to select. Enter to submit',
   },
 ]);
@@ -49,21 +54,6 @@ const firstCamel = camelCase(first);
 const secondPascal = pascalCase(second);
 const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
-
-const writeNewFileWithMixin = async (filename, mixin) => {
-  const regex = /}\n$/gm;
-  let tsFileContent = (await readFile(filename)).toString();
-
-  let { index } = [...tsFileContent.matchAll(regex)][0];
-  if (!index) throw new Error('regex was not found');
-
-  const updatedFile = `${tsFileContent.slice(
-    0,
-    index,
-  )}${mixin}${tsFileContent.slice(index)}`;
-
-  await writeFile(filename, updatedFile);
-};
 
 const getIntermediateModel =
   () => `import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -204,6 +194,27 @@ const getSecondModelInterfaceMixin = () => `
   ${firstCamel}To${secondPascal}Relations!: I${firstPascal}To${secondPascal}[];
 `;
 
+const getMixinToFirstModelInRelationMap =
+  () => `      ${secondCamel}s: ['${secondPascal}'],
+      ${firstCamel}To${secondPascal}Relations: ['${firstPascal}To${secondPascal}'],
+`;
+
+const getMixinToSecondModelInRelationMap =
+  () => `      ${firstCamel}sWithThat${secondPascal}: ['${firstPascal}'],
+      ${firstCamel}To${secondPascal}Relations: ['${firstPascal}To${secondPascal}'],
+`;
+
+const getIntermediateModelToRelationMapMixin =
+  () => `  ${firstPascal}To${secondPascal}: {
+    identityKeys: ['${firstCamel}Id', '${secondCamel}Id'],
+    relationToEntityNameMap: {
+      ${firstCamel}: '${firstPascal}',
+      ${secondCamel}: '${secondPascal}',
+      // ${firstPascal}To${secondPascal} relationToEntityNameMap token
+    },
+  },
+`;
+
 if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
   console.log(
     chalk.cyan(
@@ -240,6 +251,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
       getFirstModelMixin(),
+      /}\n$/gm,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
@@ -253,6 +265,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
       getSecondModelMixin(),
+      /}\n$/gm,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
@@ -296,6 +309,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${firstCamel}.model.ts`,
       getFirstModelInterfaceMixin(),
+      /}\n$/gm,
     );
     console.log(
       chalk.gray(
@@ -313,6 +327,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${secondCamel}.model.ts`,
       getSecondModelInterfaceMixin(),
+      /}\n$/gm,
     );
     console.log(
       chalk.gray(
@@ -347,6 +362,70 @@ if (selectedFilesToGenerate.includes('repository')) {
     console.log(
       chalk.gray(
         `\n------ index.ts reexport of ${firstPascal}To${secondPascal}Repo repo was written to disk:\n`,
+      ),
+    );
+  }
+}
+
+if (selectedFilesToGenerate.includes('relationMapExtension')) {
+  console.log(
+    chalk.cyan(
+      `\n------ Mixin for ${firstPascal}To${secondPascal} in relation map:\n`,
+    ),
+  );
+  console.log(getIntermediateModelToRelationMapMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getIntermediateModelToRelationMapMixin(),
+      /  \/\/ RelationMapValue end token/gm,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${firstPascal}To${secondPascal} in relation map was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${firstPascal} in relation map:\n`),
+  );
+  console.log(getMixinToFirstModelInRelationMap());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getMixinToFirstModelInRelationMap(),
+      new RegExp(
+        `      \\/\\/ ${firstPascal} relationToEntityNameMap token`,
+        'gm',
+      ),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${firstPascal} in relation map was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${secondPascal} in relation map:\n`),
+  );
+  console.log(getMixinToSecondModelInRelationMap());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getMixinToSecondModelInRelationMap(),
+      new RegExp(
+        `      \\/\\/ ${secondPascal} relationToEntityNameMap token`,
+        'gm',
+      ),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${secondPascal} in relation map was written to disk:\n`,
       ),
     );
   }

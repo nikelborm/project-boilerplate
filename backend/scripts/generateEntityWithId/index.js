@@ -2,8 +2,9 @@
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, readFile, writeFile } from 'fs/promises';
+import { appendFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
 
 const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
@@ -34,7 +35,6 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
         selected: true,
       },
     ],
-    max: 3,
     hint: '- Space to select. Enter to submit',
   },
 ]);
@@ -42,21 +42,6 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
 const pascal = pascalCase(first);
 const snake = snakeCase(first);
 const camel = camelCase(first);
-
-const writeNewFileWithMixin = async (filename, mixin) => {
-  const regex = /  \/\/ RelationMapValue end token/gm;
-  let tsFileContent = (await readFile(filename)).toString();
-
-  let { index } = [...tsFileContent.matchAll(regex)][0];
-  if (!index) throw new Error('regex was not found');
-
-  const updatedFile = `${tsFileContent.slice(
-    0,
-    index,
-  )}${mixin}${tsFileContent.slice(index)}`;
-
-  await writeFile(filename, updatedFile);
-};
 
 const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
 ${
@@ -247,6 +232,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     await writeNewFileWithMixin(
       `./backend/src/types/private/relationMap.ts`,
       getRelationMapMixin(),
+      /  \/\/ RelationMapValue end token/gm,
     );
     console.log(
       chalk.gray(
