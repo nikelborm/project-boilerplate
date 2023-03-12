@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   createManyPlain,
   createOnePlain,
+  deleteEntityByIdentity,
+  findOnePlainByIdentity,
+  getAllEntities,
   updateManyPlain,
   updateManyWithRelations,
   updateOnePlain,
@@ -23,11 +26,16 @@ export class UserRepo {
     private readonly repo: Repository<User>,
   ) {}
 
-  async getAll(): Promise<SelectedOnePlainUser[]> {
-    return await this.repo.find();
-  }
+  getAll = getAllEntities(this.repo)<Config>();
 
-  async findMany(partOfNameOrEmail?: string): Promise<SelectedOnePlainUser[]> {
+  findOneById = async (
+    id: number,
+  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+    await findOnePlainByIdentity(this.repo)<Config>()({ id });
+
+  async findMany(
+    partOfNameOrEmail?: string,
+  ): Promise<RepoTypes['SelectedOnePlainEntity'][]> {
     return await this.repo.find({
       ...(partOfNameOrEmail && {
         where: [
@@ -64,35 +72,18 @@ export class UserRepo {
     });
   }
 
-  async findOneById(id: number): Promise<SelectedOnePlainUser | null> {
-    return await this.repo.findOne({
-      where: { id },
-    });
-  }
-
   async findOneByExactEmail(
     userEmail: string,
-  ): Promise<SelectedOnePlainUser | null> {
+  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> {
     return await this.repo.findOne({ where: { email: userEmail } });
   }
 
   async findOneByExactName(
     firstName: string,
     lastName: string,
-  ): Promise<SelectedOnePlainUser | null> {
+  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> {
     return await this.repo.findOne({ where: { firstName, lastName } });
   }
-
-  createOnePlain = createOnePlain(this.repo)<RepoTypes['Config']>();
-  createManyPlain = createManyPlain(this.repo)<RepoTypes['Config']>();
-  updateManyPlain = updateManyPlain(this.repo)<RepoTypes['Config']>();
-  updateOnePlain = updateOnePlain(this.repo)<RepoTypes['Config']>();
-  updateManyWithRelations = updateManyWithRelations(this.repo)<
-    RepoTypes['Config']
-  >();
-  updateOneWithRelations = updateOneWithRelations(this.repo)<
-    RepoTypes['Config']
-  >();
 
   async findOneByEmailWithAccessScopesAndPasswordHash(
     email: string,
@@ -120,9 +111,17 @@ export class UserRepo {
       .getOne();
   }
 
-  async delete(id: number): Promise<void> {
-    await this.repo.delete(id);
-  }
+  createOnePlain = createOnePlain(this.repo)<Config>();
+  createManyPlain = createManyPlain(this.repo)<Config>();
+
+  updateManyPlain = updateManyPlain(this.repo)<Config>();
+  updateOnePlain = updateOnePlain(this.repo)<Config>();
+
+  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
+
+  deleteOneById = async (id: number): Promise<void> =>
+    await deleteEntityByIdentity(this.repo)<Config>()({ id });
 }
 
 type RepoTypes = EntityRepoMethodTypes<
@@ -147,4 +146,4 @@ type RepoTypes = EntityRepoMethodTypes<
   }
 >;
 
-export type SelectedOnePlainUser = RepoTypes['SelectedOnePlainEntity'];
+type Config = RepoTypes['Config'];

@@ -2,7 +2,7 @@
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, writeFile } from 'fs/promises';
+import { appendFile, readFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
 
 const { first, selectedFilesToGenerate, dryRun } = await prompts([
@@ -28,6 +28,11 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
       { title: 'Database model', value: 'databaseModel', selected: true },
       { title: 'Interface', value: 'interface', selected: true },
       { title: 'Repository', value: 'repository', selected: true },
+      {
+        title: 'Relation map extension',
+        value: 'relationMapExtension',
+        selected: true,
+      },
     ],
     max: 3,
     hint: '- Space to select. Enter to submit',
@@ -37,6 +42,21 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
 const pascal = pascalCase(first);
 const snake = snakeCase(first);
 const camel = camelCase(first);
+
+const writeNewFileWithMixin = async (filename, mixin) => {
+  const regex = /  \/\/ RelationMapValue end token/gm;
+  let tsFileContent = (await readFile(filename)).toString();
+
+  let { index } = [...tsFileContent.matchAll(regex)][0];
+  if (!index) throw new Error('regex was not found');
+
+  const updatedFile = `${tsFileContent.slice(
+    0,
+    index,
+  )}${mixin}${tsFileContent.slice(index)}`;
+
+  await writeFile(filename, updatedFile);
+};
 
 const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
 ${
@@ -76,9 +96,28 @@ const getInterface = () => `export class I${pascal} {
 }
 `;
 
+const getRelationMapMixin = () => `  ${pascal}: {
+    identityKeys: ['id'],
+    relationToEntityNameMap: {
+      // ${pascal} relationToEntityNameMap token
+    },
+  },
+`;
+
 const getRepo = () => `import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { insertManyPlain, insertOnePlain } from 'src/tools';
+import {
+  createManyPlain,
+  createOnePlain,
+  deleteEntityByIdentity,
+  findOnePlainByIdentity,
+  getAllEntities,
+  updateManyPlain,
+  updateManyWithRelations,
+  updateOnePlain,
+  updateOneWithRelations,
+} from 'src/tools';
+import type { EntityRepoMethodTypes } from 'src/types';
 import { Repository } from 'typeorm';
 import { ${pascal} } from '../model';
 
@@ -89,68 +128,41 @@ export class ${pascal}Repo {
     private readonly repo: Repository<${pascal}>,
   ) {}
 
-  async getAll(): Promise<SelectedOnePlain${pascal}[]> {
-    return await this.repo.find();
-  }
+  getAll = getAllEntities(this.repo)<Config>();
 
-  async findOneById(id: number): Promise<SelectedOnePlain${pascal} | null> {
-    return await this.repo.findOne({
-      where: { id },
-    });
-  }
+  findOneById = async (
+    id: number,
+  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+    await findOnePlainByIdentity(this.repo)<Config>()({ id });
 
-  async createOnePlain(
-    new${pascal}: Pick<${pascal}, PlainKeysAllowedToModify>,
-  ): Promise<CreatedOnePlain${pascal}> {
-    return await insertOnePlain<CreatedOnePlain${pascal}>(this.repo, new${pascal});
-  }
+  createOnePlain = createOnePlain(this.repo)<Config>();
+  createManyPlain = createManyPlain(this.repo)<Config>();
 
-  async createManyPlain(
-    new${pascal}s: Pick<${pascal}, PlainKeysAllowedToModify>[],
-  ): Promise<CreatedOnePlain${pascal}[]> {
-    return await insertManyPlain<CreatedOnePlain${pascal}>(this.repo, new${pascal}s);
-  }
+  updateManyPlain = updateManyPlain(this.repo)<Config>();
+  updateOnePlain = updateOnePlain(this.repo)<Config>();
 
-  async updateOnePlain({
-    id,
-    ...existing${pascal}
-  }: UpdatedOnePlain${pascal}): Promise<UpdatedOnePlain${pascal}> {
-    await this.repo.update(id, existing${pascal});
-    return { id, ...existing${pascal} };
-  }
+  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
 
-  async updateManyPlain(
-    existing${pascal}s: UpdatedOnePlain${pascal}[],
-  ): Promise<UpdatedOnePlain${pascal}[]> {
-    const updated${pascal}s = await this.repo.save(existing${pascal}s);
-    return updated${pascal}s;
-  }
-
-  async delete(id: number): Promise<void> {
-    await this.repo.delete(id);
-  }
+  deleteOneById = async (id: number): Promise<void> =>
+    await deleteEntityByIdentity(this.repo)<Config>()({ id });
 }
 
-type PrimaryKeys = 'id';
-type PlainKeysGeneratedAfterInsert = PrimaryKeys | 'createdAt' | 'updatedAt';
-
-type PlainKeysAllowedToModify = RegularPlainKeys;
-
-type UsuallyReturned${pascal}PlainKeys =
-  | PlainKeysGeneratedAfterInsert
-  | RegularPlainKeys;
-
-type RegularPlainKeys = never;
-
-export type CreatedOnePlain${pascal} = Pick<
+type RepoTypes = EntityRepoMethodTypes<
   ${pascal},
-  PlainKeysAllowedToModify | PlainKeysGeneratedAfterInsert
+  {
+    EntityName: '${pascal}';
+    OptionalToCreateRegularPlainKeys: null;
+    RequiredToCreateRegularPlainKeys: null;
+
+    ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdateRelationKeys: null;
+    UnselectedByDefaultPlainKeys: null;
+  }
 >;
 
-export type UpdatedOnePlain${pascal} = Pick<${pascal}, PrimaryKeys> &
-  Partial<Pick<${pascal}, PlainKeysAllowedToModify>>;
-
-export type SelectedOnePlain${pascal} = Pick<${pascal}, UsuallyReturned${pascal}PlainKeys>;
+type Config = RepoTypes['Config'];
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {
@@ -222,6 +234,23 @@ if (selectedFilesToGenerate.includes('repository')) {
     console.log(
       chalk.gray(
         `\n------ index.ts reexport of ${pascal}Repo repository was written to disk:\n`,
+      ),
+    );
+  }
+}
+
+if (selectedFilesToGenerate.includes('relationMapExtension')) {
+  console.log(chalk.cyan(`\n------ Mixin for ${pascal} in relation map:\n`));
+  console.log(getRelationMapMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/types/private/relationMap.ts`,
+      getRelationMapMixin(),
+    );
+    console.log(
+      chalk.gray(
+        `\n------ Mixin for ${pascal} in relation map was written to disk:\n`,
       ),
     );
   }

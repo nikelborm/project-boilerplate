@@ -1,26 +1,11 @@
-import type { DBModelNames } from './modelNames';
-import type * as model from '../shared/model';
-
-export type RelationMapMaximizedType = {
-  [ModelName in DBModelNames]: `I${ModelName}` extends keyof typeof model
-    ? {
-        identityKeys: readonly (keyof InstanceType<
-          (typeof model)[`I${ModelName}`]
-        >)[];
-        relationToEntityNameMap: {
-          [RelationKey in keyof InstanceType<
-            (typeof model)[`I${ModelName}`]
-          >]?: DBModelNames | readonly [DBModelNames];
-        };
-      }
-    : never;
-};
+// import type { RelationMapMaximizedType } from './relationMapMaximizedType';
 
 // uncomment type to enable intellisense
 const RelationMapValue /* : RelationMapMaximizedType */ = {
   AccessScope: {
     identityKeys: ['id'],
     relationToEntityNameMap: {
+      // AccessScope relationToEntityNameMap token
       usersWithThatAccessScope: ['User'],
       userToAccessScopeRelations: ['UserToAccessScope'],
     },
@@ -28,6 +13,7 @@ const RelationMapValue /* : RelationMapMaximizedType */ = {
   User: {
     identityKeys: ['id'],
     relationToEntityNameMap: {
+      // User relationToEntityNameMap token
       userToAccessScopeRelations: ['UserToAccessScope'],
       accessScopes: ['AccessScope'],
     },
@@ -35,10 +21,15 @@ const RelationMapValue /* : RelationMapMaximizedType */ = {
   UserToAccessScope: {
     identityKeys: ['accessScopeId', 'userId'],
     relationToEntityNameMap: {
+      // UserToAccessScope relationToEntityNameMap token
       accessScope: 'AccessScope',
       user: 'User',
     },
   },
+  // RelationMapValue end token
 } as const;
+
+//! Do not remove "Entity relationToEntityNameMap token" and "RelationMapValue end token"
+//! because it will break code auto generation
 
 export type RelationMap = typeof RelationMapValue;

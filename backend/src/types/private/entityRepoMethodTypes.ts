@@ -7,11 +7,19 @@ export type EntityRepoMethodTypes<
   Entity extends Record<string, any>,
   Config extends EntityRepoMethodTypesConfig<Entity>,
 > = {
+  //                                                             Reexport for easy access
+
+  Config: Config;
+
+  //                      Import left keys that came not from config but from RelationMap
+
   RelationKeys: keyof RelationMap[Config['EntityName']]['relationToEntityNameMap'];
+
   IdentityPlainKeys: DeArrayOrFail<
     RelationMap[Config['EntityName']]['identityKeys']
   >;
-  ////////////////////////////////////////////////////////////
+
+  //                         Little pieces which are part of final formatted object types
 
   GeneratedPartAfterEntityCreation: Config['ForbiddenToCreateGeneratedPlainKeys'] extends keyof Entity
     ? Pick<Entity, Config['ForbiddenToCreateGeneratedPlainKeys']>
@@ -94,7 +102,7 @@ export type EntityRepoMethodTypes<
     EntityRepoMethodTypes<Entity, Config>['OptionalToCreatePlainPart'] &
     EntityRepoMethodTypes<Entity, Config>['RequiredToCreatePlainPart'];
 
-  ///////////////////////////////////////////////////////////////
+  //                                                       final types for repo functions
 
   OnePlainEntityToBeCreated: EntityRepoMethodTypes<
     Entity,
@@ -122,8 +130,6 @@ export type EntityRepoMethodTypes<
         Config['UnselectedByDefaultPlainKeys']
       >
     : EntityRepoMethodTypes<Entity, Config>['PossiblyCanBeSelectedPlainPart'];
-
-  Config: Config;
 };
 
 export type EntityRepoMethodTypesConfig<Entity extends Record<string, any>> = {

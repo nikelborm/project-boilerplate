@@ -90,7 +90,7 @@ export class UserUseCase {
   }
 
   async deleteOne(id: number): Promise<void> {
-    await this.userRepo.delete(id);
+    await this.userRepo.deleteOneById(id);
   }
 
   #removeHashAndSalt = ({
