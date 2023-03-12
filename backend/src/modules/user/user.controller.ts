@@ -40,7 +40,8 @@ export class UserController {
     @ValidatedBody()
     createUserDTO: CreateUserDTO,
   ): Promise<CreateOneUserResponse> {
-    return await this.userUseCase.createUser(createUserDTO);
+    const user = await this.userUseCase.createUser(createUserDTO);
+    return { user };
   }
 
   @Post('createMany')
@@ -49,9 +50,9 @@ export class UserController {
     @ValidatedBody()
     { users }: CreateUsersDTO,
   ): Promise<CreateManyUsersResponseDTO> {
-    const responses = await this.userUseCase.createManyUsers(users);
+    const createdUsers = await this.userUseCase.createManyUsers(users);
     return {
-      createdUsers: responses.map(({ user }) => user),
+      createdUsers,
     };
   }
 

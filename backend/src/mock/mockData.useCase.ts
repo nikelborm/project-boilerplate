@@ -35,7 +35,7 @@ export class MockDataUseCase {
     });
     console.log('systemAdminScope: ', systemAdminScope);
 
-    const { user } = await this.userUseCase.createUser({
+    const user = await this.userUseCase.createUser({
       email: 'asd@asd.asd',
       lastName: 'Такой-тов',
       firstName: 'Такой-то',

@@ -58,5 +58,3 @@ type RepoTypes = EntityRepoMethodTypes<
     UnselectedByDefaultPlainKeys: null;
   }
 >;
-
-export type SelectedOnePlainAccessScope = RepoTypes['SelectedOnePlainEntity'];

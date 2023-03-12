@@ -10,7 +10,6 @@ import { isQueryFailedError } from 'src/tools';
 import {
   BasicUserInfoDTO,
   BasicUserInfoWithIdDTO,
-  CreateOneUserResponse,
   CreateUserDTO,
   PG_UNIQUE_CONSTRAINT_VIOLATION,
   UserAuthInfo,
@@ -30,7 +29,7 @@ export class UserUseCase {
     );
   }
 
-  async findMany(search?: string): Promise<repo.SelectedOnePlainUser[]> {
+  async findMany(search?: string): Promise<BasicUserInfoWithIdDTO[]> {
     return await this.userRepo.findMany(search);
   }
 
@@ -45,32 +44,22 @@ export class UserUseCase {
 
   async createManyUsers(
     users: CreateUserDTO[],
-  ): Promise<CreateOneUserResponse[]> {
+  ): Promise<BasicUserInfoWithIdDTO[]> {
     return await Promise.all(users.map(this.createUser));
   }
 
-  async createUser(user: CreateUserDTO): Promise<CreateOneUserResponse> {
-    let userWithoutSensitiveDataWithId: BasicUserInfoWithIdDTO;
+  async createUser(user: CreateUserDTO): Promise<BasicUserInfoWithIdDTO> {
     try {
-      userWithoutSensitiveDataWithId = (({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordHash,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        salt,
-        ...rest
-      }: InsertedUserModel): BasicUserInfoWithIdDTO => rest)(
-        await this.userRepo.createOnePlain(this.createUserModel(user)),
+      const dirtyUser = await this.userRepo.createOnePlain(
+        this.createUserModel(user),
       );
+      return this.#removeHashAndSalt(dirtyUser);
     } catch (error: any) {
       if (isQueryFailedError(error))
         if (error.code === PG_UNIQUE_CONSTRAINT_VIOLATION)
           throw new BadRequestException(messages.user.exists);
       throw error;
     }
-
-    return {
-      user: userWithoutSensitiveDataWithId,
-    };
   }
 
   async setUserPassword(id: number, password: string): Promise<void> {
@@ -103,6 +92,14 @@ export class UserUseCase {
   async deleteOne(id: number): Promise<void> {
     await this.userRepo.delete(id);
   }
+
+  #removeHashAndSalt = ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    passwordHash,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    salt,
+    ...rest
+  }: InsertedUserModel): BasicUserInfoWithIdDTO => rest;
 }
 
 type UserModelToInsert = BasicUserInfoDTO & {

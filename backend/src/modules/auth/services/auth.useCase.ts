@@ -60,7 +60,7 @@ export class AuthUseCase {
   async registerNewUserAndLogin(
     createUserDTO: CreateUserDTO,
   ): Promise<RegisterUserResponseDTO> {
-    const { user } = await this.userUseCase.createUser(createUserDTO);
+    const user = await this.userUseCase.createUser(createUserDTO);
     return {
       authTokenPair: await this.login({
         ...user,
