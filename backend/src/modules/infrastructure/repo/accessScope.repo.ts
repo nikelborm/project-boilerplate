@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  createManyPlain,
+  createOnePlain,
+  updateManyPlain,
+  updateOnePlain,
+  updateOneWithRelations,
+} from 'src/tools';
+import type { EntityRepoMethodTypes } from 'src/types';
 import { Repository } from 'typeorm';
-import { AccessScope, User, UserToAccessScope } from '../model';
+import { AccessScope } from '../model';
 
 @Injectable()
 export class AccessScopeRepo {
@@ -19,60 +27,36 @@ export class AccessScopeRepo {
     return await this.repo.findOne({ where: { id } });
   }
 
-  async updateOneWithRelations({
-    id,
-    usersWithThatAccessScope,
-  }: Pick<AccessScope, 'id'> & {
-    usersWithThatAccessScope?: Pick<User, 'id'>[];
-  }): Promise<CreatedAccessScopeWithRelations> {
-    const accessScopeToSave = new AccessScope();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<
+    RepoTypes['Config']
+  >();
 
-    accessScopeToSave.id = id;
-    if (usersWithThatAccessScope)
-      accessScopeToSave.userToAccessScopeRelations =
-        usersWithThatAccessScope.map(({ id: userId }) => {
-          const relation = new UserToAccessScope();
-          relation.accessScopeId = id;
-          relation.userId = userId;
-          return relation;
-        });
+  updateManyPlain = updateManyPlain(this.repo)<RepoTypes['Config']>();
 
-    return await this.repo.save(accessScopeToSave);
-  }
+  updateOnePlain = updateOnePlain(this.repo)<RepoTypes['Config']>();
 
-  async createOneWithRelations({
-    type,
-    usersWithThatAccessScope,
-  }: Pick<AccessScope, 'type'> & {
-    usersWithThatAccessScope?: Pick<User, 'id'>[];
-  }): Promise<CreatedAccessScopeWithRelations> {
-    const accessScopeToSave = new AccessScope();
+  createOnePlain = createOnePlain(this.repo)<RepoTypes['Config']>();
 
-    accessScopeToSave.type = type;
-    if (usersWithThatAccessScope)
-      accessScopeToSave.userToAccessScopeRelations =
-        usersWithThatAccessScope.map(({ id: userId }) => {
-          const relation = new UserToAccessScope();
-          relation.userId = userId;
-          return relation;
-        });
-
-    return await this.repo.save(accessScopeToSave);
-  }
+  createManyPlain = createManyPlain(this.repo)<RepoTypes['Config']>();
 
   async deleteMany(accessScopeIds: number[]): Promise<void> {
     await this.repo.delete(accessScopeIds);
   }
 }
 
-type PlainKeysGeneratedAfterInsert = 'id' | 'createdAt' | 'updatedAt';
-
-type CreatedAccessScopeWithRelations = Pick<
+type RepoTypes = EntityRepoMethodTypes<
   AccessScope,
-  'type' | PlainKeysGeneratedAfterInsert
-> & {
-  userToAccessScopeRelations: Pick<
-    UserToAccessScope,
-    'accessScopeId' | 'userId'
-  >[];
-};
+  {
+    EntityName: 'AccessScope';
+    RequiredToCreateRegularPlainKeys: 'type';
+    OptionalToCreateRegularPlainKeys: null;
+
+    ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdateRelationKeys: null;
+
+    UnselectedByDefaultPlainKeys: null;
+  }
+>;
+
+export type SelectedOnePlainAccessScope = RepoTypes['SelectedOnePlainEntity'];

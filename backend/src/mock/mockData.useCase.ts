@@ -30,7 +30,7 @@ export class MockDataUseCase {
   async mockUserAndAdminAccessScope(): Promise<void> {
     console.log('mockUserAndAdminAccessScope called');
 
-    const systemAdminScope = await this.accessScopeRepo.createOneWithRelations({
+    const systemAdminScope = await this.accessScopeRepo.createOnePlain({
       type: AccessScopeType.SYSTEM_ADMIN,
     });
     console.log('systemAdminScope: ', systemAdminScope);
@@ -47,7 +47,7 @@ export class MockDataUseCase {
     });
 
     console.log('user: ', user);
-    const userToAccessScope = await this.userToAccessScopeRepo.createOne({
+    const userToAccessScope = await this.userToAccessScopeRepo.createOnePlain({
       accessScopeId: systemAdminScope.id,
       userId: user.id,
     });

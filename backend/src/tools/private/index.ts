@@ -7,4 +7,4 @@ export * from './pluralForm';
 export * from './upperCaseFirstLetter';
 export * from './validateIdExisting';
 export * from './websocketGatewayAdapter';
-export * from './insertManyPlain';
+export * from './repo';

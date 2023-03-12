@@ -1,4 +1,4 @@
-import type { AccessScopeType } from '../accessScopeType';
+import type { AccessScopeType } from '../modelHelper';
 import type { IUser, IUserToAccessScope } from '.';
 
 export class IAccessScope {

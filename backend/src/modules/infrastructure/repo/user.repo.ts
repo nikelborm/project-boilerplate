@@ -1,7 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { insertManyPlain, insertOnePlain } from 'src/tools';
-import type { UserAuthInfo, UserForLoginAttemptValidation } from 'src/types';
+import {
+  createManyPlain,
+  createOnePlain,
+  updateManyPlain,
+  updateManyWithRelations,
+  updateOnePlain,
+  updateOneWithRelations,
+} from 'src/tools';
+import type {
+  EntityRepoMethodTypes,
+  UserAuthInfo,
+  UserForLoginAttemptValidation,
+} from 'src/types';
 import { ILike, Repository } from 'typeorm';
 import { User } from '../model';
 
@@ -72,32 +83,16 @@ export class UserRepo {
     return await this.repo.findOne({ where: { firstName, lastName } });
   }
 
-  async createOnePlain(
-    newUser: Pick<User, PlainKeysAllowedToModify>,
-  ): Promise<CreatedOnePlainUser> {
-    return await insertOnePlain<CreatedOnePlainUser>(this.repo, newUser);
-  }
-
-  async createManyPlain(
-    newUsers: Pick<User, PlainKeysAllowedToModify>[],
-  ): Promise<CreatedOnePlainUser[]> {
-    return await insertManyPlain<CreatedOnePlainUser>(this.repo, newUsers);
-  }
-
-  async updateOnePlain({
-    id,
-    ...existingUser
-  }: UpdatedOnePlainUser): Promise<UpdatedOnePlainUser> {
-    await this.repo.update(id, existingUser);
-    return { id, ...existingUser };
-  }
-
-  async updateManyPlain(
-    existingUsers: UpdatedOnePlainUser[],
-  ): Promise<UpdatedOnePlainUser[]> {
-    const updatedUsers = await this.repo.save(existingUsers);
-    return updatedUsers;
-  }
+  createOnePlain = createOnePlain(this.repo)<RepoTypes['Config']>();
+  createManyPlain = createManyPlain(this.repo)<RepoTypes['Config']>();
+  updateManyPlain = updateManyPlain(this.repo)<RepoTypes['Config']>();
+  updateOnePlain = updateOnePlain(this.repo)<RepoTypes['Config']>();
+  updateManyWithRelations = updateManyWithRelations(this.repo)<
+    RepoTypes['Config']
+  >();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<
+    RepoTypes['Config']
+  >();
 
   async findOneByEmailWithAccessScopesAndPasswordHash(
     email: string,
@@ -130,31 +125,26 @@ export class UserRepo {
   }
 }
 
-type PrimaryKeys = 'id';
-type PlainKeysGeneratedAfterInsert = PrimaryKeys | 'createdAt' | 'updatedAt';
-
-type PlainKeysAllowedToModify = RegularPlainKeys | 'salt' | 'passwordHash';
-
-type UsuallyReturnedUserPlainKeys =
-  | PlainKeysGeneratedAfterInsert
-  | RegularPlainKeys;
-
-type RegularPlainKeys =
-  | 'firstName'
-  | 'lastName'
-  | 'nickname'
-  | 'email'
-  | 'avatarURL'
-  | 'patronymic'
-  | 'gender'
-  | 'phone';
-
-export type CreatedOnePlainUser = Pick<
+type RepoTypes = EntityRepoMethodTypes<
   User,
-  PlainKeysAllowedToModify | PlainKeysGeneratedAfterInsert
+  {
+    EntityName: 'User';
+    OptionalToCreateRegularPlainKeys: 'avatarURL' | 'phone';
+    RequiredToCreateRegularPlainKeys:
+      | 'firstName'
+      | 'lastName'
+      | 'nickname'
+      | 'email'
+      | 'patronymic'
+      | 'gender'
+      | 'salt'
+      | 'passwordHash';
+
+    ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
+    ForbiddenToUpdateRelationKeys: null;
+    UnselectedByDefaultPlainKeys: 'salt' | 'passwordHash';
+  }
 >;
 
-export type UpdatedOnePlainUser = Pick<User, PrimaryKeys> &
-  Partial<Pick<User, PlainKeysAllowedToModify>>;
-
-export type SelectedOnePlainUser = Pick<User, UsuallyReturnedUserPlainKeys>;
+export type SelectedOnePlainUser = RepoTypes['SelectedOnePlainEntity'];

@@ -279,7 +279,7 @@
         "label": "ORM migration generation for dev database (ormgen)",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
@@ -298,7 +298,7 @@
         "label": "Shell in dev backend",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh",
         "problemMatcher": [],
@@ -317,7 +317,7 @@
         "label": "Remove build folder (rm -rf dist) in dev backend",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev rm -rf ./dist",
         "problemMatcher": [],
@@ -336,7 +336,7 @@
         "label": "Migrate dev database",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
@@ -353,7 +353,7 @@
         "label": "Drop dev database",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
@@ -363,7 +363,7 @@
         "label": "Recreate dev database",
         "type": "shell",
         "dependsOn": [
-          "Run dev"
+          "Up dev"
         ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],

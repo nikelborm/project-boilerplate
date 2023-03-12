@@ -1,4 +1,4 @@
-import type { AccessScopeType } from './accessScopeType';
+import type { AccessScopeType } from './modelHelper/accessScopeType';
 
 export interface UserAuthInfo {
   id: number;

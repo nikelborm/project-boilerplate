@@ -80,7 +80,8 @@ export class UserUseCase {
       throw new BadRequestException(messages.repo.user.cantGetNotFoundById(id));
 
     const updatedUser = this.createUserModel({ ...candidate, password });
-    await this.userRepo.updateOnePlain({ id, ...updatedUser });
+
+    await this.userRepo.updateOnePlain({ id }, updatedUser);
   }
 
   private createUserModel({
