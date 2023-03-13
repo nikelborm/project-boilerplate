@@ -278,9 +278,6 @@
       {
         "label": "ORM migration generation for dev database (ormgen)",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
         "promptOnClose": true,
@@ -297,9 +294,6 @@
       {
         "label": "Shell in dev backend",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh",
         "problemMatcher": [],
         "promptOnClose": true,
@@ -316,9 +310,6 @@
       {
         "label": "Remove build folder (rm -rf dist) in dev backend",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev rm -rf ./dist",
         "problemMatcher": [],
         "promptOnClose": true,
@@ -335,9 +326,6 @@
       {
         "label": "Migrate dev database",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
@@ -352,9 +340,6 @@
       {
         "label": "Drop dev database",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
         "promptOnClose": true
@@ -362,9 +347,6 @@
       {
         "label": "Recreate dev database",
         "type": "shell",
-        "dependsOn": [
-          "Up dev"
-        ],
         "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],
         "promptOnClose": true

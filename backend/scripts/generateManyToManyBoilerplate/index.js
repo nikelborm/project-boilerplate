@@ -32,8 +32,13 @@ const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
     message: 'Pick files to generate',
     choices: [
       {
-        title: 'Model and interfaces',
-        value: 'databaseModelAndInterfaces',
+        title: 'Models',
+        value: 'models',
+        selected: true,
+      },
+      {
+        title: 'Interfaces',
+        value: 'interfaces',
         selected: true,
       },
       { title: 'Repository', value: 'repository', selected: true },
@@ -58,10 +63,18 @@ const secondCamel = camelCase(second);
 const getIntermediateModel =
   () => `import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ${secondPascal}, ${firstPascal} } from '.';
-import type { I${firstPascal}To${secondPascal} } from 'src/types';
+${
+  selectedFilesToGenerate.includes('interfaces')
+    ? `import type { I${firstPascal}To${secondPascal} } from 'src/types';`
+    : ''
+}
 
 @Entity({ name: '${firstSnake}_to_${secondSnake}' })
-export class ${firstPascal}To${secondPascal} implements I${firstPascal}To${secondPascal} {
+export class ${firstPascal}To${secondPascal} ${
+    selectedFilesToGenerate.includes('interfaces')
+      ? `implements I${firstPascal}To${secondPascal} `
+      : ''
+  }{
   @ManyToOne(
     () => ${firstPascal},
     (${firstCamel}) => ${firstCamel}.${firstCamel}To${secondPascal}Relations,
@@ -151,7 +164,7 @@ type RepoTypes = EntityRepoMethodTypes<
   ${firstPascal}To${secondPascal},
   {
     EntityName: '${firstPascal}To${secondPascal}';
-    RequiredToCreateAndSelectRegularPlainKeys: null;
+    RequiredToCreateAndSelectRegularPlainKeys: '${firstCamel}Id' | '${secondCamel}Id';
     OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: null;
@@ -245,7 +258,7 @@ const getIntermediateModelToRelationMapMixin =
   },
 `;
 
-if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
+if (selectedFilesToGenerate.includes('models')) {
   console.log(
     chalk.cyan(
       `\n------ new ${firstPascal}To${secondPascal} model was generated\n`,
@@ -331,7 +344,9 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
       chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
     );
   }
+}
 
+if (selectedFilesToGenerate.includes('interfaces')) {
   console.log(
     chalk.cyan(
       `\n------ new I${firstPascal}To${secondPascal} model interface was generated:\n`,

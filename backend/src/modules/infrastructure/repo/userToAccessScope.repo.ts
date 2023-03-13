@@ -42,8 +42,8 @@ type RepoTypes = EntityRepoMethodTypes<
   UserToAccessScope,
   {
     EntityName: 'UserToAccessScope';
+    RequiredToCreateAndSelectRegularPlainKeys: 'userId' | 'accessScopeId';
     OptionalToCreateAndSelectRegularPlainKeys: null;
-    RequiredToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: null;
     ForbiddenToUpdatePlainKeys: 'userId' | 'accessScopeId';
