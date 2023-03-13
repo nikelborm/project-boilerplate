@@ -80,7 +80,7 @@ export class ${pascal}UseCase {
   }
 
   async deleteOne(id: number): Promise<void> {
-    await this.${camel}Repo.delete(id);
+    await this.${camel}Repo.deleteOneById(id);
   }
 }
 `;
