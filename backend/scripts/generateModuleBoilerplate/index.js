@@ -9,7 +9,10 @@ const { entityName, dryRun } = await prompts([
   {
     type: 'text',
     name: 'entityName',
-    message: 'Entity name (fully lower case) with space delimiter',
+    message: `${chalk.yellow(`Module generation does not support generation for intermediate relation entities
+Currently supported generation only for entities with single id column`)}
+
+Entity name (fully lower case) with space delimiter`,
   },
   {
     type: 'toggle',
@@ -173,9 +176,18 @@ export class CreateMany${pascal}sRequestDTO {
 `;
 
 const getCreateOneAndManyResponseDTO =
-  () => `import { NestedArrayDTO } from '../../../../../tools/shared';
+  () => `import { IsDateConverted, NestedArrayDTO } from '../../../../../tools/shared';
+import { IsPositive } from 'class-validator';
 
 export class CreateOne${pascal}ResponseDTO {
+  @IsPositive()
+  id!: number;
+
+  @IsDateConverted()
+  createdAt!: Date;
+
+  @IsDateConverted()
+  updatedAt!: Date;
 }
 
 export class CreateMany${pascal}sResponseDTO {
@@ -185,11 +197,11 @@ export class CreateMany${pascal}sResponseDTO {
 `;
 
 const getFindOneOrManyResponseDTO =
-  () => `import { IsNumber } from 'class-validator';
+  () => `import { IsPositive } from 'class-validator';
 import { IsDateConverted, NestedArrayDTO } from '../../../../../tools/shared';
 
 export class GetOne${pascal}ByIdResponseDTO {
-  @IsNumber()
+  @IsPositive()
   id!: number;
 
   @IsDateConverted()

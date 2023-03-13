@@ -65,11 +65,11 @@ const getMixinToMultipleSideOfRelation = () => `
 `;
 
 const getMixinToMultipleSideEntityInRelationMap =
-  () => `${secondCamel}: '${secondPascal}',
+  () => `      ${secondCamel}: '${secondPascal}',
 `;
 
 const getMixinToSingleSideEntityInRelationMap =
-  () => `${firstCamel}: ['${firstPascal}'],
+  () => `      ${firstCamel}: ['${firstPascal}'],
 `;
 
 const getMixinToSingleSideOfRelation = () => `
@@ -89,6 +89,18 @@ const getMixinToMultipleSideOfRelationInterface = () => `
 const getMixinToSingleSideOfRelationInterface = () => `
   ${firstCamel}s!: I${firstPascal}[];
 `;
+
+const getFirstModelImportMixin = () => `
+import { ${secondPascal} } from '.';`;
+
+const getFirstInterfaceImportMixin = () => `
+import type { I${secondPascal} } from '.';`;
+
+const getSecondModelImportMixin = () => `
+import { ${firstPascal} } from '.';`;
+
+const getSecondInterfaceImportMixin = () => `
+import type { I${firstPascal} } from '.';`;
 
 if (selectedFilesToGenerate.includes('usualMixins')) {
   console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model:\n`));
@@ -144,6 +156,74 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
       `./shared/src/types/shared/model/${secondCamel}.model.ts`,
       getMixinToSingleSideOfRelationInterface(),
       /}\n$/g,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${secondPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model imports:\n`));
+  console.log(getFirstModelImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
+      getFirstModelImportMixin(),
+      /\n*@Entity/g,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${secondPascal} model imports:\n`),
+  );
+  console.log(getSecondModelImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
+      getSecondModelImportMixin(),
+      /\n*@Entity/g,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for I${firstPascal} model interface imports:\n`),
+  );
+  console.log(getFirstInterfaceImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${firstCamel}.model.ts`,
+      getFirstInterfaceImportMixin(),
+      /\n*export class I/g,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${firstPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(
+      `\n------ Mixin for I${secondPascal} model interface imports:\n`,
+    ),
+  );
+  console.log(getSecondInterfaceImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${secondCamel}.model.ts`,
+      getSecondInterfaceImportMixin(),
+      /\n*export class I/g,
     );
     console.log(
       chalk.gray(
