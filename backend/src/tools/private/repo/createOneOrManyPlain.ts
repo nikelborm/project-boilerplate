@@ -16,7 +16,7 @@ export const createManyPlain =
   >(
     newEntities: ProvidedPlainEntityToBeCreated[],
   ): Promise<ReturnType[]> => {
-    const { generatedMaps } = await repo.insert(newEntities);
+    const { generatedMaps } = await repo.insert(newEntities as any);
     if (newEntities.length !== generatedMaps.length)
       throw new Error(
         'insertManyPlain newEntities.length !== generatedMaps.length',
