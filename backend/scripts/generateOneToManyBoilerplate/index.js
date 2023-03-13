@@ -3,7 +3,7 @@
 import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import chalk from 'chalk';
-import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin/index.js';
 
 const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
   {
@@ -98,7 +98,7 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
       getMixinToMultipleSideOfRelation(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
@@ -111,7 +111,7 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
       getMixinToSingleSideOfRelation(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
@@ -126,7 +126,7 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${firstCamel}.model.ts`,
       getMixinToMultipleSideOfRelationInterface(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(
@@ -143,7 +143,7 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${secondCamel}.model.ts`,
       getMixinToSingleSideOfRelationInterface(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(
@@ -165,7 +165,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
       getMixinToMultipleSideEntityInRelationMap(),
       new RegExp(
         `      \\/\\/ ${firstPascal} relationToEntityNameMap token`,
-        'gm',
+        'g',
       ),
     );
     console.log(
@@ -186,7 +186,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
       getMixinToSingleSideEntityInRelationMap(),
       new RegExp(
         `      \\/\\/ ${secondPascal} relationToEntityNameMap token`,
-        'gm',
+        'g',
       ),
     );
     console.log(

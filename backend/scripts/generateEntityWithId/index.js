@@ -4,7 +4,7 @@ import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import { appendFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
-import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin/index.js';
 
 const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
@@ -72,7 +72,9 @@ export class ${pascal} ${
 }
 `;
 
-const getInterface = () => `export class I${pascal} {
+const getInterface = () => `//
+
+export class I${pascal} {
   id!: number;
 
   createdAt!: Date;
@@ -232,7 +234,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     await writeNewFileWithMixin(
       `./backend/src/types/private/relationMap.ts`,
       getRelationMapMixin(),
-      /  \/\/ RelationMapValue end token/gm,
+      /  \/\/ RelationMapValue end token/g,
     );
     console.log(
       chalk.gray(

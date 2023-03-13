@@ -4,7 +4,7 @@ import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import { appendFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
-import { writeNewFileWithMixin } from '../writeNewFileWithMixin';
+import { writeNewFileWithMixin } from '../writeNewFileWithMixin/index.js';
 
 const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
   {
@@ -109,6 +109,18 @@ export class I${firstPascal}To${secondPascal} {
 const getIntermediateModelRepo =
   () => `import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  createManyPlain,
+  createOnePlain,
+  deleteEntityByIdentity,
+  findOnePlainByIdentity,
+  getAllEntities,
+  updateManyPlain,
+  updateManyWithRelations,
+  updateOnePlain,
+  updateOneWithRelations,
+} from 'src/tools';
+import type { EntityRepoMethodTypes } from 'src/types';
 import { Repository } from 'typeorm';
 import { ${firstPascal}To${secondPascal} } from '../model';
 
@@ -119,31 +131,37 @@ export class ${firstPascal}To${secondPascal}Repo {
     private readonly repo: Repository<${firstPascal}To${secondPascal}>,
   ) {}
 
-  async getAll(): Promise<${firstPascal}To${secondPascal}[]> {
-    return await this.repo.find();
-  }
+  getAll = getAllEntities(this.repo)<Config>();
 
-  async createOne(
-    new${firstPascal}To${secondPascal}: CreatedOnePlain${firstPascal}To${secondPascal},
-  ): Promise<CreatedOnePlain${firstPascal}To${secondPascal}> {
-    await this.repo.insert(new${firstPascal}To${secondPascal});
-    return new${firstPascal}To${secondPascal};
-  }
+  findOneByIdentity = findOnePlainByIdentity(this.repo)<Config>();
 
-  async createMany(
-    new${firstPascal}To${secondPascal}s: CreatedOnePlain${firstPascal}To${secondPascal}[],
-  ): Promise<CreatedOnePlain${firstPascal}To${secondPascal}[]> {
-    await this.repo.insert(new${firstPascal}To${secondPascal}s);
-    return new${firstPascal}To${secondPascal}s;
-  }
+  createOnePlain = createOnePlain(this.repo)<Config>();
+  createManyPlain = createManyPlain(this.repo)<Config>();
+
+  updateManyPlain = updateManyPlain(this.repo)<Config>();
+  updateOnePlain = updateOnePlain(this.repo)<Config>();
+
+  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
+
+  deleteOne = deleteEntityByIdentity(this.repo)<Config>();
 }
 
-type PlainKeysAllowedToModify = '${firstCamel}Id' | '${secondCamel}Id';
-
-type CreatedOnePlain${firstPascal}To${secondPascal} = Pick<
+type RepoTypes = EntityRepoMethodTypes<
   ${firstPascal}To${secondPascal},
-  PlainKeysAllowedToModify
+  {
+    EntityName: '${firstPascal}To${secondPascal}';
+    OptionalToCreateRegularPlainKeys: null;
+    RequiredToCreateRegularPlainKeys: null;
+
+    ForbiddenToCreateGeneratedPlainKeys: null;
+    ForbiddenToUpdatePlainKeys: '${firstCamel}Id' | '${secondCamel}Id';
+    ForbiddenToUpdateRelationKeys: null;
+    UnselectedByDefaultPlainKeys: null;
+  }
 >;
+
+type Config = RepoTypes['Config'];
 `;
 
 const getFirstModelMixin = () => `
@@ -168,6 +186,12 @@ const getFirstModelMixin = () => `
   ${firstCamel}To${secondPascal}Relations!: ${firstPascal}To${secondPascal}[];
 `;
 
+const getFirstModelImportMixin = () => `
+import { ${secondPascal}, ${firstPascal}To${secondPascal} } from '.';`;
+
+const getFirstInterfaceImportMixin = () => `
+import type { I${secondPascal}, I${firstPascal}To${secondPascal} } from '.';`;
+
 const getSecondModelMixin = () => `
   @ManyToMany(
     () => ${firstPascal},
@@ -181,6 +205,12 @@ const getSecondModelMixin = () => `
   )
   ${firstCamel}To${secondPascal}Relations!: ${firstPascal}To${secondPascal}[];
 `;
+
+const getSecondModelImportMixin = () => `
+import { ${firstPascal}, ${firstPascal}To${secondPascal} } from '.';`;
+
+const getSecondInterfaceImportMixin = () => `
+import type { I${firstPascal}, I${firstPascal}To${secondPascal} } from '.';`;
 
 const getFirstModelInterfaceMixin = () => `
   ${secondCamel}s!: I${secondPascal}[];
@@ -251,7 +281,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
       getFirstModelMixin(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
@@ -265,7 +295,37 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
       getSecondModelMixin(),
-      /}\n$/gm,
+      /}\n$/g,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
+    );
+  }
+
+  console.log(chalk.cyan(`\n------ Mixin for ${firstPascal} model imports:\n`));
+  console.log(getFirstModelImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${firstCamel}.model.ts`,
+      getFirstModelImportMixin(),
+      /\n*@Entity/g,
+    );
+    console.log(
+      chalk.gray(`\n------ mixin to ${firstPascal} was written to disk:\n`),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for ${secondPascal} model imports:\n`),
+  );
+  console.log(getSecondModelImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
+      getSecondModelImportMixin(),
+      /\n*@Entity/g,
     );
     console.log(
       chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
@@ -309,7 +369,7 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${firstCamel}.model.ts`,
       getFirstModelInterfaceMixin(),
-      /}\n$/gm,
+      /}\n$/g,
     );
     console.log(
       chalk.gray(
@@ -327,7 +387,45 @@ if (selectedFilesToGenerate.includes('databaseModelAndInterfaces')) {
     await writeNewFileWithMixin(
       `./shared/src/types/shared/model/${secondCamel}.model.ts`,
       getSecondModelInterfaceMixin(),
-      /}\n$/gm,
+      /}\n$/g,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${secondPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(`\n------ Mixin for I${firstPascal} model interface imports:\n`),
+  );
+  console.log(getFirstInterfaceImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${firstCamel}.model.ts`,
+      getFirstInterfaceImportMixin(),
+      /\n*export class I/g,
+    );
+    console.log(
+      chalk.gray(
+        `\n------ mixin to I${firstPascal} interface was written to disk:\n`,
+      ),
+    );
+  }
+
+  console.log(
+    chalk.cyan(
+      `\n------ Mixin for I${secondPascal} model interface imports:\n`,
+    ),
+  );
+  console.log(getSecondInterfaceImportMixin());
+
+  if (!dryRun) {
+    await writeNewFileWithMixin(
+      `./shared/src/types/shared/model/${secondCamel}.model.ts`,
+      getSecondInterfaceImportMixin(),
+      /\n*export class I/g,
     );
     console.log(
       chalk.gray(
@@ -379,7 +477,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     await writeNewFileWithMixin(
       `./backend/src/types/private/relationMap.ts`,
       getIntermediateModelToRelationMapMixin(),
-      /  \/\/ RelationMapValue end token/gm,
+      /  \/\/ RelationMapValue end token/g,
     );
     console.log(
       chalk.gray(
@@ -399,7 +497,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
       getMixinToFirstModelInRelationMap(),
       new RegExp(
         `      \\/\\/ ${firstPascal} relationToEntityNameMap token`,
-        'gm',
+        'g',
       ),
     );
     console.log(
@@ -420,7 +518,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
       getMixinToSecondModelInRelationMap(),
       new RegExp(
         `      \\/\\/ ${secondPascal} relationToEntityNameMap token`,
-        'gm',
+        'g',
       ),
     );
     console.log(
