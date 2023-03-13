@@ -139,8 +139,8 @@ type RepoTypes = EntityRepoMethodTypes<
   ${pascal},
   {
     EntityName: '${pascal}';
-    OptionalToCreateRegularPlainKeys: null;
-    RequiredToCreateRegularPlainKeys: null;
+    RequiredToCreateAndSelectRegularPlainKeys: 'createdAt' | 'updatedAt';
+    OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';

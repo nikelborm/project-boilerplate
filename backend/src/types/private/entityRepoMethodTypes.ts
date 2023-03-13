@@ -32,12 +32,12 @@ export type EntityRepoMethodTypes<
     ? Pick<Entity, EntityRepoMethodTypes<Entity, Config>['IdentityPlainKeys']>
     : never;
 
-  RequiredToCreatePlainPart: Config['RequiredToCreateRegularPlainKeys'] extends keyof Entity
-    ? Pick<Entity, Config['RequiredToCreateRegularPlainKeys']>
+  RequiredToCreatePlainPart: Config['RequiredToCreateAndSelectRegularPlainKeys'] extends keyof Entity
+    ? Pick<Entity, Config['RequiredToCreateAndSelectRegularPlainKeys']>
     : Record<never, never>;
 
-  OptionalToCreatePlainPart: Config['OptionalToCreateRegularPlainKeys'] extends keyof Entity
-    ? Partial<Pick<Entity, Config['OptionalToCreateRegularPlainKeys']>>
+  OptionalToCreatePlainPart: Config['OptionalToCreateAndSelectRegularPlainKeys'] extends keyof Entity
+    ? Partial<Pick<Entity, Config['OptionalToCreateAndSelectRegularPlainKeys']>>
     : Record<never, never>;
 
   UpdatablePlainPart: Partial<
@@ -134,8 +134,8 @@ export type EntityRepoMethodTypes<
 
 export type EntityRepoMethodTypesConfig<Entity extends Record<string, any>> = {
   EntityName: DBModelNames;
-  RequiredToCreateRegularPlainKeys: keyof Entity | null;
-  OptionalToCreateRegularPlainKeys: keyof Entity | null;
+  RequiredToCreateAndSelectRegularPlainKeys: keyof Entity | null;
+  OptionalToCreateAndSelectRegularPlainKeys: keyof Entity | null;
 
   ForbiddenToCreateGeneratedPlainKeys: keyof Entity | null;
   ForbiddenToUpdatePlainKeys: keyof Entity | null;

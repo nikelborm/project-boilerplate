@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   createManyPlain,
   createOnePlain,
+  deleteEntityByIdentity,
+  findOnePlainByIdentity,
+  getAllEntities,
   updateManyPlain,
+  updateManyWithRelations,
   updateOnePlain,
   updateOneWithRelations,
 } from 'src/tools';
@@ -18,38 +22,35 @@ export class AccessScopeRepo {
     private readonly repo: Repository<AccessScope>,
   ) {}
 
-  async getOneById(
+  getAll = getAllEntities(this.repo)<Config>();
+
+  findOneById = async (
     id: number,
-  ): Promise<Pick<
-    AccessScope,
-    'id' | 'type' | 'createdAt' | 'updatedAt'
-  > | null> {
-    return await this.repo.findOne({ where: { id } });
-  }
+  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+    await findOnePlainByIdentity(this.repo)<Config>()({ id });
 
-  updateOneWithRelations = updateOneWithRelations(this.repo)<
-    RepoTypes['Config']
-  >();
+  createOnePlain = createOnePlain(this.repo)<Config>();
+  createManyPlain = createManyPlain(this.repo)<Config>();
 
-  updateManyPlain = updateManyPlain(this.repo)<RepoTypes['Config']>();
+  updateManyPlain = updateManyPlain(this.repo)<Config>();
+  updateOnePlain = updateOnePlain(this.repo)<Config>();
 
-  updateOnePlain = updateOnePlain(this.repo)<RepoTypes['Config']>();
+  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
+  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
 
-  createOnePlain = createOnePlain(this.repo)<RepoTypes['Config']>();
-
-  createManyPlain = createManyPlain(this.repo)<RepoTypes['Config']>();
-
-  async deleteMany(accessScopeIds: number[]): Promise<void> {
-    await this.repo.delete(accessScopeIds);
-  }
+  deleteOneById = async (id: number): Promise<void> =>
+    await deleteEntityByIdentity(this.repo)<Config>()({ id });
 }
 
 type RepoTypes = EntityRepoMethodTypes<
   AccessScope,
   {
     EntityName: 'AccessScope';
-    RequiredToCreateRegularPlainKeys: 'type';
-    OptionalToCreateRegularPlainKeys: null;
+    RequiredToCreateAndSelectRegularPlainKeys:
+      | 'type'
+      | 'createdAt'
+      | 'updatedAt';
+    OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
@@ -58,3 +59,5 @@ type RepoTypes = EntityRepoMethodTypes<
     UnselectedByDefaultPlainKeys: null;
   }
 >;
+
+type Config = RepoTypes['Config'];

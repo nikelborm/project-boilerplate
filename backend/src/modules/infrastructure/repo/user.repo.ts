@@ -128,8 +128,8 @@ type RepoTypes = EntityRepoMethodTypes<
   User,
   {
     EntityName: 'User';
-    OptionalToCreateRegularPlainKeys: 'avatarURL' | 'phone';
-    RequiredToCreateRegularPlainKeys:
+    OptionalToCreateAndSelectRegularPlainKeys: 'avatarURL' | 'phone';
+    RequiredToCreateAndSelectRegularPlainKeys:
       | 'firstName'
       | 'lastName'
       | 'nickname'
@@ -137,7 +137,9 @@ type RepoTypes = EntityRepoMethodTypes<
       | 'patronymic'
       | 'gender'
       | 'salt'
-      | 'passwordHash';
+      | 'passwordHash'
+      | 'createdAt'
+      | 'updatedAt';
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
