@@ -529,7 +529,7 @@
       {
         "label": "Create new docker builder",
         "type": "shell",
-        "command": "docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx create --name my_builder --platform=linux/arm64,linux/amd64",
+        "command": "docker buildx install; docker run --rm --privileged -d --name buildkit moby/buildkit; docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx install; docker buildx create --name my_builder --platform=linux/arm64,linux/amd64",
         "promptOnClose": false,
         "problemMatcher": [],
         "group": {

@@ -47,20 +47,11 @@ export type EntityRepoMethodTypes<
     EntityRepoMethodTypes<Entity, Config>['OptionalToCreatePlainPart'];
 
   UpdatablePlainPart: Partial<
-    Config['ForbiddenToUpdatePlainKeys'] extends null
-      ? EntityRepoMethodTypes<
-          Entity,
-          Config
-        >['PartWithRequiredAndOptionalParts']
-      : Config['ForbiddenToUpdatePlainKeys'] extends keyof Entity
-      ? Omit<
-          EntityRepoMethodTypes<
-            Entity,
-            Config
-          >['PartWithRequiredAndOptionalParts'],
-          Config['ForbiddenToUpdatePlainKeys']
-        >
-      : never
+    OmitIfNotNull<
+      EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts'],
+      Config['ForbiddenToUpdatePlainKeys'],
+      Entity
+    >
   >;
 
   OriginalPartWithRelations: EntityRepoMethodTypes<
@@ -93,20 +84,14 @@ export type EntityRepoMethodTypes<
     : Record<never, never>;
 
   UpdatableRelationalPart: Partial<
-    Config['ForbiddenToUpdateRelationKeys'] extends null
-      ? EntityRepoMethodTypes<
-          Entity,
-          Config
-        >['PartWithRelationsOptimizedForUpdates']
-      : Config['ForbiddenToUpdateRelationKeys'] extends keyof Entity
-      ? Omit<
-          EntityRepoMethodTypes<
-            Entity,
-            Config
-          >['PartWithRelationsOptimizedForUpdates'],
-          Config['ForbiddenToUpdateRelationKeys']
-        >
-      : never
+    OmitIfNotNull<
+      EntityRepoMethodTypes<
+        Entity,
+        Config
+      >['PartWithRelationsOptimizedForUpdates'],
+      Config['ForbiddenToUpdateRelationKeys'],
+      Entity
+    >
   >;
 
   PossiblyCanBeSelectedPlainPart: EntityRepoMethodTypes<
@@ -117,17 +102,11 @@ export type EntityRepoMethodTypes<
 
   // ------------------------------------------------------- final types for repo functions
 
-  OnePlainEntityToBeCreated: Config['ForbiddenToCreateGeneratedPlainKeys'] extends null
-    ? EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts']
-    : Config['ForbiddenToCreateGeneratedPlainKeys'] extends keyof Entity
-    ? Omit<
-        EntityRepoMethodTypes<
-          Entity,
-          Config
-        >['PartWithRequiredAndOptionalParts'],
-        Config['ForbiddenToCreateGeneratedPlainKeys']
-      >
-    : never;
+  OnePlainEntityToBeCreated: OmitIfNotNull<
+    EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts'],
+    Config['ForbiddenToCreateGeneratedPlainKeys'],
+    Entity
+  >;
 
   // OneEntityWithRelationsToBeCreated should be disallowed
 
@@ -143,14 +122,11 @@ export type EntityRepoMethodTypes<
   >['OnePlainEntityToBeUpdated'] &
     EntityRepoMethodTypes<Entity, Config>['UpdatableRelationalPart'];
 
-  SelectedOnePlainEntity: Config['UnselectedByDefaultPlainKeys'] extends null
-    ? EntityRepoMethodTypes<Entity, Config>['PossiblyCanBeSelectedPlainPart']
-    : Config['UnselectedByDefaultPlainKeys'] extends keyof Entity
-    ? Omit<
-        EntityRepoMethodTypes<Entity, Config>['PossiblyCanBeSelectedPlainPart'],
-        Config['UnselectedByDefaultPlainKeys']
-      >
-    : never;
+  SelectedOnePlainEntity: OmitIfNotNull<
+    EntityRepoMethodTypes<Entity, Config>['PossiblyCanBeSelectedPlainPart'],
+    Config['UnselectedByDefaultPlainKeys'],
+    Entity
+  >;
 };
 
 export type EntityRepoMethodTypesConfig<Entity extends Record<string, any>> = {
@@ -175,3 +151,13 @@ type GetRelationPartBy<RelatedEntityName> =
         >
       : never
     : never;
+
+type OmitIfNotNull<
+  Holder,
+  Keys extends keyof Entity | null,
+  Entity extends Record<string, any>,
+> = [Keys] extends [null]
+  ? Holder
+  : [Keys] extends [keyof Entity]
+  ? Omit<Holder, Keys>
+  : never;
