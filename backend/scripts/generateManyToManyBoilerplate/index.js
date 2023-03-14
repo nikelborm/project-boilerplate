@@ -164,7 +164,9 @@ type RepoTypes = EntityRepoMethodTypes<
   ${firstPascal}To${secondPascal},
   {
     EntityName: '${firstPascal}To${secondPascal}';
+
     RequiredToCreateAndSelectRegularPlainKeys: '${firstCamel}Id' | '${secondCamel}Id';
+
     OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: null;
@@ -258,7 +260,9 @@ const getIntermediateModelToRelationMapMixin =
   },
 `;
 
+
 if (selectedFilesToGenerate.includes('models')) {
+
   console.log(
     chalk.cyan(
       `\n------ new ${firstPascal}To${secondPascal} model was generated\n`,
@@ -309,6 +313,7 @@ if (selectedFilesToGenerate.includes('models')) {
       `./backend/src/modules/infrastructure/model/${secondCamel}.model.ts`,
       getSecondModelMixin(),
       /}\n$/g,
+
     );
     console.log(
       chalk.gray(`\n------ mixin to ${secondPascal} was written to disk:\n`),
