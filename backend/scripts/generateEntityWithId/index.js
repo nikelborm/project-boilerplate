@@ -153,6 +153,12 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
+
+export type OnePlain${pascal}ToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
+export type OnePlain${pascal}ToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
+export type One${pascal}WithRelationsToBeUpdated =
+  RepoTypes['OneEntityWithRelationsToBeUpdated'];
+export type SelectedOnePlain${pascal} = RepoTypes['SelectedOnePlainEntity'];
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {

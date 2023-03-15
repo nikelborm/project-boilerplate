@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import {
   writeNewFileAndAndLog,
   writeNewFileAndExtendDirReexportsAndLog,
-} from '../common';
+} from '../common/index.js';
 
 const { entityName, dryRun } = await prompts([
   {

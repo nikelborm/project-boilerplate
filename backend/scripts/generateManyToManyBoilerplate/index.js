@@ -185,6 +185,12 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
+
+export type OnePlain${firstPascal}To${secondPascal}ToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
+export type OnePlain${firstPascal}To${secondPascal}ToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
+export type One${firstPascal}To${secondPascal}WithRelationsToBeUpdated =
+  RepoTypes['OneEntityWithRelationsToBeUpdated'];
+export type SelectedOnePlain${firstPascal}To${secondPascal} = RepoTypes['SelectedOnePlainEntity'];
 `;
 
 const getFirstModelMixin = () => `

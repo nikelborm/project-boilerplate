@@ -37,8 +37,13 @@ const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
     message: 'Pick files to generate',
     choices: [
       {
-        title: 'Usual mixins',
-        value: 'usualMixins',
+        title: 'Model mixins',
+        value: 'modelMixins',
+        selected: true,
+      },
+      {
+        title: 'Model interface mixins',
+        value: 'modelInterfaceMixins',
         selected: true,
       },
       {
@@ -108,7 +113,7 @@ import { ${firstPascal} } from '.';`;
 const getSecondInterfaceImportMixin = () => `
 import type { I${firstPascal} } from '.';`;
 
-if (selectedFilesToGenerate.includes('usualMixins')) {
+if (selectedFilesToGenerate.includes('modelMixins')) {
   await appendModelBodyMixinToFileAndLog(
     first,
     getMixinToMultipleSideOfRelation(),
@@ -121,18 +126,6 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
     dryRun,
   );
 
-  await appendModelInterfaceBodyMixinToFileAndLog(
-    first,
-    getMixinToMultipleSideOfRelationInterface(),
-    dryRun,
-  );
-
-  await appendModelInterfaceBodyMixinToFileAndLog(
-    second,
-    getMixinToSingleSideOfRelationInterface(),
-    dryRun,
-  );
-
   await appendModelImportsMixinToFileAndLog(
     first,
     getFirstModelImportMixin(),
@@ -142,6 +135,20 @@ if (selectedFilesToGenerate.includes('usualMixins')) {
   await appendModelImportsMixinToFileAndLog(
     second,
     getSecondModelImportMixin(),
+    dryRun,
+  );
+}
+
+if (selectedFilesToGenerate.includes('modelInterfaceMixins')) {
+  await appendModelInterfaceBodyMixinToFileAndLog(
+    first,
+    getMixinToMultipleSideOfRelationInterface(),
+    dryRun,
+  );
+
+  await appendModelInterfaceBodyMixinToFileAndLog(
+    second,
+    getMixinToSingleSideOfRelationInterface(),
     dryRun,
   );
 

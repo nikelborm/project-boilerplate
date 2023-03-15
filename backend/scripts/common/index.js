@@ -279,7 +279,7 @@ export async function appendModelInterfaceImportsMixinToFileAndLog(
     `I${entityName}`,
     mixin,
     `./shared/src/types/shared/model/${camelCase(entityName)}.model.ts`,
-    /}\n$/g,
+    /\n*export class I/g,
     dryRun,
   );
 }
