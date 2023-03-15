@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 // @ts-check
-import { camelCase, pascalCase, snakeCase } from 'change-case';
+import { pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
-import { appendFile, writeFile } from 'fs/promises';
 import chalk from 'chalk';
-import { writeNewFileWithMixin } from '../writeNewFileWithMixin/index.js';
+import {
+  appendRelationMapMixinToFileAndLog,
+  writeNewModelFileAndExtendDirReexportsAndLog,
+  writeNewModelInterfaceFileAndExtendDirReexportsAndLog,
+  writeNewRepositoryFileAndExtendDirReexportsAndLog,
+} from '../common/index.js';
 
 const { first, selectedFilesToGenerate, dryRun } = await prompts([
   {
@@ -41,7 +45,6 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
 
 const pascal = pascalCase(first);
 const snake = snakeCase(first);
-const camel = camelCase(first);
 
 const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
 ${
@@ -153,95 +156,32 @@ type Config = RepoTypes['Config'];
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {
-  console.log(chalk.cyan(`\n------ new ${pascal} model was generated\n`));
-  console.log(getModel());
-
-  if (!dryRun) {
-    await writeFile(
-      `./backend/src/modules/infrastructure/model/${camel}.model.ts`,
-      getModel(),
-    );
-    console.log(
-      chalk.gray(`\n------ new ${pascal} model was written to disk:\n`),
-    );
-    await appendFile(
-      `./backend/src/modules/infrastructure/model/index.ts`,
-      `export * from './${camel}.model';\n`,
-    );
-    console.log(
-      chalk.gray(
-        `\n------ index.ts reexport of ${pascal} model was written to disk:\n`,
-      ),
-    );
-  }
+  await writeNewModelFileAndExtendDirReexportsAndLog(first, getModel(), dryRun);
 }
 
 if (selectedFilesToGenerate.includes('interface')) {
-  console.log(chalk.cyan(`\n------ new I${pascal} interface was generated\n`));
-  console.log(getInterface());
-
-  if (!dryRun) {
-    await writeFile(
-      `./shared/src/types/shared/model/${camel}.model.ts`,
-      getInterface(),
-    );
-    console.log(
-      chalk.gray(`\n------ new I${pascal} interface was written to disk:\n`),
-    );
-    await appendFile(
-      `./shared/src/types/shared/model/index.ts`,
-      `export * from './${camel}.model';\n`,
-    );
-    console.log(
-      chalk.gray(
-        `\n------ index.ts reexport of I${pascal} interface was written to disk:\n`,
-      ),
-    );
-  }
+  await writeNewModelInterfaceFileAndExtendDirReexportsAndLog(
+    first,
+    getInterface(),
+    dryRun,
+  );
 }
 
 if (selectedFilesToGenerate.includes('repository')) {
-  console.log(chalk.cyan(`\n------ new ${pascal}Repo repo was generated\n`));
-  console.log(getRepo());
-
-  if (!dryRun) {
-    await writeFile(
-      `./backend/src/modules/infrastructure/repo/${camel}.repo.ts`,
-      getRepo(),
-    );
-    console.log(
-      chalk.gray(
-        `\n------ new ${pascal}Repo repository was written to disk:\n`,
-      ),
-    );
-    await appendFile(
-      `./backend/src/modules/infrastructure/repo/index.ts`,
-      `export * from './${camel}.repo';\n`,
-    );
-    console.log(
-      chalk.gray(
-        `\n------ index.ts reexport of ${pascal}Repo repository was written to disk:\n`,
-      ),
-    );
-  }
+  await writeNewRepositoryFileAndExtendDirReexportsAndLog(
+    first,
+    getRepo(),
+    dryRun,
+  );
 }
 
 if (selectedFilesToGenerate.includes('relationMapExtension')) {
-  console.log(chalk.cyan(`\n------ Mixin for ${pascal} in relation map:\n`));
-  console.log(getRelationMapMixin());
-
-  if (!dryRun) {
-    await writeNewFileWithMixin(
-      `./backend/src/types/private/relationMap.ts`,
-      getRelationMapMixin(),
-      /  \/\/ RelationMapValue end token/g,
-    );
-    console.log(
-      chalk.gray(
-        `\n------ Mixin for ${pascal} in relation map was written to disk:\n`,
-      ),
-    );
-  }
+  await appendRelationMapMixinToFileAndLog(
+    first,
+    getRelationMapMixin(),
+    dryRun,
+    /  \/\/ RelationMapValue end token/g,
+  );
 }
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));

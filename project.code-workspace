@@ -18,7 +18,7 @@
     }
   ],
   "tasks": {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
@@ -370,7 +370,7 @@
       {
         "label": "Install yarn dependencies",
         "type": "shell",
-        "command": ". ${HOME}/.nvm/nvm.sh; yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate; yarn --cwd backend/scripts/generateOneToManyBoilerplate; yarn --cwd backend/scripts/generateEntityWithId",
+        "command": ". ${HOME}/.nvm/nvm.sh; yarn --cwd shared; yarn --cwd backend; yarn --cwd frontend; yarn --cwd backend/scripts/generateManyToManyBoilerplate; yarn --cwd backend/scripts/generateOneToManyBoilerplate; yarn --cwd backend/scripts/generateEntityWithId; yarn --cwd backend/scripts/common; yarn --cwd backend/scripts/generateModuleBoilerplate",
         "promptOnClose": false,
         "problemMatcher": [],
         "presentation": {

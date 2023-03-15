@@ -4,6 +4,10 @@ import { camelCase, pascalCase } from 'change-case';
 import prompts from 'prompts';
 import { appendFile, writeFile, mkdir, readFile } from 'fs/promises';
 import chalk from 'chalk';
+import {
+  writeNewFileAndAndLog,
+  writeNewFileAndExtendDirReexportsAndLog,
+} from '../common';
 
 const { entityName, dryRun } = await prompts([
   {
@@ -260,18 +264,13 @@ if (!dryRun) {
   );
 }
 
-console.log(chalk.cyan(`\n------ new ${pascal}Module was generated\n`));
-console.log(getModule());
-
-if (!dryRun) {
-  await writeFile(
-    `./backend/src/modules/${camel}/${camel}.module.ts`,
-    getModule(),
-  );
-  console.log(
-    chalk.gray(`\n------ new ${pascal}Module was written to disk:\n`),
-  );
-}
+await writeNewFileAndAndLog(
+  'module',
+  `${pascal}Module`,
+  getModule(),
+  `./backend/src/modules/${camel}/${camel}.module.ts`,
+  dryRun,
+);
 
 console.log(chalk.cyan(`\n------ new index.ts was generated\n`));
 console.log(getIndex());
@@ -281,115 +280,51 @@ if (!dryRun) {
   console.log(chalk.gray(`\n------ new index.ts was written to disk:\n`));
 }
 
-console.log(chalk.cyan(`\n------ new ${pascal}UseCase was generated\n`));
-console.log(getUseCase());
-
-if (!dryRun) {
-  await writeFile(
-    `./backend/src/modules/${camel}/${camel}.useCase.ts`,
-    getUseCase(),
-  );
-  console.log(
-    chalk.gray(`\n------ new ${pascal}UseCase was written to disk:\n`),
-  );
-}
-
-console.log(chalk.cyan(`\n------ new ${pascal}Controller was generated\n`));
-console.log(getController());
-
-if (!dryRun) {
-  await writeFile(
-    `./backend/src/modules/${camel}/${camel}.controller.ts`,
-    getController(),
-  );
-  console.log(
-    chalk.gray(`\n------ new ${pascal}Controller was written to disk:\n`),
-  );
-}
-
-console.log(
-  chalk.cyan(
-    `\n------ new CreateOne${pascal}RequestDTO, CreateMany${pascal}sRequestDTO were generated\n`,
-  ),
+await writeNewFileAndAndLog(
+  'Use case',
+  `${pascal}UseCase`,
+  getUseCase(),
+  `./backend/src/modules/${camel}/${camel}.useCase.ts`,
+  dryRun,
 );
-console.log(getCreateOneAndManyRequestDTO());
 
-if (!dryRun) {
-  await writeFile(
-    `./shared/src/types/shared/dto/request_body/mutation/createOneOrMany${pascal}s.dto.ts`,
-    getCreateOneAndManyRequestDTO(),
-  );
-  console.log(
-    chalk.gray(
-      `\n------ new createOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-  await appendFile(
-    `./shared/src/types/shared/dto/request_body/mutation/index.ts`,
-    `export * from './createOneOrMany${pascal}s.dto';\n`,
-  );
-  console.log(
-    chalk.gray(
-      `\n------ index.ts reexport of createOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-}
-
-console.log(
-  chalk.cyan(
-    `\n------ new CreateOne${pascal}ResponseDTO, CreateMany${pascal}sResponseDTO were generated\n`,
-  ),
+await writeNewFileAndAndLog(
+  'Controller',
+  `${pascal}Controller`,
+  getController(),
+  `./backend/src/modules/${camel}/${camel}.controller.ts`,
+  dryRun,
 );
-console.log(getCreateOneAndManyResponseDTO());
 
-if (!dryRun) {
-  await writeFile(
-    `./shared/src/types/shared/dto/response_body/mutation/createOneOrMany${pascal}s.dto.ts`,
-    getCreateOneAndManyResponseDTO(),
-  );
-  console.log(
-    chalk.gray(
-      `\n------ new createOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-  await appendFile(
-    `./shared/src/types/shared/dto/response_body/mutation/index.ts`,
-    `export * from './createOneOrMany${pascal}s.dto';\n`,
-  );
-  console.log(
-    chalk.gray(
-      `\n------ index.ts reexport of createOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-}
-
-console.log(
-  chalk.cyan(
-    `\n------ new GetOne${pascal}ByIdResponseDTO, FindMany${pascal}sResponseDTO were generated\n`,
-  ),
+await writeNewFileAndExtendDirReexportsAndLog(
+  'DTO',
+  `CreateOneOrMany${pascal}RequestDTO`,
+  getCreateOneAndManyRequestDTO(),
+  `./shared/src/types/shared/dto/request_body/mutation/createOneOrMany${pascal}s.dto.ts`,
+  dryRun,
+  `./shared/src/types/shared/dto/request_body/mutation/index.ts`,
+  `export * from './createOneOrMany${pascal}s.dto';\n`,
 );
-console.log(getFindOneOrManyResponseDTO());
 
-if (!dryRun) {
-  await writeFile(
-    `./shared/src/types/shared/dto/response_body/query/getOneOrMany${pascal}s.dto.ts`,
-    getFindOneOrManyResponseDTO(),
-  );
-  console.log(
-    chalk.gray(
-      `\n------ new getOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-  await appendFile(
-    `./shared/src/types/shared/dto/response_body/query/index.ts`,
-    `export * from './getOneOrMany${pascal}s.dto';\n`,
-  );
-  console.log(
-    chalk.gray(
-      `\n------ index.ts reexport of getOneOrMany${pascal}s.dto was written to disk:\n`,
-    ),
-  );
-}
+await writeNewFileAndExtendDirReexportsAndLog(
+  'DTO',
+  `CreateOneOrMany${pascal}ResponseDTO`,
+  getCreateOneAndManyResponseDTO(),
+  `./shared/src/types/shared/dto/response_body/mutation/createOneOrMany${pascal}s.dto.ts`,
+  dryRun,
+  `./shared/src/types/shared/dto/response_body/mutation/index.ts`,
+  `export * from './createOneOrMany${pascal}s.dto';\n`,
+);
+
+await writeNewFileAndExtendDirReexportsAndLog(
+  'DTO',
+  `GetOneOrFindMany${pascal}ResponseDTO`,
+  getFindOneOrManyResponseDTO(),
+  `./shared/src/types/shared/dto/response_body/query/getOneOrMany${pascal}s.dto.ts`,
+  dryRun,
+  `./shared/src/types/shared/dto/response_body/query/index.ts`,
+  `export * from './getOneOrMany${pascal}s.dto';\n`,
+);
 
 console.log(chalk.cyan(`\n------ new AppModule.ts were generated\n`));
 const newAppModule = await getNewAppModule();
