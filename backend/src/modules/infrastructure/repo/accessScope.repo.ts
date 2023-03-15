@@ -46,10 +46,12 @@ type RepoTypes = EntityRepoMethodTypes<
   AccessScope,
   {
     EntityName: 'AccessScope';
+
     RequiredToCreateAndSelectRegularPlainKeys:
       | 'type'
       | 'createdAt'
       | 'updatedAt';
+
     OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
@@ -61,3 +63,11 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
+
+export type OnePlainAccessScopeToBeCreated =
+  RepoTypes['OnePlainEntityToBeCreated'];
+export type OnePlainAccessScopeToBeUpdated =
+  RepoTypes['OnePlainEntityToBeUpdated'];
+export type OneAccessScopeWithRelationsToBeUpdated =
+  RepoTypes['OneEntityWithRelationsToBeUpdated'];
+export type SelectedOnePlainAccessScope = RepoTypes['SelectedOnePlainEntity'];

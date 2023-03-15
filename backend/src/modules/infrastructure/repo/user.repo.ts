@@ -149,3 +149,9 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
+
+export type OnePlainUserToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
+export type OnePlainUserToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
+export type OneUserWithRelationsToBeUpdated =
+  RepoTypes['OneEntityWithRelationsToBeUpdated'];
+export type SelectedOnePlainUser = RepoTypes['SelectedOnePlainEntity'];
