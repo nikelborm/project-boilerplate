@@ -225,7 +225,7 @@ const getNewAppModule = async () => {
   const appModuleImportsRegexp = /(imports:[ \[\n\A-Za-z,]*,)[ \n]*]/g;
 
   const appModuleEcmascriptImportsRegexp =
-    /(import [ \{\n\A-Za-z,]*,)[ \n]*} *from *'.\/modules';/g;
+    /(import [ \{\n\A-Za-z,]*,)[ \n]*} *from *'.\';/g;
 
   let appModuleTsFileContent = (
     await readFile('./backend/src/app.module.ts')
@@ -253,12 +253,9 @@ const getNewAppModule = async () => {
 };
 
 if (!dryRun) {
-  await mkdir(`./backend/src/modules/${camel}`);
+  await mkdir(`./backend/src/${camel}`);
   console.log(chalk.gray(`\n------ new ${camel} folder was generated\n`));
-  await appendFile(
-    `./backend/src/modules/index.ts`,
-    `export * from './${camel}';\n`,
-  );
+  await appendFile(`./backend/src/index.ts`, `export * from './${camel}';\n`);
   console.log(
     chalk.gray(`\n------ index.ts reexport of modules was written to disk:\n`),
   );
@@ -268,7 +265,7 @@ await writeNewFileAndAndLog(
   'module',
   `${pascal}Module`,
   getModule(),
-  `./backend/src/modules/${camel}/${camel}.module.ts`,
+  `./backend/src/${camel}/${camel}.module.ts`,
   dryRun,
 );
 
@@ -276,7 +273,7 @@ console.log(chalk.cyan(`\n------ new index.ts was generated\n`));
 console.log(getIndex());
 
 if (!dryRun) {
-  await writeFile(`./backend/src/modules/${camel}/index.ts`, getIndex());
+  await writeFile(`./backend/src/${camel}/index.ts`, getIndex());
   console.log(chalk.gray(`\n------ new index.ts was written to disk:\n`));
 }
 
@@ -284,7 +281,7 @@ await writeNewFileAndAndLog(
   'Use case',
   `${pascal}UseCase`,
   getUseCase(),
-  `./backend/src/modules/${camel}/${camel}.useCase.ts`,
+  `./backend/src/${camel}/${camel}.useCase.ts`,
   dryRun,
 );
 
@@ -292,7 +289,7 @@ await writeNewFileAndAndLog(
   'Controller',
   `${pascal}Controller`,
   getController(),
-  `./backend/src/modules/${camel}/${camel}.controller.ts`,
+  `./backend/src/${camel}/${camel}.controller.ts`,
   dryRun,
 );
 

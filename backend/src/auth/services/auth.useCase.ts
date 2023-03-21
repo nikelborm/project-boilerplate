@@ -6,7 +6,7 @@ import {
   messages,
   TypedConfigService,
 } from 'src/config';
-import { UserUseCase } from 'src/modules/user';
+import { UserUseCase } from 'src/user';
 import type {
   AuthTokenPairDTO,
   CreateUserDTO,

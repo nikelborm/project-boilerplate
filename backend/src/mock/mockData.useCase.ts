@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { assertMockScriptNameIsCorrect } from 'src/config';
-import { repo, UserUseCase } from 'src/modules';
+import { repo, UserUseCase } from 'src';
 import { AccessScopeType } from 'src/types';
 
 @Injectable()

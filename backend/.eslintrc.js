@@ -36,7 +36,7 @@ module.exports = {
         // [ // its off because there is bug with repos and attempts to disable the from checking
         //     "error",
         //     {
-        //         src: ["src/modules/**/*.ts"],
+        //         src: ["src/**/*.ts"],
         //         filterFromPaths: ["user", "node_modules", ".test.", ".spec."],
         //     },
         // ],

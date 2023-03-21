@@ -40,8 +40,6 @@ If you want to develop inside a container
 
 - [ ] Merge typescript, prettier and eslint configs and place it in project root directory
 
-- [ ] write script for fast adding new modules and connecting it to app module
-
 - [ ] write script for getting sql from all migrations into one .sql file which then will be fed to dbml documentation generator
 
 - [ ] add healthcheck

@@ -12,7 +12,7 @@ import {
   messages,
   TypedConfigService,
 } from 'src/config';
-import { UserUseCase } from 'src/modules/user';
+import { UserUseCase } from 'src/user';
 import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
 import {
   AllowedForArgs,

@@ -9,7 +9,7 @@ import {
   AuthModule,
   InfrastructureModule,
   UserModule,
-} from './modules';
+} from '.';
 
 @Module({
   imports: [

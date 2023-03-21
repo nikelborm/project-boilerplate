@@ -10,8 +10,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "dbdocs": "rm -rf src/modules/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/modules/infrastructure/migration/all_migrations.sql -o src/modules/infrastructure/migration/all_migrations.dbml --postgres",
-    "dbdocs:publish": "dbdocs build src/modules/infrastructure/migration/all_migrations.dbml --project Smarthouse"
+    "dbdocs": "rm -rf src/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/infrastructure/migration/all_migrations.sql -o src/infrastructure/migration/all_migrations.dbml --postgres",
+    "dbdocs:publish": "dbdocs build src/infrastructure/migration/all_migrations.dbml --project Smarthouse"
   },
   "engineStrict": true,
   "engines": {

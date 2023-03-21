@@ -71,8 +71,8 @@ services:
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
     volumes:
       - type: bind # for running migrate script inside existing backend container
-        source: ./backend/src/modules/infrastructure/
-        target: /app/src/modules/infrastructure/
+        source: ./backend/src/infrastructure/
+        target: /app/src/infrastructure/
     networks:
       nginx-back-net-prod:
       back-db-net-prod:
