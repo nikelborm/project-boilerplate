@@ -1,10 +1,10 @@
 import {
   EntityRepoMethodTypes,
-  IDefaultEntityRepo,
+  IDefaultEntityWithIdentityRepo,
   IUserToAccessScope,
 } from 'src/types';
 
-export abstract class DI_UserToAccessScopeRepo extends IDefaultEntityRepo<RepoTypes> {}
+export abstract class DI_UserToAccessScopeRepo extends IDefaultEntityWithIdentityRepo<RepoTypes> {}
 
 export type RepoTypes = EntityRepoMethodTypes<
   IUserToAccessScope,

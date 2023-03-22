@@ -11,7 +11,7 @@ import * as repo from './repo';
 import * as di from './di';
 
 const entities = Object.values(model);
-const DIRepoGetters = Object.values(di);
+const DI_RepoGetters = Object.values(di);
 const repoProviders = Object.values(repo).filter(
   (
     e,
@@ -42,6 +42,6 @@ const repoProviders = Object.values(repo).filter(
     TypeOrmModule.forFeature(entities),
   ],
   providers: [...repoProviders],
-  exports: [...DIRepoGetters],
+  exports: [...DI_RepoGetters],
 })
 export class InfrastructureModule {}
