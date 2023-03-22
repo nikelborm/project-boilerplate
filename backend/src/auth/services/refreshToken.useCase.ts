@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Provider, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TokenExpiredError } from 'jsonwebtoken';
 import {
@@ -71,7 +71,7 @@ class RefreshTokenUseCase implements DI_RefreshTokenUseCase {
   }
 }
 
-export const RefreshTokenUseCaseProvider = {
+export const RefreshTokenUseCaseProvider: Provider = {
   provide: DI_RefreshTokenUseCase,
   useClass: RefreshTokenUseCase,
 };

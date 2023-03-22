@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { DI_WhitelistedSessionStore } from '../di';
 
 @Injectable()
@@ -109,7 +109,7 @@ interface Session {
   expirationDate: Date;
 }
 
-export const InMemoryWhitelistedSessionStoreProvider = {
+export const InMemoryWhitelistedSessionStoreProvider: Provider = {
   provide: DI_WhitelistedSessionStore,
   useClass: InMemoryWhitelistedSessionStore,
 };

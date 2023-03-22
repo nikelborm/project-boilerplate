@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Provider } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
 import {
   ConfigKeys,
@@ -116,7 +116,7 @@ class UserUseCase implements DI_UserUseCase {
   }: T): Omit<T, 'passwordHash' | 'salt'> => rest;
 }
 
-export const UserUseCaseDIProvider = {
+export const UserUseCaseDIProvider: Provider = {
   provide: DI_UserUseCase,
   useClass: UserUseCase,
 };

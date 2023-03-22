@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DI_TypedConfigService } from './di';
 import { ConfigKeys } from './types';
@@ -22,7 +22,7 @@ class TypedConfigService<Store extends Record<string, unknown>>
   }
 }
 
-export const TypedConfigServiceProvider = {
+export const TypedConfigServiceProvider: Provider = {
   provide: DI_TypedConfigService,
   useClass: TypedConfigService,
 };

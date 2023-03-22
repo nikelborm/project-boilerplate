@@ -6,11 +6,11 @@ import {
   ValidatedBody,
 } from 'src/tools';
 import { EmptyResponseDTO, UpdateAccessScopeDTO } from 'src/types';
-import { AccessScopeUseCase } from './accessScope.useCase';
+import { DI_AccessScopeUseCase } from './di';
 
 @ApiController('accessScope')
 export class AccessScopeController {
-  constructor(private readonly accessScopeUseCase: AccessScopeUseCase) {}
+  constructor(private readonly accessScopeUseCase: DI_AccessScopeUseCase) {}
 
   @Post('updateAccessScope')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)

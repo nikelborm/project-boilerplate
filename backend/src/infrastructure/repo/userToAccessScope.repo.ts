@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityRepoImplementation } from 'src/tools';
 import { Repository } from 'typeorm';
@@ -19,7 +19,7 @@ class UserToAccessScopeRepo
   }
 }
 
-export const UserToAccessScopeRepoDIProvider = {
+export const UserToAccessScopeRepoDIProvider: Provider = {
   provide: DI_UserToAccessScopeRepo,
   useClass: UserToAccessScopeRepo,
 };

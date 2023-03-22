@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityWithIdRepoImplementation } from 'src/tools';
 import type {
@@ -115,7 +115,7 @@ class UserRepo
   }
 }
 
-export const UserRepoDIProvider = {
+export const UserRepoDIProvider: Provider = {
   provide: DI_UserRepo,
   useClass: UserRepo,
 };

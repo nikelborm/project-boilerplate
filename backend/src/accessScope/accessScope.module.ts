@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AccessScopeController } from './accessScope.controller';
-import { AccessScopeUseCase } from './accessScope.useCase';
+import { AccessScopeUseCaseProvider } from './accessScope.useCase';
+import { DI_AccessScopeUseCase } from './di';
 
 @Module({
-  providers: [AccessScopeUseCase],
+  providers: [AccessScopeUseCaseProvider],
   controllers: [AccessScopeController],
-  exports: [AccessScopeUseCase],
+  exports: [DI_AccessScopeUseCase],
 })
 export class AccessScopeModule {}

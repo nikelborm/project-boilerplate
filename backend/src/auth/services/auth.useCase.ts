@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Provider, UnauthorizedException } from '@nestjs/common';
 import { createHash, timingSafeEqual } from 'crypto';
 import {
   ConfigKeys,
@@ -139,7 +139,7 @@ class AuthUseCase implements DI_AuthUseCase {
   // }
 }
 
-export const AuthUseCaseProvider = {
+export const AuthUseCaseProvider: Provider = {
   provide: DI_AuthUseCase,
   useClass: AuthUseCase,
 };
