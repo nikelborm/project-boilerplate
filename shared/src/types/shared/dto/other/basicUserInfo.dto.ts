@@ -66,5 +66,4 @@ export class BasicUserInfoWithNullableAvatarDTO extends BasicUserInfoDTO {
   @MinLength(2)
   @MaxLength(50)
   phone!: string | null;
-
 }

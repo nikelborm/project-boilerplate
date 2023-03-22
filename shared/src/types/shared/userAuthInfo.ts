@@ -7,7 +7,7 @@ export interface UserAuthInfo {
   email: string;
   patronymic: string;
   gender: string;
-  phone?: string | undefined;
+  phone: string | null;
   avatarURL: string | null;
   nickname: string;
   accessScopes: {

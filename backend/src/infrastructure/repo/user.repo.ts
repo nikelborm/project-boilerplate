@@ -118,11 +118,13 @@ export class UserRepo {
         'accessScopes.type',
       ])
       .where('user.email = :email', { email })
-      .getOne()) as RepoTypes['Public']['SelectedOnePlainEntity'] & {
-      accessScopes: { id: number; type: AccessScopeType }[];
-      salt: string;
-      passwordHash: string;
-    };
+      .getOne()) as
+      | (RepoTypes['Public']['SelectedOnePlainEntity'] & {
+          accessScopes: { id: number; type: AccessScopeType }[];
+          salt: string;
+          passwordHash: string;
+        })
+      | null;
   }
 
   createOnePlain = createOnePlain(this.repo)<Config>();
