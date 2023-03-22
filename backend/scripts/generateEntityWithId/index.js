@@ -100,6 +100,8 @@ import {
   createManyPlain,
   createOnePlain,
   deleteEntityByIdentity,
+  deleteManyEntitiesByIdentities,
+  findManyPlainByIdentities,
   findOnePlainByIdentity,
   getAllEntities,
   updateManyPlain,
@@ -122,8 +124,15 @@ export class ${pascal}Repo {
 
   findOneById = async (
     id: number,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
     await findOnePlainByIdentity(this.repo)<Config>()({ id });
+
+  findManyByIds = async (
+    ids: number[],
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'][]> =>
+    await findManyPlainByIdentities(this.repo)<Config>()(
+      ids.map((id) => ({ id })),
+    );
 
   createOnePlain = createOnePlain(this.repo)<Config>();
   createManyPlain = createManyPlain(this.repo)<Config>();
@@ -136,6 +145,11 @@ export class ${pascal}Repo {
 
   deleteOneById = async (id: number): Promise<void> =>
     await deleteEntityByIdentity(this.repo)<Config>()({ id });
+
+  deleteManyByIds = async (ids: number[]): Promise<void> =>
+    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
+      ids.map((id) => ({ id })),
+    );
 }
 
 type RepoTypes = EntityRepoMethodTypes<
@@ -154,11 +168,7 @@ type RepoTypes = EntityRepoMethodTypes<
 
 type Config = RepoTypes['Config'];
 
-export type OnePlain${pascal}ToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
-export type OnePlain${pascal}ToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
-export type One${pascal}WithRelationsToBeUpdated =
-  RepoTypes['OneEntityWithRelationsToBeUpdated'];
-export type SelectedOnePlain${pascal} = RepoTypes['SelectedOnePlainEntity'];
+export type ${pascal}PublicRepoTypes = RepoTypes['Public'];
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {

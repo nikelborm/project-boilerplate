@@ -8,7 +8,7 @@ export const getAllEntities =
   <Entity extends Record<string, any>>(repo: Repository<Entity>) =>
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <Types extends EntityRepoMethodTypes<Entity, Config>>(): Promise<
-    Types['SelectedOnePlainEntity'][]
+    Types['Public']['SelectedOnePlainEntity'][]
   > => {
-    return (await repo.find()) as Types['SelectedOnePlainEntity'][];
+    return (await repo.find()) as Types['Public']['SelectedOnePlainEntity'][];
   };

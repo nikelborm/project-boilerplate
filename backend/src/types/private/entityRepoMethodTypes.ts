@@ -7,10 +7,17 @@ export type EntityRepoMethodTypes<
   Entity extends Record<string, any>,
   Config extends EntityRepoMethodTypesConfig<Entity>,
 > = {
-  // ------------------------------------------------------------- Reexport for easy access
-
   Config: Config;
 
+  Parts: EntityRepoTypeParts<Entity, Config>;
+
+  Public: PublicMethodTypesOfRepo<Entity, Config>;
+};
+
+export type EntityRepoTypeParts<
+  Entity extends Record<string, any>,
+  Config extends EntityRepoMethodTypesConfig<Entity>,
+> = {
   // ---------------------- Import left keys that came not from config but from RelationMap
 
   RelationKeys: keyof RelationMap[Config['EntityName']]['relationToEntityNameMap'];
@@ -25,14 +32,14 @@ export type EntityRepoMethodTypes<
     ? Pick<Entity, Config['ForbiddenToCreateGeneratedPlainKeys']>
     : Record<never, never>;
 
-  IdentityPartRequiredForUpdateAndAlwaysSelected: EntityRepoMethodTypes<
+  IdentityPartRequiredForUpdateAndAlwaysSelected: EntityRepoTypeParts<
     Entity,
     Config
   >['IdentityPlainKeys'] extends keyof Entity
-    ? Pick<Entity, EntityRepoMethodTypes<Entity, Config>['IdentityPlainKeys']>
+    ? Pick<Entity, EntityRepoTypeParts<Entity, Config>['IdentityPlainKeys']>
     : never;
 
-  RequiredToCreatePlainPart: Config['RequiredToCreateAndSelectRegularPlainKeys'] extends keyof Entity
+  RequiredToCreateAndSelectPlainPart: Config['RequiredToCreateAndSelectRegularPlainKeys'] extends keyof Entity
     ? Pick<Entity, Config['RequiredToCreateAndSelectRegularPlainKeys']>
     : Record<never, never>;
 
@@ -40,33 +47,33 @@ export type EntityRepoMethodTypes<
     ? Partial<Pick<Entity, Config['OptionalToCreateAndSelectRegularPlainKeys']>>
     : Record<never, never>;
 
-  PartWithRequiredAndOptionalParts: EntityRepoMethodTypes<
-    Entity,
-    Config
-  >['RequiredToCreatePlainPart'] &
-    EntityRepoMethodTypes<Entity, Config>['OptionalToCreatePlainPart'];
-
-  UpdatablePlainPart: Partial<
-    OmitIfNotNull<
-      EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts'],
-      Config['ForbiddenToUpdatePlainKeys'],
-      Entity
+  UpdatablePlainPart: TypeormInputTypeNotRequiredNullable<
+    Partial<
+      OmitIfProvidedKeysAreNotNull<
+        EntityRepoTypeParts<
+          Entity,
+          Config
+        >['RequiredToCreateAndSelectPlainPart'] &
+          EntityRepoTypeParts<Entity, Config>['OptionalToCreatePlainPart'],
+        Config['ForbiddenToUpdatePlainKeys'],
+        Entity
+      >
     >
   >;
 
-  OriginalPartWithRelations: EntityRepoMethodTypes<
+  OriginalPartWithRelations: EntityRepoTypeParts<
     Entity,
     Config
   >['RelationKeys'] extends keyof Entity
-    ? Pick<Entity, EntityRepoMethodTypes<Entity, Config>['RelationKeys']>
+    ? Pick<Entity, EntityRepoTypeParts<Entity, Config>['RelationKeys']>
     : Record<never, never>;
 
-  PartWithRelationsOptimizedForUpdates: EntityRepoMethodTypes<
+  PartWithRelationsOptimizedForUpdates: EntityRepoTypeParts<
     Entity,
     Config
   >['RelationKeys'] extends keyof Entity
     ? {
-        [RelationalKey in EntityRepoMethodTypes<
+        [RelationalKey in EntityRepoTypeParts<
           Entity,
           Config
         >['RelationKeys']]?: RelationalKey extends keyof RelationMap[Config['EntityName']]['relationToEntityNameMap']
@@ -84,8 +91,8 @@ export type EntityRepoMethodTypes<
     : Record<never, never>;
 
   UpdatableRelationalPart: Partial<
-    OmitIfNotNull<
-      EntityRepoMethodTypes<
+    OmitIfProvidedKeysAreNotNull<
+      EntityRepoTypeParts<
         Entity,
         Config
       >['PartWithRelationsOptimizedForUpdates'],
@@ -94,38 +101,109 @@ export type EntityRepoMethodTypes<
     >
   >;
 
-  PossiblyCanBeSelectedPlainPart: EntityRepoMethodTypes<
+  PossiblyCanBeSelectedPlainPart: EntityRepoTypeParts<
     Entity,
     Config
   >['IdentityPartRequiredForUpdateAndAlwaysSelected'] &
-    EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts'];
+    EntityRepoTypeParts<Entity, Config>['RequiredToCreateAndSelectPlainPart'] &
+    EntityRepoTypeParts<Entity, Config>['OptionalToCreatePlainPart'];
+};
 
-  // ------------------------------------------------------- final types for repo functions
+export type PublicMethodTypesOfRepo<
+  Entity extends Record<string, any>,
+  Config extends EntityRepoMethodTypesConfig<Entity>,
+> = {
+  Parts: EntityRepoTypeParts<Entity, Config>;
 
-  OnePlainEntityToBeCreated: OmitIfNotNull<
-    EntityRepoMethodTypes<Entity, Config>['PartWithRequiredAndOptionalParts'],
+  OnePlainEntityToBeCreated: OmitIfProvidedKeysAreNotNull<
+    EntityRepoTypeParts<Entity, Config>['RequiredToCreateAndSelectPlainPart'] &
+      TypeormInputTypeNotRequiredNullable<
+        EntityRepoTypeParts<Entity, Config>['OptionalToCreatePlainPart']
+      >,
     Config['ForbiddenToCreateGeneratedPlainKeys'],
     Entity
   >;
 
   // OneEntityWithRelationsToBeCreated should be disallowed
 
-  OnePlainEntityToBeUpdated: EntityRepoMethodTypes<
+  OnePlainEntityToBeUpdated: EntityRepoTypeParts<
     Entity,
     Config
   >['IdentityPartRequiredForUpdateAndAlwaysSelected'] &
-    EntityRepoMethodTypes<Entity, Config>['UpdatablePlainPart'];
+    EntityRepoTypeParts<Entity, Config>['UpdatablePlainPart'];
 
-  OneEntityWithRelationsToBeUpdated: EntityRepoMethodTypes<
+  OneEntityWithRelationsToBeUpdated: PublicMethodTypesOfRepo<
     Entity,
     Config
   >['OnePlainEntityToBeUpdated'] &
-    EntityRepoMethodTypes<Entity, Config>['UpdatableRelationalPart'];
+    EntityRepoTypeParts<Entity, Config>['UpdatableRelationalPart'];
 
-  SelectedOnePlainEntity: OmitIfNotNull<
-    EntityRepoMethodTypes<Entity, Config>['PossiblyCanBeSelectedPlainPart'],
-    Config['UnselectedByDefaultPlainKeys'],
-    Entity
+  SelectedOnePlainEntity: TypeormReturnTypeRequiredNullable<
+    OmitIfProvidedKeysAreNotNull<
+      EntityRepoTypeParts<Entity, Config>['PossiblyCanBeSelectedPlainPart'],
+      Config['UnselectedByDefaultPlainKeys'],
+      Entity
+    >
+  >;
+
+  CreateOnePlainEntityFunctionType: <
+    ProvidedPlainEntityToBeCreated extends PublicMethodTypesOfRepo<
+      Entity,
+      Config
+    >['OnePlainEntityToBeCreated'],
+  >(
+    providedPlainEntityToBeCreated: ProvidedPlainEntityToBeCreated,
+  ) => Promise<
+    TypeormReturnTypeRequiredNullable<
+      ProvidedPlainEntityToBeCreated &
+        EntityRepoTypeParts<Entity, Config>['GeneratedPartAfterEntityCreation']
+    >
+  >;
+
+  CreateManyPlainEntitiesFunctionType: <
+    ProvidedPlainEntityToBeCreated extends PublicMethodTypesOfRepo<
+      Entity,
+      Config
+    >['OnePlainEntityToBeCreated'],
+  >(
+    providedPlainEntitiesToBeCreated: ProvidedPlainEntityToBeCreated[],
+  ) => Promise<
+    TypeormReturnTypeRequiredNullable<
+      ProvidedPlainEntityToBeCreated &
+        EntityRepoTypeParts<Entity, Config>['GeneratedPartAfterEntityCreation']
+    >[]
+  >;
+
+  UpdateOnePlainEntityFunctionType: <
+    ProvidedUpdatedPart extends EntityRepoTypeParts<
+      Entity,
+      Config
+    >['UpdatablePlainPart'],
+  >(
+    identity: EntityRepoTypeParts<
+      Entity,
+      Config
+    >['IdentityPartRequiredForUpdateAndAlwaysSelected'],
+    partToUpdate: ProvidedUpdatedPart,
+  ) => Promise<
+    TypeormReturnTypeRequiredNullable<
+      EntityRepoTypeParts<
+        Entity,
+        Config
+      >['IdentityPartRequiredForUpdateAndAlwaysSelected'] &
+        ProvidedUpdatedPart
+    >
+  >;
+
+  UpdateManyPlainEntitiesFunctionType: <
+    ProvidedPlainEntityToBeUpdated extends PublicMethodTypesOfRepo<
+      Entity,
+      Config
+    >['OnePlainEntityToBeUpdated'],
+  >(
+    providedPlainEntitiesToBeUpdated: ProvidedPlainEntityToBeUpdated[],
+  ) => Promise<
+    TypeormReturnTypeRequiredNullable<ProvidedPlainEntityToBeUpdated>[]
   >;
 };
 
@@ -152,7 +230,7 @@ type GetRelationPartBy<RelatedEntityName> =
       : never
     : never;
 
-type OmitIfNotNull<
+type OmitIfProvidedKeysAreNotNull<
   Holder,
   Keys extends keyof Entity | null,
   Entity extends Record<string, any>,
@@ -161,3 +239,20 @@ type OmitIfNotNull<
   : [Keys] extends [keyof Entity]
   ? Omit<Holder, Keys>
   : never;
+
+export type TypeormReturnTypeRequiredNullable<T extends Record<string, any>> = {
+  [Key in keyof T]-?: T extends {
+    [KeyThatShouldBeDefined in Key]-?: Exclude<T[Key], null | undefined>;
+  }
+    ? Exclude<T[Key], null | undefined>
+    : Exclude<T[Key], null | undefined> | null;
+};
+
+export type TypeormInputTypeNotRequiredNullable<T extends Record<string, any>> =
+  {
+    [Key in keyof T]+?: T extends {
+      [KeyThatShouldBeDefined in Key]-?: Exclude<T[Key], null | undefined>;
+    }
+      ? Exclude<T[Key], null | undefined>
+      : Exclude<T[Key], null | undefined> | null;
+  };

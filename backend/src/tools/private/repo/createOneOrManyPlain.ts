@@ -1,6 +1,7 @@
 import type {
   EntityRepoMethodTypes,
   EntityRepoMethodTypesConfig,
+  TypeormReturnTypeRequiredNullable,
 } from 'src/types';
 import type { Repository } from 'typeorm';
 
@@ -9,9 +10,10 @@ export const createManyPlain =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedPlainEntityToBeCreated extends Types['OnePlainEntityToBeCreated'],
-    ReturnType extends Required<
-      ProvidedPlainEntityToBeCreated & Types['GeneratedPartAfterEntityCreation']
+    ProvidedPlainEntityToBeCreated extends Types['Public']['OnePlainEntityToBeCreated'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<
+      ProvidedPlainEntityToBeCreated &
+        Types['Parts']['GeneratedPartAfterEntityCreation']
     >,
   >(
     newEntities: ProvidedPlainEntityToBeCreated[],
@@ -32,9 +34,10 @@ export const createOnePlain =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedPlainEntityToBeCreated extends Types['OnePlainEntityToBeCreated'],
-    ReturnType extends Required<
-      ProvidedPlainEntityToBeCreated & Types['GeneratedPartAfterEntityCreation']
+    ProvidedPlainEntityToBeCreated extends Types['Public']['OnePlainEntityToBeCreated'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<
+      ProvidedPlainEntityToBeCreated &
+        Types['Parts']['GeneratedPartAfterEntityCreation']
     >,
   >(
     newEntity: ProvidedPlainEntityToBeCreated,

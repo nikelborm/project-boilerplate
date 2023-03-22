@@ -134,6 +134,8 @@ import {
   createManyPlain,
   createOnePlain,
   deleteEntityByIdentity,
+  deleteManyEntitiesByIdentities,
+  findManyPlainByIdentities,
   findOnePlainByIdentity,
   getAllEntities,
   updateManyPlain,
@@ -155,6 +157,7 @@ export class ${firstPascal}To${secondPascal}Repo {
   getAll = getAllEntities(this.repo)<Config>();
 
   findOneByIdentity = findOnePlainByIdentity(this.repo)<Config>();
+  findManyByIdentities = findManyPlainByIdentities(this.repo)<Config>();
 
   createOnePlain = createOnePlain(this.repo)<Config>();
   createManyPlain = createManyPlain(this.repo)<Config>();
@@ -166,6 +169,7 @@ export class ${firstPascal}To${secondPascal}Repo {
   updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
 
   deleteOne = deleteEntityByIdentity(this.repo)<Config>();
+  deleteMany = deleteManyEntitiesByIdentities(this.repo)<Config>();
 }
 
 type RepoTypes = EntityRepoMethodTypes<
@@ -186,11 +190,7 @@ type RepoTypes = EntityRepoMethodTypes<
 
 type Config = RepoTypes['Config'];
 
-export type OnePlain${firstPascal}To${secondPascal}ToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
-export type OnePlain${firstPascal}To${secondPascal}ToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
-export type One${firstPascal}To${secondPascal}WithRelationsToBeUpdated =
-  RepoTypes['OneEntityWithRelationsToBeUpdated'];
-export type SelectedOnePlain${firstPascal}To${secondPascal} = RepoTypes['SelectedOnePlainEntity'];
+export type ${firstPascal}To${secondPascal}PublicRepoTypes = RepoTypes['Public'];
 `;
 
 const getFirstModelMixin = () => `

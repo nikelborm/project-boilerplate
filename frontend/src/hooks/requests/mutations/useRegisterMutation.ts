@@ -1,16 +1,16 @@
 import { useMutation } from 'react-query';
-import { RegisterUserResponseDTO, CreateUserDTO } from 'types/shared';
+import { RegisterUserResponseDTO, CreateUserRequestDTO } from 'types/shared';
 import { customFetch } from 'tools';
 
 export function useRegistrationMutation() {
   const { mutate, isLoading, isError, isSuccess, data } = useMutation(
-    ({ confirm, ...user }: CreateUserDTO & { confirm: string }) =>
+    ({ confirm, ...user }: CreateUserRequestDTO & { confirm: string }) =>
       user.password === confirm
         ? customFetch('auth/local/register', {
             method: 'POST',
             needsAccessToken: false,
             needsJsonResponseBodyParsing: true,
-            requestDTOclass: CreateUserDTO,
+            requestDTOclass: CreateUserRequestDTO,
             responseDTOclass: RegisterUserResponseDTO,
             body: user,
           })

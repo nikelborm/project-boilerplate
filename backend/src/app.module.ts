@@ -13,10 +13,10 @@ import {
 
 @Module({
   imports: [
-    InfrastructureModule,
-    TypedConfigModule,
     AccessScopeModule,
     AuthModule,
+    InfrastructureModule,
+    TypedConfigModule,
     UserModule,
   ],
   controllers: [MockDataController],

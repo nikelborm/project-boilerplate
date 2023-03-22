@@ -1,6 +1,7 @@
 import type {
   EntityRepoMethodTypesConfig,
   EntityRepoMethodTypes,
+  TypeormReturnTypeRequiredNullable,
 } from 'src/types';
 import type { Repository } from 'typeorm';
 
@@ -9,8 +10,8 @@ export const updateManyPlain =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedPlainEntityToBeUpdated extends Types['OnePlainEntityToBeUpdated'],
-    ReturnType extends Required<ProvidedPlainEntityToBeUpdated>,
+    ProvidedPlainEntityToBeUpdated extends Types['Public']['OnePlainEntityToBeUpdated'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<ProvidedPlainEntityToBeUpdated>,
   >(
     entitiesToBeUpdated: ProvidedPlainEntityToBeUpdated[],
   ): Promise<ReturnType[]> => {
@@ -23,13 +24,13 @@ export const updateOnePlain =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedUpdatedPart extends Types['UpdatablePlainPart'],
-    ReturnType extends Required<
-      Types['IdentityPartRequiredForUpdateAndAlwaysSelected'] &
+    ProvidedUpdatedPart extends Types['Parts']['UpdatablePlainPart'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<
+      Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'] &
         ProvidedUpdatedPart
     >,
   >(
-    identity: Types['IdentityPartRequiredForUpdateAndAlwaysSelected'],
+    identity: Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'],
     partToUpdate: ProvidedUpdatedPart,
   ): Promise<ReturnType> => {
     await repo.update(identity, partToUpdate as any);

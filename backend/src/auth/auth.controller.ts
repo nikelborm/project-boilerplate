@@ -3,7 +3,7 @@ import { ApiController, AuthorizedOnly, ValidatedBody } from 'src/tools';
 import {
   AuthedRequest,
   AuthTokenPairDTO,
-  CreateUserDTO,
+  CreateUserRequestDTO,
   EmptyResponseDTO,
   LoginUserRequestDTO,
   RefreshTokenDTO,
@@ -32,7 +32,7 @@ export class AuthController {
   @Post('local/register')
   async register(
     @ValidatedBody()
-    createUserDTO: CreateUserDTO,
+    createUserDTO: CreateUserRequestDTO,
   ): Promise<RegisterUserResponseDTO> {
     return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
   }

@@ -9,7 +9,7 @@ import {
 import { UserUseCase } from 'src/user';
 import type {
   AuthTokenPairDTO,
-  CreateUserDTO,
+  CreateUserRequestDTO,
   RegisterUserResponseDTO,
   UserAuthInfo,
   UserForLoginAttemptValidation,
@@ -58,7 +58,7 @@ export class AuthUseCase {
   }
 
   async registerNewUserAndLogin(
-    createUserDTO: CreateUserDTO,
+    createUserDTO: CreateUserRequestDTO,
   ): Promise<RegisterUserResponseDTO> {
     const user = await this.userUseCase.createUser(createUserDTO);
     return {

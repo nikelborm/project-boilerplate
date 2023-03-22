@@ -23,9 +23,9 @@
     "allowUnreachableCode": false,
     "baseUrl": "./",
     "incremental": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false, // this property is cool but sometimes it pisses me off
     "allowJs": false,
-    "noErrorTruncation":true,
+    "noErrorTruncation": true,
     "skipLibCheck": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,

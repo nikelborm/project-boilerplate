@@ -1,12 +1,12 @@
 import { NestedArrayDTO, NestedDTO } from '../../../../../tools/shared';
-import { BasicUserInfoWithIdDTO } from '../../other/basicUserInfoWithId.dto';
+import { BasicUserInfoWithNullableAvatarWithIdDTO } from '../../other/basicUserInfoWithId.dto';
 
-export class CreateOneUserResponse {
-  @NestedDTO(() => BasicUserInfoWithIdDTO)
-  user!: BasicUserInfoWithIdDTO;
+export class CreateOneUserResponseDTO {
+  @NestedDTO(() => BasicUserInfoWithNullableAvatarWithIdDTO)
+  user!: BasicUserInfoWithNullableAvatarWithIdDTO;
 }
 
 export class CreateManyUsersResponseDTO {
-  @NestedArrayDTO(() => BasicUserInfoWithIdDTO)
-  createdUsers!: BasicUserInfoWithIdDTO[];
+  @NestedArrayDTO(() => BasicUserInfoWithNullableAvatarWithIdDTO)
+  createdUsers!: BasicUserInfoWithNullableAvatarWithIdDTO[];
 }

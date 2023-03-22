@@ -1,5 +1,7 @@
-import type { BasicUserInfoWithIdDTO } from '../../other/basicUserInfoWithId.dto';
+import { NestedArrayDTO } from '../../../../../tools/shared';
+import { BasicUserInfoWithNullableAvatarWithIdDTO } from '../../other/basicUserInfoWithId.dto';
 
 export class FindManyUsersResponseDTO {
-  users!: BasicUserInfoWithIdDTO[];
+  @NestedArrayDTO(() => BasicUserInfoWithNullableAvatarWithIdDTO)
+  users!: BasicUserInfoWithNullableAvatarWithIdDTO[];
 }

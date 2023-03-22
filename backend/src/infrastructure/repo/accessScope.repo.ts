@@ -4,6 +4,7 @@ import {
   createManyPlain,
   createOnePlain,
   deleteEntityByIdentity,
+  deleteManyEntitiesByIdentities,
   findOnePlainByIdentity,
   getAllEntities,
   updateManyPlain,
@@ -26,7 +27,7 @@ export class AccessScopeRepo {
 
   findOneById = async (
     id: number,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
     await findOnePlainByIdentity(this.repo)<Config>()({ id });
 
   createOnePlain = createOnePlain(this.repo)<Config>();
@@ -40,6 +41,11 @@ export class AccessScopeRepo {
 
   deleteOneById = async (id: number): Promise<void> =>
     await deleteEntityByIdentity(this.repo)<Config>()({ id });
+
+  deleteManyByIds = async (ids: number[]): Promise<void> =>
+    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
+      ids.map((id) => ({ id })),
+    );
 }
 
 type RepoTypes = EntityRepoMethodTypes<
@@ -63,11 +69,3 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
-
-export type OnePlainAccessScopeToBeCreated =
-  RepoTypes['OnePlainEntityToBeCreated'];
-export type OnePlainAccessScopeToBeUpdated =
-  RepoTypes['OnePlainEntityToBeUpdated'];
-export type OneAccessScopeWithRelationsToBeUpdated =
-  RepoTypes['OneEntityWithRelationsToBeUpdated'];
-export type SelectedOnePlainAccessScope = RepoTypes['SelectedOnePlainEntity'];

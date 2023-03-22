@@ -4,6 +4,8 @@ import {
   createManyPlain,
   createOnePlain,
   deleteEntityByIdentity,
+  deleteManyEntitiesByIdentities,
+  findManyPlainByIdentities,
   findOnePlainByIdentity,
   getAllEntities,
   updateManyPlain,
@@ -25,6 +27,7 @@ export class UserToAccessScopeRepo {
   getAll = getAllEntities(this.repo)<Config>();
 
   findOneByIdentity = findOnePlainByIdentity(this.repo)<Config>();
+  findManyByIdentities = findManyPlainByIdentities(this.repo)<Config>();
 
   createOnePlain = createOnePlain(this.repo)<Config>();
   createManyPlain = createManyPlain(this.repo)<Config>();
@@ -36,6 +39,7 @@ export class UserToAccessScopeRepo {
   updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
 
   deleteOne = deleteEntityByIdentity(this.repo)<Config>();
+  deleteMany = deleteManyEntitiesByIdentities(this.repo)<Config>();
 }
 
 type RepoTypes = EntityRepoMethodTypes<
@@ -56,11 +60,4 @@ type RepoTypes = EntityRepoMethodTypes<
 
 type Config = RepoTypes['Config'];
 
-export type OnePlainUserToAccessScopeToBeCreated =
-  RepoTypes['OnePlainEntityToBeCreated'];
-export type OnePlainUserToAccessScopeToBeUpdated =
-  RepoTypes['OnePlainEntityToBeUpdated'];
-export type OneUserToAccessScopeWithRelationsToBeUpdated =
-  RepoTypes['OneEntityWithRelationsToBeUpdated'];
-export type SelectedOnePlainUserToAccessScope =
-  RepoTypes['SelectedOnePlainEntity'];
+export type UserToAccessScopePublicRepoTypes = RepoTypes['Public'];

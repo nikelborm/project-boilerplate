@@ -78,10 +78,20 @@ const rawMessages = {
         )}: there is no id specified where it should be. JSON: ${JSON.stringify(
           entities,
         )}`,
-      cantGetNotFoundById: (id: number, entityName?: string): string =>
+      cantGetNotFoundById: (id: number | string, entityName?: string): string =>
         `${startsWithCapital(
           entityName || 'entity',
         )} with id={${id}} was not found`,
+      cantGetSomeIdsWereNotFound: <IdType extends string | number>(
+        allRequestedIds: IdType[],
+        notFoundIds: IdType[],
+        entityName?: string,
+      ): string =>
+        `Some ${pluralForm(
+          entityName || 'entity',
+        )} with ids={${notFoundIds.join()}} were not found when requesting ${pluralForm(
+          entityName || 'entity',
+        )} with ids={${allRequestedIds.join()}}`,
       cantGetNotFoundByUUID: (uuid: string, entityName?: string): string =>
         `${startsWithCapital(
           entityName || 'entity',

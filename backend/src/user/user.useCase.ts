@@ -8,9 +8,8 @@ import {
 } from 'src/config';
 import { isQueryFailedError } from 'src/tools';
 import {
-  BasicUserInfoDTO,
-  BasicUserInfoWithIdDTO,
-  CreateUserDTO,
+  BasicUserInfoWithNullableAvatarWithIdDTO,
+  CreateUserRequestDTO,
   PG_UNIQUE_CONSTRAINT_VIOLATION,
   UserAuthInfo,
 } from 'src/types';
@@ -29,7 +28,9 @@ export class UserUseCase {
     );
   }
 
-  async findMany(search?: string): Promise<BasicUserInfoWithIdDTO[]> {
+  async findMany(
+    search?: string,
+  ): Promise<BasicUserInfoWithNullableAvatarWithIdDTO[]> {
     return await this.userRepo.findMany(search);
   }
 
@@ -43,15 +44,17 @@ export class UserUseCase {
   }
 
   async createManyUsers(
-    users: CreateUserDTO[],
-  ): Promise<BasicUserInfoWithIdDTO[]> {
+    users: CreateUserRequestDTO[],
+  ): Promise<BasicUserInfoWithNullableAvatarWithIdDTO[]> {
     return await Promise.all(users.map(this.createUser));
   }
 
-  async createUser(user: CreateUserDTO): Promise<BasicUserInfoWithIdDTO> {
+  async createUser(
+    user: CreateUserRequestDTO,
+  ): Promise<BasicUserInfoWithNullableAvatarWithIdDTO> {
     try {
       const dirtyUser = await this.userRepo.createOnePlain(
-        this.createUserModel(user),
+        this.#getModelWithHashedPassword(user),
       );
       return this.#removeHashAndSalt(dirtyUser);
     } catch (error: any) {
@@ -68,15 +71,24 @@ export class UserUseCase {
     if (!candidate)
       throw new BadRequestException(messages.repo.user.cantGetNotFoundById(id));
 
-    const updatedUser = this.createUserModel({ ...candidate, password });
+    const { passwordHash, salt } = this.#getModelWithHashedPassword({
+      password,
+    });
 
-    await this.userRepo.updateOnePlain({ id }, updatedUser);
+    await this.userRepo.updateOnePlain({ id }, { salt, passwordHash });
   }
 
-  private createUserModel({
+  async deleteOne(id: number): Promise<void> {
+    await this.userRepo.deleteOneById(id);
+  }
+
+  #getModelWithHashedPassword<T extends { password: string }>({
     password,
     ...restUser
-  }: CreateUserDTO): UserModelToInsert {
+  }: T): Omit<T, 'password'> & {
+    salt: string;
+    passwordHash: string;
+  } {
     const salt = randomBytes(64).toString('hex');
     return {
       ...restUser,
@@ -89,24 +101,16 @@ export class UserUseCase {
     };
   }
 
-  async deleteOne(id: number): Promise<void> {
-    await this.userRepo.deleteOneById(id);
-  }
-
-  #removeHashAndSalt = ({
+  #removeHashAndSalt = <
+    T extends {
+      salt: string;
+      passwordHash: string;
+    },
+  >({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     passwordHash,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     salt,
     ...rest
-  }: InsertedUserModel): BasicUserInfoWithIdDTO => rest;
+  }: T): Omit<T, 'passwordHash' | 'salt'> => rest;
 }
-
-type UserModelToInsert = BasicUserInfoDTO & {
-  salt: string;
-  passwordHash: string;
-};
-
-type InsertedUserModel = UserModelToInsert & {
-  id: number;
-};

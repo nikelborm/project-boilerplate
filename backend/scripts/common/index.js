@@ -50,14 +50,25 @@ export async function appendMixinToFileAndLog(
   console.log(mixin);
 
   if (!dryRun) {
-    await writeNewFileWithMixin(path, mixin, regex);
-    console.log(
-      chalk.gray(
-        `\n------ Mixin to ${pascalCase(
-          entityName,
-        )} ${filePurpose} was written to disk:\n`,
-      ),
-    );
+    try {
+      await writeNewFileWithMixin(path, mixin, regex);
+      console.log(
+        chalk.gray(
+          `\n------ Mixin to ${pascalCase(
+            entityName,
+          )} ${filePurpose} was written to disk\n`,
+        ),
+      );
+    } catch (error) {
+      console.log(
+        chalk.red(
+          `\n------ Failed to write updated file with mixin ${pascalCase(
+            entityName,
+          )} ${filePurpose}:\n`,
+        ),
+      );
+      console.log(chalk.red(error));
+    }
   }
 }
 
@@ -75,9 +86,7 @@ export async function appendModelBodyMixinToFileAndLog(
     'model class',
     entityName,
     mixin,
-    `./backend/src/infrastructure/model/${camelCase(
-      entityName,
-    )}.model.ts`,
+    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
     /}\n$/g,
     dryRun,
   );
@@ -97,9 +106,7 @@ export async function appendModelImportsMixinToFileAndLog(
     "model's file imports",
     entityName,
     mixin,
-    `./backend/src/infrastructure/model/${camelCase(
-      entityName,
-    )}.model.ts`,
+    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
     /\n*@Entity/g,
     dryRun,
   );
@@ -129,14 +136,25 @@ export async function writeNewFileAndAndLog(
   console.log(fileContent);
 
   if (!dryRun) {
-    await writeFile(path, fileContent);
-    console.log(
-      chalk.gray(
-        `\n------ New ${pascalCase(
-          entityName,
-        )} ${filePurpose} was written to disk:\n`,
-      ),
-    );
+    try {
+      await writeFile(path, fileContent);
+      console.log(
+        chalk.gray(
+          `\n------ New ${pascalCase(
+            entityName,
+          )} ${filePurpose} was written to disk:\n`,
+        ),
+      );
+    } catch (error) {
+      console.log(
+        chalk.red(
+          `\n------ Failed to write new file ${pascalCase(
+            entityName,
+          )} ${filePurpose}:\n`,
+        ),
+      );
+      console.log(chalk.red(error));
+    }
   }
 }
 
@@ -192,9 +210,7 @@ export async function writeNewModelFileAndExtendDirReexportsAndLog(
     'model',
     entityName,
     content,
-    `./backend/src/infrastructure/model/${camelCase(
-      entityName,
-    )}.model.ts`,
+    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
     dryRun,
     `./backend/src/infrastructure/model/index.ts`,
     `export * from './${camelCase(entityName)}.model';\n`,
@@ -235,9 +251,7 @@ export async function writeNewRepositoryFileAndExtendDirReexportsAndLog(
     'repo',
     `${entityName}Repo`,
     content,
-    `./backend/src/infrastructure/repo/${camelCase(
-      entityName,
-    )}.repo.ts`,
+    `./backend/src/infrastructure/repo/${camelCase(entityName)}.repo.ts`,
     dryRun,
     `./backend/src/infrastructure/repo/index.ts`,
     `export * from './${camelCase(entityName)}.repo';\n`,

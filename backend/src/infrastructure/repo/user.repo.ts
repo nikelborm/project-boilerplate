@@ -4,6 +4,7 @@ import {
   createManyPlain,
   createOnePlain,
   deleteEntityByIdentity,
+  deleteManyEntitiesByIdentities,
   findOnePlainByIdentity,
   getAllEntities,
   updateManyPlain,
@@ -12,6 +13,7 @@ import {
   updateOneWithRelations,
 } from 'src/tools';
 import type {
+  AccessScopeType,
   EntityRepoMethodTypes,
   UserAuthInfo,
   UserForLoginAttemptValidation,
@@ -30,13 +32,13 @@ export class UserRepo {
 
   findOneById = async (
     id: number,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> =>
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
     await findOnePlainByIdentity(this.repo)<Config>()({ id });
 
   async findMany(
     partOfNameOrEmail?: string,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'][]> {
-    return await this.repo.find({
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'][]> {
+    return (await this.repo.find({
       ...(partOfNameOrEmail && {
         where: [
           { firstName: ILike(`%${partOfNameOrEmail}%`) },
@@ -45,11 +47,11 @@ export class UserRepo {
           { nickname: ILike(`%${partOfNameOrEmail}%`) },
         ],
       }),
-    });
+    })) as RepoTypes['Public']['SelectedOnePlainEntity'][];
   }
 
   async getOneByIdWithAccessScopes(id: number): Promise<UserAuthInfo | null> {
-    return await this.repo.findOne({
+    return (await this.repo.findOne({
       where: { id },
       relations: {
         accessScopes: true,
@@ -69,26 +71,34 @@ export class UserRepo {
           type: true,
         },
       },
-    });
+    })) as
+      | (RepoTypes['Public']['SelectedOnePlainEntity'] & {
+          accessScopes: { id: number; type: AccessScopeType }[];
+        })
+      | null;
   }
 
   async findOneByExactEmail(
     userEmail: string,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> {
-    return await this.repo.findOne({ where: { email: userEmail } });
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> {
+    return (await this.repo.findOne({ where: { email: userEmail } })) as
+      | RepoTypes['Public']['SelectedOnePlainEntity']
+      | null;
   }
 
   async findOneByExactName(
     firstName: string,
     lastName: string,
-  ): Promise<RepoTypes['SelectedOnePlainEntity'] | null> {
-    return await this.repo.findOne({ where: { firstName, lastName } });
+  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> {
+    return (await this.repo.findOne({ where: { firstName, lastName } })) as
+      | RepoTypes['Public']['SelectedOnePlainEntity']
+      | null;
   }
 
   async findOneByEmailWithAccessScopesAndPasswordHash(
     email: string,
   ): Promise<UserForLoginAttemptValidation | null> {
-    return await this.repo
+    return (await this.repo
       .createQueryBuilder('user')
       .leftJoin('user.accessScopes', 'accessScopes')
       .addSelect([
@@ -108,7 +118,11 @@ export class UserRepo {
         'accessScopes.type',
       ])
       .where('user.email = :email', { email })
-      .getOne();
+      .getOne()) as RepoTypes['Public']['SelectedOnePlainEntity'] & {
+      accessScopes: { id: number; type: AccessScopeType }[];
+      salt: string;
+      passwordHash: string;
+    };
   }
 
   createOnePlain = createOnePlain(this.repo)<Config>();
@@ -122,13 +136,17 @@ export class UserRepo {
 
   deleteOneById = async (id: number): Promise<void> =>
     await deleteEntityByIdentity(this.repo)<Config>()({ id });
+
+  deleteManyByIds = async (ids: number[]): Promise<void> =>
+    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
+      ids.map((id) => ({ id })),
+    );
 }
 
 type RepoTypes = EntityRepoMethodTypes<
   User,
   {
     EntityName: 'User';
-    OptionalToCreateAndSelectRegularPlainKeys: 'avatarURL' | 'phone';
     RequiredToCreateAndSelectRegularPlainKeys:
       | 'firstName'
       | 'lastName'
@@ -140,6 +158,7 @@ type RepoTypes = EntityRepoMethodTypes<
       | 'passwordHash'
       | 'createdAt'
       | 'updatedAt';
+    OptionalToCreateAndSelectRegularPlainKeys: 'avatarURL' | 'phone';
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
@@ -149,9 +168,4 @@ type RepoTypes = EntityRepoMethodTypes<
 >;
 
 type Config = RepoTypes['Config'];
-
-export type OnePlainUserToBeCreated = RepoTypes['OnePlainEntityToBeCreated'];
-export type OnePlainUserToBeUpdated = RepoTypes['OnePlainEntityToBeUpdated'];
-export type OneUserWithRelationsToBeUpdated =
-  RepoTypes['OneEntityWithRelationsToBeUpdated'];
-export type SelectedOnePlainUser = RepoTypes['SelectedOnePlainEntity'];
+export type UserPublicRepoTypes = RepoTypes['Public'];

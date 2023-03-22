@@ -9,9 +9,9 @@ import {
 import {
   AuthedRequest,
   CreateManyUsersResponseDTO,
-  CreateOneUserResponse,
-  CreateUserDTO,
-  CreateUsersDTO,
+  CreateOneUserResponseDTO,
+  CreateUserRequestDTO,
+  CreateUsersRequestDTO,
   DeleteEntityByIdDTO,
   EmptyResponseDTO,
   FindManyUsersResponseDTO,
@@ -38,8 +38,8 @@ export class UserController {
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUser(
     @ValidatedBody()
-    createUserDTO: CreateUserDTO,
-  ): Promise<CreateOneUserResponse> {
+    createUserDTO: CreateUserRequestDTO,
+  ): Promise<CreateOneUserResponseDTO> {
     const user = await this.userUseCase.createUser(createUserDTO);
     return { user };
   }
@@ -48,7 +48,7 @@ export class UserController {
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
   async createUsers(
     @ValidatedBody()
-    { users }: CreateUsersDTO,
+    { users }: CreateUsersRequestDTO,
   ): Promise<CreateManyUsersResponseDTO> {
     const createdUsers = await this.userUseCase.createManyUsers(users);
     return {

@@ -1,6 +1,7 @@
 import type {
   EntityRepoMethodTypesConfig,
   EntityRepoMethodTypes,
+  TypeormReturnTypeRequiredNullable,
 } from 'src/types';
 import type { Repository } from 'typeorm';
 
@@ -9,8 +10,8 @@ export const updateManyWithRelations =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedEntityWithRelationsToBeUpdated extends Types['OneEntityWithRelationsToBeUpdated'],
-    ReturnType extends Required<ProvidedEntityWithRelationsToBeUpdated>,
+    ProvidedEntityWithRelationsToBeUpdated extends Types['Public']['OneEntityWithRelationsToBeUpdated'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<ProvidedEntityWithRelationsToBeUpdated>,
   >(
     entitiesToBeUpdated: ProvidedEntityWithRelationsToBeUpdated[],
   ): Promise<ReturnType[]> => {
@@ -23,8 +24,8 @@ export const updateOneWithRelations =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedEntityWithRelationsToBeUpdated extends Types['OneEntityWithRelationsToBeUpdated'],
-    ReturnType extends Required<ProvidedEntityWithRelationsToBeUpdated>,
+    ProvidedEntityWithRelationsToBeUpdated extends Types['Public']['OneEntityWithRelationsToBeUpdated'],
+    ReturnType extends TypeormReturnTypeRequiredNullable<ProvidedEntityWithRelationsToBeUpdated>,
   >(
     entityToBeUpdated: ProvidedEntityWithRelationsToBeUpdated,
   ): Promise<ReturnType> => {
