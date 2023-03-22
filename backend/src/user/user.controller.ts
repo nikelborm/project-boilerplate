@@ -17,11 +17,11 @@ import {
   FindManyUsersResponseDTO,
   SetMyPasswordDTO,
 } from 'src/types';
-import { UserUseCase } from './user.useCase';
+import { DI_UserUseCase } from './di';
 
 @ApiController('user')
 export class UserController {
-  constructor(private readonly userUseCase: UserUseCase) {}
+  constructor(private readonly userUseCase: DI_UserUseCase) {}
 
   @Get('all')
   @AuthorizedOnly()

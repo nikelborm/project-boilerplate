@@ -5,19 +5,19 @@ import {
   ConfigKeys,
   IAppConfigMap,
   messages,
-  TypedConfigService,
+  DI_TypedConfigService,
 } from 'src/config';
 import type { UserAccessTokenPayload, UserAuthInfo } from 'src/types';
-import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
+import { DI_AccessTokenUseCase, DI_WhitelistedSessionStore } from '../di';
 
 @Injectable()
-export class AccessTokenUseCase {
+class AccessTokenUseCase implements DI_AccessTokenUseCase {
   private readonly AUTH_JWT_SECRET: string;
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
-    private readonly configService: TypedConfigService<IAppConfigMap>,
+    private readonly whitelistedSessionStore: DI_WhitelistedSessionStore,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
     this.AUTH_JWT_SECRET = this.configService.get(ConfigKeys.AUTH_JWT_SECRET);
   }
@@ -40,7 +40,7 @@ export class AccessTokenUseCase {
 
   async decodeAuthHeaderAndGetUserId(
     authHeader: string | undefined,
-  ): Promise<number> {
+  ): Promise<{ userId: number }> {
     if (!authHeader)
       throw new UnauthorizedException(messages.auth.missingAuthHeader);
 
@@ -72,6 +72,11 @@ export class AccessTokenUseCase {
     )
       throw new UnauthorizedException(messages.auth.yourSessionWasFinished);
 
-    return user.id;
+    return { userId: user.id };
   }
 }
+
+export const AccessTokenUseCaseProvider = {
+  provide: DI_AccessTokenUseCase,
+  useClass: AccessTokenUseCase,
+};

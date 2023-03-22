@@ -2,15 +2,16 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigKeys, IAppConfigMap, TypedConfigService } from 'src/config';
+import { ConfigKeys, DI_TypedConfigService, IAppConfigMap } from 'src/config';
 import { UserModule } from '../user';
 import { AuthController } from './auth.controller';
+import { DI_AuthUseCase } from './di';
 import { AccessTokenGuard } from './guards';
 import {
-  AccessTokenUseCase,
-  AuthUseCase,
-  InMemoryWhitelistedSessionStore,
-  RefreshTokenUseCase,
+  AccessTokenUseCaseProvider,
+  AuthUseCaseProvider,
+  InMemoryWhitelistedSessionStoreProvider,
+  RefreshTokenUseCaseProvider,
 } from './services';
 import { LocalStrategy } from './strategy';
 
@@ -19,17 +20,17 @@ import { LocalStrategy } from './strategy';
     UserModule,
     PassportModule,
     JwtModule.registerAsync({
-      useFactory: (configService: TypedConfigService<IAppConfigMap>) => ({
+      useFactory: (configService: DI_TypedConfigService<IAppConfigMap>) => ({
         secret: configService.get(ConfigKeys.AUTH_JWT_SECRET),
       }),
-      inject: [TypedConfigService],
+      inject: [DI_TypedConfigService],
     }),
   ],
   providers: [
-    AuthUseCase,
-    AccessTokenUseCase,
-    RefreshTokenUseCase,
-    InMemoryWhitelistedSessionStore,
+    AuthUseCaseProvider,
+    AccessTokenUseCaseProvider,
+    RefreshTokenUseCaseProvider,
+    InMemoryWhitelistedSessionStoreProvider,
     LocalStrategy,
     {
       provide: APP_GUARD,
@@ -37,6 +38,6 @@ import { LocalStrategy } from './strategy';
     },
   ],
   controllers: [AuthController],
-  exports: [AuthUseCase],
+  exports: [DI_AuthUseCase],
 })
 export class AuthModule {}

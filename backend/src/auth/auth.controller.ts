@@ -10,12 +10,12 @@ import {
   RegisterUserResponseDTO,
   UserAuthInfo,
 } from 'src/types';
+import { DI_AuthUseCase } from './di';
 import { LocalAuthGuard } from './guards';
-import { AuthUseCase } from './services';
 
 @ApiController('auth')
 export class AuthController {
-  constructor(private readonly authUseCase: AuthUseCase) {}
+  constructor(private readonly authUseCase: DI_AuthUseCase) {}
 
   @Post('local/login')
   @UseGuards(LocalAuthGuard)

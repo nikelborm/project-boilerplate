@@ -11,7 +11,16 @@
   "license": "UNLICENSED",
   "scripts": {
     "dbdocs": "rm -rf src/infrastructure/migration/all_migrations.dbml && yarn sql2dbml src/infrastructure/migration/all_migrations.sql -o src/infrastructure/migration/all_migrations.dbml --postgres",
-    "dbdocs:publish": "dbdocs build src/infrastructure/migration/all_migrations.dbml --project Smarthouse"
+    "dbdocs:publish": "dbdocs build src/infrastructure/migration/all_migrations.dbml --project Smarthouse",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+
   },
   "engineStrict": true,
   "engines": {
@@ -47,7 +56,13 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@darraghor/eslint-plugin-nestjs-typed": "^3.19.0",
+    "@nestjs/testing": "^9.0.0",
+    "@types/jest": "29.2.4",
+    "@types/supertest": "^2.0.11",
+    "jest": "29.3.1",
+    "supertest": "^6.1.3",
+    "ts-jest": "29.0.3",
+
     "@dbml/cli": "^2.4.1",
     "@nestjs/schematics": "^9.0.4",
     "@nestjsi/typeorm-pg": "0.2.3",
@@ -78,5 +93,25 @@
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.6.4"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "moduleNameMapper": {
+      "^src(.*)$": "<rootDir>$1"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   }
 }

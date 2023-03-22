@@ -1,13 +1,13 @@
 import type { INestApplicationContext } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import type { ServerOptions } from 'socket.io';
-import { ConfigKeys, IAppConfigMap, TypedConfigService } from 'src/config';
+import { ConfigKeys, IAppConfigMap, DI_TypedConfigService } from 'src/config';
 
 // https://github.com/nestjs/nest/issues/5676#issuecomment-749719792
 export class WebsocketGatewayAdapter extends IoAdapter {
   constructor(
     app: INestApplicationContext,
-    private readonly configService: TypedConfigService<IAppConfigMap>,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
     super(app);
   }

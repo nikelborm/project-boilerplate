@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { DI_WhitelistedSessionStore } from '../di';
 
 @Injectable()
-export class InMemoryWhitelistedSessionStore {
+class InMemoryWhitelistedSessionStore implements DI_WhitelistedSessionStore {
   private store: Record<UserId, SerializedRefreshSessionEntries> =
     Object.create(null);
 
@@ -107,3 +108,8 @@ interface Session {
   uuid: string;
   expirationDate: Date;
 }
+
+export const InMemoryWhitelistedSessionStoreProvider = {
+  provide: DI_WhitelistedSessionStore,
+  useClass: InMemoryWhitelistedSessionStore,
+};

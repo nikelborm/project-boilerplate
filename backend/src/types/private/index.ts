@@ -4,4 +4,5 @@ export * from './entityRepoMethodTypes';
 export * from './errors';
 export * from './relationMap';
 export * from './relationMapMaximizedType';
+export * from './repo';
 export * from './userForLoginAttemptValidation';

@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DI_TypedConfigService } from './di';
 import { ConfigKeys } from './types';
 
 @Injectable()
-export class TypedConfigService<Store extends Record<string, unknown>> {
+class TypedConfigService<Store extends Record<string, unknown>>
+  implements DI_TypedConfigService<Store>
+{
   constructor(private readonly configService: ConfigService<Store, true>) {}
 
   get<Key extends keyof Store>(propertyPath: Key): Store[Key] {
@@ -18,3 +21,8 @@ export class TypedConfigService<Store extends Record<string, unknown>> {
     );
   }
 }
+
+export const TypedConfigServiceProvider = {
+  provide: DI_TypedConfigService,
+  useClass: TypedConfigService,
+};

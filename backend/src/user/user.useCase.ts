@@ -4,8 +4,9 @@ import {
   ConfigKeys,
   IAppConfigMap,
   messages,
-  TypedConfigService,
+  DI_TypedConfigService,
 } from 'src/config';
+import { DI_UserRepo } from 'src/infrastructure';
 import { isQueryFailedError } from 'src/tools';
 import {
   BasicUserInfoWithNullableAvatarWithIdDTO,
@@ -13,15 +14,15 @@ import {
   PG_UNIQUE_CONSTRAINT_VIOLATION,
   UserAuthInfo,
 } from 'src/types';
-import { repo } from '../infrastructure';
+import { DI_UserUseCase } from './di';
 
 @Injectable()
-export class UserUseCase {
+class UserUseCase implements DI_UserUseCase {
   private readonly USER_PASSWORD_HASH_SALT: string;
 
   constructor(
-    private readonly userRepo: repo.UserRepo,
-    private readonly configService: TypedConfigService<IAppConfigMap>,
+    private readonly userRepo: DI_UserRepo,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
     this.USER_PASSWORD_HASH_SALT = this.configService.get(
       ConfigKeys.USER_PASSWORD_HASH_SALT,
@@ -114,3 +115,8 @@ export class UserUseCase {
     ...rest
   }: T): Omit<T, 'passwordHash' | 'salt'> => rest;
 }
+
+export const UserUseCaseDIProvider = {
+  provide: DI_UserUseCase,
+  useClass: UserUseCase,
+};

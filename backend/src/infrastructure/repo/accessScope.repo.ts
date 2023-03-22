@@ -1,71 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createManyPlain,
-  createOnePlain,
-  deleteEntityByIdentity,
-  deleteManyEntitiesByIdentities,
-  findOnePlainByIdentity,
-  getAllEntities,
-  updateManyPlain,
-  updateManyWithRelations,
-  updateOnePlain,
-  updateOneWithRelations,
-} from 'src/tools';
-import type { EntityRepoMethodTypes } from 'src/types';
-import { Repository } from 'typeorm';
+import { DefaultEntityWithIdRepoImplementation } from 'src/tools';
+import type { Repository } from 'typeorm';
 import { AccessScope } from '../model';
+import { DI_AccessScopeRepo, RepoTypes } from '../di/accessScope.repo.di';
 
 @Injectable()
-export class AccessScopeRepo {
+class AccessScopeRepo
+  extends DefaultEntityWithIdRepoImplementation<RepoTypes>
+  implements DI_AccessScopeRepo
+{
   constructor(
     @InjectRepository(AccessScope)
-    private readonly repo: Repository<AccessScope>,
-  ) {}
-
-  getAll = getAllEntities(this.repo)<Config>();
-
-  findOneById = async (
-    id: number,
-  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
-    await findOnePlainByIdentity(this.repo)<Config>()({ id });
-
-  createOnePlain = createOnePlain(this.repo)<Config>();
-  createManyPlain = createManyPlain(this.repo)<Config>();
-
-  updateManyPlain = updateManyPlain(this.repo)<Config>();
-  updateOnePlain = updateOnePlain(this.repo)<Config>();
-
-  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
-  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
-
-  deleteOneById = async (id: number): Promise<void> =>
-    await deleteEntityByIdentity(this.repo)<Config>()({ id });
-
-  deleteManyByIds = async (ids: number[]): Promise<void> =>
-    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
-      ids.map((id) => ({ id })),
-    );
+    protected override readonly repo: Repository<AccessScope>,
+  ) {
+    super(repo);
+  }
 }
 
-type RepoTypes = EntityRepoMethodTypes<
-  AccessScope,
-  {
-    EntityName: 'AccessScope';
-
-    RequiredToCreateAndSelectRegularPlainKeys:
-      | 'type'
-      | 'createdAt'
-      | 'updatedAt';
-
-    OptionalToCreateAndSelectRegularPlainKeys: null;
-
-    ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
-    ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
-    ForbiddenToUpdateRelationKeys: null;
-
-    UnselectedByDefaultPlainKeys: null;
-  }
->;
-
-type Config = RepoTypes['Config'];
+export const AccessScopeRepoDIProvider = {
+  provide: DI_AccessScopeRepo,
+  useClass: AccessScopeRepo,
+};

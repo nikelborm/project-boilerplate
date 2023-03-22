@@ -132,3 +132,5 @@ networks:
           gateway: 10.5.0.1
   back-db-net-prod: {}
   pgadmin-db-net-prod: {}
+# eval "$(./scripts/shdotenv.sh --env ../env/dev.env -d node)"; yarn test:watch
+# sudo docker run   --volume=/:/rootfs:ro   --volume=/var/run:/var/run:ro   --volume=/sys:/sys:ro   --volume=/var/lib/docker/:/var/lib/docker:ro   --volume=/dev/disk/:/dev/disk:ro   --publish=8080:8080   --detach=true   --name=cadvisor   --privileged   --device=/dev/kmsg   gcr.io/cadvisor/cadvisor:v0.46.0

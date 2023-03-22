@@ -2,11 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { createHash, timingSafeEqual } from 'crypto';
 import {
   ConfigKeys,
+  DI_TypedConfigService,
   IAppConfigMap,
   messages,
-  TypedConfigService,
 } from 'src/config';
-import { UserUseCase } from 'src/user';
 import type {
   AuthTokenPairDTO,
   CreateUserRequestDTO,
@@ -14,21 +13,25 @@ import type {
   UserAuthInfo,
   UserForLoginAttemptValidation,
 } from 'src/types';
+import { DI_UserUseCase } from 'src/user';
 import { v4 as uuid } from 'uuid';
-import { AccessTokenUseCase } from './accessToken.useCase';
-import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
-import { RefreshTokenUseCase } from './refreshToken.useCase';
+import {
+  DI_AccessTokenUseCase,
+  DI_AuthUseCase,
+  DI_RefreshTokenUseCase,
+  DI_WhitelistedSessionStore,
+} from '../di';
 
 @Injectable()
-export class AuthUseCase {
+class AuthUseCase implements DI_AuthUseCase {
   private readonly USER_PASSWORD_HASH_SALT: string;
 
   constructor(
-    private readonly accessTokenUseCase: AccessTokenUseCase,
-    private readonly refreshTokenUseCase: RefreshTokenUseCase,
-    private readonly userUseCase: UserUseCase,
-    private readonly configService: TypedConfigService<IAppConfigMap>,
-    private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
+    private readonly accessTokenUseCase: DI_AccessTokenUseCase,
+    private readonly refreshTokenUseCase: DI_RefreshTokenUseCase,
+    private readonly userUseCase: DI_UserUseCase,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
+    private readonly whitelistedSessionStore: DI_WhitelistedSessionStore,
   ) {
     this.USER_PASSWORD_HASH_SALT = this.configService.get(
       ConfigKeys.USER_PASSWORD_HASH_SALT,
@@ -135,3 +138,8 @@ export class AuthUseCase {
 
   // }
 }
+
+export const AuthUseCaseProvider = {
+  provide: DI_AuthUseCase,
+  useClass: AuthUseCase,
+};

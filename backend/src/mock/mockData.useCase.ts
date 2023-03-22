@@ -1,14 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { assertMockScriptNameIsCorrect } from 'src/config';
-import { repo, UserUseCase } from 'src';
+import { assertMockScriptNameIsCorrect } from 'src/config/tools/assertMockScriptNameIsCorrect';
+import {
+  DI_UserUseCase,
+  DI_UserToAccessScopeRepo,
+  DI_AccessScopeRepo,
+} from 'src';
 import { AccessScopeType } from 'src/types';
 
 @Injectable()
 export class MockDataUseCase {
   constructor(
-    private readonly userUseCase: UserUseCase,
-    private readonly userToAccessScopeRepo: repo.UserToAccessScopeRepo,
-    private readonly accessScopeRepo: repo.AccessScopeRepo,
+    private readonly userUseCase: DI_UserUseCase,
+    private readonly userToAccessScopeRepo: DI_UserToAccessScopeRepo,
+    private readonly accessScopeRepo: DI_AccessScopeRepo,
   ) {}
 
   async executeMock(scriptName?: string): Promise<void> {

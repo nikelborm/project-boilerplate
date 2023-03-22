@@ -8,11 +8,10 @@ import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 import {
   ConfigKeys,
+  DI_TypedConfigService,
   IAppConfigMap,
   messages,
-  TypedConfigService,
 } from 'src/config';
-import { UserUseCase } from 'src/user';
 import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
 import {
   AllowedForArgs,
@@ -20,16 +19,17 @@ import {
   UserAuthInfo,
   UserLevelScopes,
 } from 'src/types';
-import { AccessTokenUseCase } from '../services';
+import { DI_UserUseCase } from 'src/user';
+import { DI_AccessTokenUseCase } from '../di';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
   private readonly IS_DEVELOPMENT: boolean;
 
   constructor(
-    private readonly configService: TypedConfigService<IAppConfigMap>,
-    private readonly accessTokenUseCase: AccessTokenUseCase,
-    private readonly userUseCase: UserUseCase,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
+    private readonly accessTokenUseCase: DI_AccessTokenUseCase,
+    private readonly userUseCase: DI_UserUseCase,
     private readonly reflector: Reflector,
   ) {
     this.IS_DEVELOPMENT = this.configService.get(ConfigKeys.IS_DEVELOPMENT);
@@ -63,9 +63,10 @@ export class AccessTokenGuard implements CanActivate {
       throw new UnauthorizedException(messages.auth.unauthorizedOnly);
     }
 
-    const userId = await this.accessTokenUseCase.decodeAuthHeaderAndGetUserId(
-      request.headers.authorization,
-    );
+    const { userId } =
+      await this.accessTokenUseCase.decodeAuthHeaderAndGetUserId(
+        request.headers.authorization,
+      );
 
     const userFromDB: UserAuthInfo =
       await this.userUseCase.getOneByIdWithAccessScopes(userId);

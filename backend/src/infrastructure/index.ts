@@ -1,3 +1,2 @@
-export * as model from './model';
-export * as repo from './repo';
+export * from './di';
 export * from './infrastructure.module';

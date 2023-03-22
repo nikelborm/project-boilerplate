@@ -11,7 +11,7 @@ import {
   BootstrapMode,
   ConfigKeys,
   IAppConfigMap,
-  TypedConfigService,
+  DI_TypedConfigService,
 } from './config';
 import { MockDataUseCase } from './mock';
 import { WebsocketGatewayAdapter } from './tools';
@@ -25,8 +25,9 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('/api');
 
-  const configService: TypedConfigService<IAppConfigMap> =
-    app.get(TypedConfigService);
+  const configService: DI_TypedConfigService<IAppConfigMap> = app.get(
+    DI_TypedConfigService,
+  );
 
   if (configService.get(ConfigKeys.IS_DEVELOPMENT))
     configService.logToConsole();

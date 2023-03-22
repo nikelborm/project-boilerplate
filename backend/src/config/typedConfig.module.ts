@@ -2,11 +2,14 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from './app.config';
 import { dbConfig } from './db.config';
-import { TypedConfigService } from './typedConfig.service';
+import { DI_TypedConfigService } from './di';
 import { isString, isNumberString } from 'class-validator';
-import { assertMockScriptNameIsCorrect } from './mockUseCaseMethodsAllowedToBeExecuted';
-import { assertBootstrapModeIsCorrect } from './allowedBootstrapModes';
+import {
+  assertMockScriptNameIsCorrect,
+  assertBootstrapModeIsCorrect,
+} from './tools';
 import { BootstrapMode } from './types';
+import { TypedConfigServiceProvider } from './typedConfig.service';
 
 @Global()
 @Module({
@@ -15,26 +18,33 @@ import { BootstrapMode } from './types';
       cache: true,
       load: [appConfig, dbConfig],
       validate(config) {
-        if (
-          [
-            config['AUTH_JWT_SECRET'],
-            config['BOOTSTRAP_MODE'],
-            config['DATABASE_HOST'],
-            config['DATABASE_NAME'],
-            config['DATABASE_PASSWORD'],
-            config['DATABASE_PORT'],
-            config['DATABASE_TYPEORM_LOGGING_MODE'],
-            config['DATABASE_USERNAME'],
-            config['INVITE_USERS_SIGN_KEY'],
-            config['MOCK_SCRIPT_NAME'],
-            config['NODE_ENV'],
-            config['SERVER_PORT'],
-            config['USER_PASSWORD_HASH_SALT'],
-            config['WEB_SOCKET_SERVER_PORT'],
-            config['WEB_SOCKET_SERVER_PATH'],
-          ].some((value) => !isString(value))
-        )
-          throw new Error('Some of the env vars are not defined');
+        const envVarsToTestAreTheyStrings = [
+          config['AUTH_JWT_SECRET'],
+          config['BOOTSTRAP_MODE'],
+          config['DATABASE_HOST'],
+          config['DATABASE_NAME'],
+          config['DATABASE_PASSWORD'],
+          config['DATABASE_PORT'],
+          config['DATABASE_TYPEORM_LOGGING_MODE'],
+          config['DATABASE_USERNAME'],
+          config['INVITE_USERS_SIGN_KEY'],
+          config['MOCK_SCRIPT_NAME'],
+          config['NODE_ENV'],
+          config['SERVER_PORT'],
+          config['USER_PASSWORD_HASH_SALT'],
+          config['WEB_SOCKET_SERVER_PORT'],
+          config['WEB_SOCKET_SERVER_PATH'],
+        ];
+        if (envVarsToTestAreTheyStrings.some((value) => !isString(value))) {
+          console.log(envVarsToTestAreTheyStrings);
+          throw new Error(
+            `Some of the env vars are not defined: ${JSON.stringify(
+              envVarsToTestAreTheyStrings,
+              null,
+              4,
+            )}`,
+          );
+        }
 
         if (
           !isNumberString(config['SERVER_PORT']) ||
@@ -77,7 +87,7 @@ import { BootstrapMode } from './types';
       },
     }),
   ],
-  providers: [TypedConfigService],
-  exports: [TypedConfigService],
+  providers: [TypedConfigServiceProvider],
+  exports: [DI_TypedConfigService],
 })
 export class TypedConfigModule {}

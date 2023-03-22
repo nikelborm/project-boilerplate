@@ -3,21 +3,21 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenExpiredError } from 'jsonwebtoken';
 import {
   ConfigKeys,
+  DI_TypedConfigService,
   IAppConfigMap,
   messages,
-  TypedConfigService,
 } from 'src/config';
 import type { UserAuthInfo, UserRefreshTokenPayload } from 'src/types';
-import { InMemoryWhitelistedSessionStore } from './inMemoryWhitelistedKeyStore.service';
+import { DI_RefreshTokenUseCase, DI_WhitelistedSessionStore } from '../di';
 
 @Injectable()
-export class RefreshTokenUseCase {
+class RefreshTokenUseCase implements DI_RefreshTokenUseCase {
   private readonly AUTH_JWT_SECRET: string;
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly whitelistedSessionStore: InMemoryWhitelistedSessionStore,
-    private readonly configService: TypedConfigService<IAppConfigMap>,
+    private readonly whitelistedSessionStore: DI_WhitelistedSessionStore,
+    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
     this.AUTH_JWT_SECRET = this.configService.get(ConfigKeys.AUTH_JWT_SECRET);
   }
@@ -70,3 +70,8 @@ export class RefreshTokenUseCase {
     };
   }
 }
+
+export const RefreshTokenUseCaseProvider = {
+  provide: DI_RefreshTokenUseCase,
+  useClass: RefreshTokenUseCase,
+};

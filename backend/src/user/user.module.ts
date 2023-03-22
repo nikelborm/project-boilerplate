@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { DI_UserUseCase } from './di';
 import { UserController } from './user.controller';
-import { UserUseCase } from './user.useCase';
+import { UserUseCaseDIProvider } from './user.useCase';
 
 @Module({
-  providers: [UserUseCase],
+  providers: [UserUseCaseDIProvider],
   controllers: [UserController],
-  exports: [UserUseCase],
+  exports: [DI_UserUseCase],
 })
 export class UserModule {}

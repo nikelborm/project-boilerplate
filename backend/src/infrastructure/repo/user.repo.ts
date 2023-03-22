@@ -1,39 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createManyPlain,
-  createOnePlain,
-  deleteEntityByIdentity,
-  deleteManyEntitiesByIdentities,
-  findOnePlainByIdentity,
-  getAllEntities,
-  updateManyPlain,
-  updateManyWithRelations,
-  updateOnePlain,
-  updateOneWithRelations,
-} from 'src/tools';
+import { DefaultEntityWithIdRepoImplementation } from 'src/tools';
 import type {
   AccessScopeType,
-  EntityRepoMethodTypes,
   UserAuthInfo,
   UserForLoginAttemptValidation,
 } from 'src/types';
 import { ILike, Repository } from 'typeorm';
+import { DI_UserRepo, RepoTypes } from '../di/user.repo.di';
 import { User } from '../model';
 
 @Injectable()
-export class UserRepo {
+class UserRepo
+  extends DefaultEntityWithIdRepoImplementation<RepoTypes>
+  implements DI_UserRepo
+{
   constructor(
     @InjectRepository(User)
-    private readonly repo: Repository<User>,
-  ) {}
-
-  getAll = getAllEntities(this.repo)<Config>();
-
-  findOneById = async (
-    id: number,
-  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
-    await findOnePlainByIdentity(this.repo)<Config>()({ id });
+    protected override readonly repo: Repository<User>,
+  ) {
+    super(repo);
+  }
 
   async findMany(
     partOfNameOrEmail?: string,
@@ -126,48 +113,9 @@ export class UserRepo {
         })
       | null;
   }
-
-  createOnePlain = createOnePlain(this.repo)<Config>();
-  createManyPlain = createManyPlain(this.repo)<Config>();
-
-  updateManyPlain = updateManyPlain(this.repo)<Config>();
-  updateOnePlain = updateOnePlain(this.repo)<Config>();
-
-  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
-  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
-
-  deleteOneById = async (id: number): Promise<void> =>
-    await deleteEntityByIdentity(this.repo)<Config>()({ id });
-
-  deleteManyByIds = async (ids: number[]): Promise<void> =>
-    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
-      ids.map((id) => ({ id })),
-    );
 }
 
-type RepoTypes = EntityRepoMethodTypes<
-  User,
-  {
-    EntityName: 'User';
-    RequiredToCreateAndSelectRegularPlainKeys:
-      | 'firstName'
-      | 'lastName'
-      | 'nickname'
-      | 'email'
-      | 'patronymic'
-      | 'gender'
-      | 'salt'
-      | 'passwordHash'
-      | 'createdAt'
-      | 'updatedAt';
-    OptionalToCreateAndSelectRegularPlainKeys: 'avatarURL' | 'phone';
-
-    ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
-    ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
-    ForbiddenToUpdateRelationKeys: null;
-    UnselectedByDefaultPlainKeys: 'salt' | 'passwordHash';
-  }
->;
-
-type Config = RepoTypes['Config'];
-export type UserPublicRepoTypes = RepoTypes['Public'];
+export const UserRepoDIProvider = {
+  provide: DI_UserRepo,
+  useClass: UserRepo,
+};

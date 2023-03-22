@@ -9,6 +9,8 @@ export type EntityRepoMethodTypes<
 > = {
   Config: Config;
 
+  Entity: Entity;
+
   Parts: EntityRepoTypeParts<Entity, Config>;
 
   Public: PublicMethodTypesOfRepo<Entity, Config>;
