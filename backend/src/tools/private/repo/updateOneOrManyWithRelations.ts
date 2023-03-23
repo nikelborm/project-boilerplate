@@ -32,15 +32,3 @@ export const updateOneWithRelations =
     const updatedEntity = await repo.save(entityToBeUpdated as any);
     return updatedEntity as unknown as ReturnType;
   };
-
-export type asd3<
-  Entity extends Record<string, any>,
-  Config extends EntityRepoMethodTypesConfig<Entity>,
-  Types extends EntityRepoMethodTypes<Entity, Config>,
-  ProvidedEntityWithRelationsToBeUpdated extends Types['Public']['OneEntityWithRelationsToBeUpdated'],
-  ReturnType extends TypeormReturnTypeRequiredNullable<ProvidedEntityWithRelationsToBeUpdated>,
-> = (
-  repo: Repository<Entity>,
-) => () => (
-  entitiesToBeUpdated: ProvidedEntityWithRelationsToBeUpdated[],
-) => Promise<ReturnType[]>;
