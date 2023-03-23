@@ -26,6 +26,7 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'error',
     'no-return-await': 'off',
     '@typescript-eslint/return-await': ['error', 'always'],
+    '@typescript-eslint/no-return-await': 'off',
     'prettier/prettier': ['error', {
       'endOfLine': 'auto'
     }],
