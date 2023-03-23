@@ -237,6 +237,55 @@ export async function writeNewModelInterfaceFileAndExtendDirReexportsAndLog(
     `export * from './${camelCase(entityName)}.model';\n`,
   );
 }
+
+/**
+ * @param {string} entityName
+ * @param {string} content
+ * @param {boolean} dryRun
+ */
+export async function writeNewDI_RepoFileAndExtendDirReexportsAndLog(
+  entityName,
+  content,
+  dryRun,
+) {
+  await writeNewFileAndExtendDirReexportsAndLog(
+    'DI Repo',
+    `DI_${entityName}Repo`,
+    content,
+    `./backend/src/infrastructure/di/${camelCase(entityName)}.repo.di.ts`,
+    dryRun,
+    `./backend/src/infrastructure/di/index.ts`,
+    `export { DI_${pascalCase(entityName)}Repo, RepoTypes as ${pascalCase(
+      entityName,
+    )}RepoTypes } from './${camelCase(entityName)}.repo.di';\n`,
+  );
+}
+
+/**
+ * @param {string} entityName
+ * @param {string} content
+ * @param {boolean} dryRun
+ */
+export async function writeNewDI_UseCaseFileAndExtendDirReexportsAndLog(
+  entityName,
+  content,
+  dryRun,
+) {
+  await writeNewFileAndExtendDirReexportsAndLog(
+    'DI Use Case',
+    `DI_${entityName}UseCase`,
+    content,
+    `./backend/src/${camelCase(entityName)}/di/${camelCase(
+      entityName,
+    )}.useCase.di.ts`,
+    dryRun,
+    `./backend/src/${camelCase(entityName)}/di/index.ts`,
+    `export { DI_${pascalCase(entityName)}UseCase } from './${camelCase(
+      entityName,
+    )}.useCase.di';\n`,
+  );
+}
+
 /**
  * @param {string} entityName
  * @param {string} content

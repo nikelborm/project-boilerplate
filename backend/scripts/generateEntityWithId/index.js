@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 // @ts-check
-import { pascalCase, snakeCase } from 'change-case';
+import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import chalk from 'chalk';
 import {
   appendRelationMapMixinToFileAndLog,
+  writeNewDI_RepoFileAndExtendDirReexportsAndLog,
   writeNewModelFileAndExtendDirReexportsAndLog,
   writeNewModelInterfaceFileAndExtendDirReexportsAndLog,
   writeNewRepositoryFileAndExtendDirReexportsAndLog,
@@ -33,6 +34,7 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
       { title: 'Database model', value: 'databaseModel', selected: true },
       { title: 'Interface', value: 'interface', selected: true },
       { title: 'Repository', value: 'repository', selected: true },
+      { title: 'DI Repository', value: 'DI_Repository', selected: true },
       {
         title: 'Relation map extension',
         value: 'relationMapExtension',
@@ -45,6 +47,7 @@ const { first, selectedFilesToGenerate, dryRun } = await prompts([
 
 const pascal = pascalCase(first);
 const snake = snakeCase(first);
+const camel = camelCase(first);
 
 const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
 ${
@@ -94,81 +97,56 @@ const getRelationMapMixin = () => `  ${pascal}: {
   },
 `;
 
-const getRepo = () => `import { Injectable } from '@nestjs/common';
+const getRepo = () => `import { Injectable, Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createManyPlain,
-  createOnePlain,
-  deleteEntityByIdentity,
-  deleteManyEntitiesByIdentities,
-  findManyPlainByIdentities,
-  findOnePlainByIdentity,
-  getAllEntities,
-  updateManyPlain,
-  updateManyWithRelations,
-  updateOnePlain,
-  updateOneWithRelations,
-} from 'src/tools';
-import type { EntityRepoMethodTypes } from 'src/types';
-import { Repository } from 'typeorm';
+import { DefaultEntityWithIdRepoImplementation } from 'src/tools';
+import type { Repository } from 'typeorm';
 import { ${pascal} } from '../model';
+import { DI_${pascal}Repo, RepoTypes } from '../di/${camel}.repo.di';
 
 @Injectable()
-export class ${pascal}Repo {
+class ${pascal}Repo
+  extends DefaultEntityWithIdRepoImplementation<RepoTypes>
+  implements DI_${pascal}Repo
+{
   constructor(
     @InjectRepository(${pascal})
-    private readonly repo: Repository<${pascal}>,
-  ) {}
-
-  getAll = getAllEntities(this.repo)<Config>();
-
-  findOneById = async (
-    id: number,
-  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'] | null> =>
-    await findOnePlainByIdentity(this.repo)<Config>()({ id });
-
-  findManyByIds = async (
-    ids: number[],
-  ): Promise<RepoTypes['Public']['SelectedOnePlainEntity'][]> =>
-    await findManyPlainByIdentities(this.repo)<Config>()(
-      ids.map((id) => ({ id })),
-    );
-
-  createOnePlain = createOnePlain(this.repo)<Config>();
-  createManyPlain = createManyPlain(this.repo)<Config>();
-
-  updateManyPlain = updateManyPlain(this.repo)<Config>();
-  updateOnePlain = updateOnePlain(this.repo)<Config>();
-
-  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
-  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
-
-  deleteOneById = async (id: number): Promise<void> =>
-    await deleteEntityByIdentity(this.repo)<Config>()({ id });
-
-  deleteManyByIds = async (ids: number[]): Promise<void> =>
-    await deleteManyEntitiesByIdentities(this.repo)<Config>()(
-      ids.map((id) => ({ id })),
-    );
+    protected override readonly repo: Repository<${pascal}>,
+  ) {
+    super(repo);
+  }
 }
 
-type RepoTypes = EntityRepoMethodTypes<
-  ${pascal},
+export const ${pascal}RepoDIProvider: Provider = {
+  provide: DI_${pascal}Repo,
+  useClass: ${pascal}Repo,
+};
+`;
+
+const getDI_Repo = () => `import {
+  EntityRepoMethodTypes,
+  I${pascal},
+  IDefaultEntityWithIdRepo,
+} from 'src/types';
+
+export abstract class DI_${pascal}Repo extends IDefaultEntityWithIdRepo<RepoTypes> {}
+
+export type RepoTypes = EntityRepoMethodTypes<
+  I${pascal},
   {
     EntityName: '${pascal}';
+
     RequiredToCreateAndSelectRegularPlainKeys: 'createdAt' | 'updatedAt';
+
     OptionalToCreateAndSelectRegularPlainKeys: null;
 
     ForbiddenToCreateGeneratedPlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdatePlainKeys: 'id' | 'createdAt' | 'updatedAt';
     ForbiddenToUpdateRelationKeys: null;
+
     UnselectedByDefaultPlainKeys: null;
   }
 >;
-
-type Config = RepoTypes['Config'];
-
-export type ${pascal}PublicRepoTypes = RepoTypes['Public'];
 `;
 
 if (selectedFilesToGenerate.includes('databaseModel')) {
@@ -187,6 +165,14 @@ if (selectedFilesToGenerate.includes('repository')) {
   await writeNewRepositoryFileAndExtendDirReexportsAndLog(
     first,
     getRepo(),
+    dryRun,
+  );
+}
+
+if (selectedFilesToGenerate.includes('DI_Repository')) {
+  await writeNewDI_RepoFileAndExtendDirReexportsAndLog(
+    first,
+    getDI_Repo(),
     dryRun,
   );
 }

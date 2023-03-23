@@ -9,6 +9,7 @@ import {
   appendModelInterfaceBodyMixinToFileAndLog,
   appendModelInterfaceImportsMixinToFileAndLog,
   appendRelationMapMixinToFileAndLog,
+  writeNewDI_RepoFileAndExtendDirReexportsAndLog,
   writeNewModelFileAndExtendDirReexportsAndLog,
   writeNewModelInterfaceFileAndExtendDirReexportsAndLog,
   writeNewRepositoryFileAndExtendDirReexportsAndLog,
@@ -50,6 +51,7 @@ const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
         selected: true,
       },
       { title: 'Repository', value: 'repository', selected: true },
+      { title: 'DI Repository', value: 'DI_Repository', selected: true },
       {
         title: 'Relation map extension',
         value: 'relationMapExtension',
@@ -128,52 +130,43 @@ export class I${firstPascal}To${secondPascal} {
 `;
 
 const getIntermediateModelRepo =
-  () => `import { Injectable } from '@nestjs/common';
+  () => `import { Injectable, Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createManyPlain,
-  createOnePlain,
-  deleteEntityByIdentity,
-  deleteManyEntitiesByIdentities,
-  findManyPlainByIdentities,
-  findOnePlainByIdentity,
-  getAllEntities,
-  updateManyPlain,
-  updateManyWithRelations,
-  updateOnePlain,
-  updateOneWithRelations,
-} from 'src/tools';
-import type { EntityRepoMethodTypes } from 'src/types';
+import { DefaultEntityWithIdentityRepoImplementation } from 'src/tools';
 import { Repository } from 'typeorm';
+import { DI_${firstPascal}To${secondPascal}Repo } from '../di';
+import { RepoTypes } from '../di/${firstCamel}To${secondPascal}.repo.di';
 import { ${firstPascal}To${secondPascal} } from '../model';
 
 @Injectable()
-export class ${firstPascal}To${secondPascal}Repo {
+class ${firstPascal}To${secondPascal}Repo
+  extends DefaultEntityWithIdentityRepoImplementation<RepoTypes>
+  implements DI_${firstPascal}To${secondPascal}Repo
+{
   constructor(
     @InjectRepository(${firstPascal}To${secondPascal})
-    private readonly repo: Repository<${firstPascal}To${secondPascal}>,
-  ) {}
-
-  getAll = getAllEntities(this.repo)<Config>();
-
-  findOneByIdentity = findOnePlainByIdentity(this.repo)<Config>();
-  findManyByIdentities = findManyPlainByIdentities(this.repo)<Config>();
-
-  createOnePlain = createOnePlain(this.repo)<Config>();
-  createManyPlain = createManyPlain(this.repo)<Config>();
-
-  updateManyPlain = updateManyPlain(this.repo)<Config>();
-  updateOnePlain = updateOnePlain(this.repo)<Config>();
-
-  updateManyWithRelations = updateManyWithRelations(this.repo)<Config>();
-  updateOneWithRelations = updateOneWithRelations(this.repo)<Config>();
-
-  deleteOne = deleteEntityByIdentity(this.repo)<Config>();
-  deleteMany = deleteManyEntitiesByIdentities(this.repo)<Config>();
+    protected override readonly repo: Repository<${firstPascal}To${secondPascal}>,
+  ) {
+    super(repo);
+  }
 }
 
-type RepoTypes = EntityRepoMethodTypes<
-  ${firstPascal}To${secondPascal},
+export const ${firstPascal}To${secondPascal}RepoDIProvider: Provider = {
+  provide: DI_${firstPascal}To${secondPascal}Repo,
+  useClass: ${firstPascal}To${secondPascal}Repo,
+};
+`;
+
+const getIntermediateModelDI_Repo = () => `import {
+  EntityRepoMethodTypes,
+  IDefaultEntityWithIdentityRepo,
+  I${firstPascal}To${secondPascal},
+} from 'src/types';
+
+export abstract class DI_${firstPascal}To${secondPascal}Repo extends IDefaultEntityWithIdentityRepo<RepoTypes> {}
+
+export type RepoTypes = EntityRepoMethodTypes<
+  I${firstPascal}To${secondPascal},
   {
     EntityName: '${firstPascal}To${secondPascal}';
 
@@ -187,10 +180,6 @@ type RepoTypes = EntityRepoMethodTypes<
     UnselectedByDefaultPlainKeys: null;
   }
 >;
-
-type Config = RepoTypes['Config'];
-
-export type ${firstPascal}To${secondPascal}PublicRepoTypes = RepoTypes['Public'];
 `;
 
 const getFirstModelMixin = () => `
@@ -334,6 +323,14 @@ if (selectedFilesToGenerate.includes('repository')) {
   await writeNewRepositoryFileAndExtendDirReexportsAndLog(
     `${firstPascal}To${secondPascal}`,
     getIntermediateModelRepo(),
+    dryRun,
+  );
+}
+
+if (selectedFilesToGenerate.includes('DI_Repository')) {
+  await writeNewDI_RepoFileAndExtendDirReexportsAndLog(
+    `${firstPascal}To${secondPascal}`,
+    getIntermediateModelDI_Repo(),
     dryRun,
   );
 }

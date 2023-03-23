@@ -5,9 +5,11 @@ import prompts from 'prompts';
 import { appendFile, writeFile, mkdir, readFile } from 'fs/promises';
 import chalk from 'chalk';
 import {
+  writeNewDI_UseCaseFileAndExtendDirReexportsAndLog,
   writeNewFileAndAndLog,
   writeNewFileAndExtendDirReexportsAndLog,
 } from '../common/index.js';
+import { closeSync, openSync } from 'fs';
 
 const { entityName, dryRun, selectedFilesToGenerate } = await prompts([
   {
@@ -98,41 +100,43 @@ const getModule = () => `import { Module } from '@nestjs/common';${
     ? `\nimport { ${pascal}Controller } from './${camel}.controller';`
     : ''
 }
-import { ${pascal}UseCase } from './${camel}.useCase';
+import { ${pascal}UseCaseProvider } from './${camel}.useCase';
+import { DI_${pascal}UseCase } from './di';
 
 @Module({
-  providers: [${pascal}UseCase],
+  providers: [${pascal}UseCaseProvider],
   controllers: [${
     selectedFilesToGenerate.includes('controller') ? `${pascal}Controller` : ''
   }],
-  exports: [${pascal}UseCase],
+  exports: [DI_${pascal}UseCase],
 })
 export class ${pascal}Module {}
 `;
 
 const getIndex = () => `export * from './${camel}.module';
-export * from './${camel}.useCase';
+export * from './di';
 `;
 
 const getUseCase =
-  () => `import { BadRequestException, Injectable } from '@nestjs/common';
+  () => `import { BadRequestException, Injectable, Provider } from '@nestjs/common';
 import { messages } from 'src/config';
+import { ${pascal}RepoTypes, DI_${pascal}Repo } from 'src/infrastructure';
 import { getRedundantAndMissingValues } from 'src/tools';
-import { repo } from '../infrastructure';
+import { DI_${pascal}UseCase } from './di';
 
 @Injectable()
-export class ${pascal}UseCase {
-  constructor(private readonly ${camel}Repo: repo.${pascal}Repo) {}
+class ${pascal}UseCase implements DI_${pascal}UseCase {
+  constructor(private readonly ${camel}Repo: DI_${pascal}Repo) {}
 
   async getAll(
     search?: string,
-  ): Promise<repo.${pascal}PublicRepoTypes['SelectedOnePlainEntity'][]> {
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]> {
     return await this.${camel}Repo.getAll();
   }
 
   async getOneById(
     ${camel}Id: number,
-  ): Promise<repo.${pascal}PublicRepoTypes['SelectedOnePlainEntity']> {
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity']> {
     const ${camel} = await this.${camel}Repo.findOneById(${camel}Id);
     if (!${camel})
       throw new BadRequestException(
@@ -143,7 +147,7 @@ export class ${pascal}UseCase {
 
   async getManyByIds(
     ${camel}Ids: number[],
-  ): Promise<repo.${pascal}PublicRepoTypes['SelectedOnePlainEntity'][]> {
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]> {
     const ${camel}s = await this.${camel}Repo.findManyByIds(${camel}Ids);
     const foundIds = ${camel}s.map(({ id }) => id);
     const { missingValues: missingIds } = getRedundantAndMissingValues(
@@ -161,24 +165,24 @@ export class ${pascal}UseCase {
     return ${camel}s;
   }
 
-  createOne${pascal}: repo.${pascal}PublicRepoTypes['CreateOnePlainEntityFunctionType'] =
+  createOne${pascal}: ${pascal}RepoTypes['Public']['CreateOnePlainEntityFunctionType'] =
     async (${camel}) => await this.${camel}Repo.createOnePlain(${camel});
 
-  createMany${pascal}s: repo.${pascal}PublicRepoTypes['CreateManyPlainEntitiesFunctionType'] =
+  createMany${pascal}s: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'] =
     async (${camel}s) => await this.${camel}Repo.createManyPlain(${camel}s);
 
   async updateOne${pascal}<
-    Provided${pascal}ToUpdate extends repo.${pascal}PublicRepoTypes['OnePlainEntityToBeUpdated'],
-  >({ id, ...updatedPart }: Provided${pascal}ToUpdate): Promise<void> {
+    ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
+  >({ id, ...updatedPart }: ${pascal}ToUpdate): Promise<void> {
     await this.${camel}Repo.updateOnePlain(
       { id },
-      updatedPart as repo.${pascal}PublicRepoTypes['Parts']['UpdatablePlainPart'],
+      updatedPart as ${pascal}RepoTypes['Parts']['UpdatablePlainPart'],
     );
   }
 
   async updateMany${pascal}s<
-    Provided${pascal}ToUpdate extends repo.${pascal}PublicRepoTypes['OnePlainEntityToBeUpdated'],
-  >(${camel}s: Provided${pascal}ToUpdate[]): Promise<void> {
+    ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
+  >(${camel}s: ${pascal}ToUpdate[]): Promise<void> {
     await this.${camel}Repo.updateManyPlain(${camel}s);
   }
 
@@ -189,6 +193,45 @@ export class ${pascal}UseCase {
   async deleteMany${pascal}sByIds(${camel}Ids: number[]): Promise<void> {
     await this.${camel}Repo.deleteManyByIds(${camel}Ids);
   }
+}
+
+export const ${pascal}UseCaseProvider: Provider = {
+  provide: DI_${pascal}UseCase,
+  useClass: ${pascal}UseCase,
+};
+`;
+
+const getDI_UseCase =
+  () => `import { ${pascal}RepoTypes } from 'src/infrastructure';
+
+export abstract class DI_${pascal}UseCase {
+  abstract getAll(
+    search?: string,
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]>;
+
+  abstract getOneById(
+    ${camel}Id: number,
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity']>;
+
+  abstract getManyByIds(
+    ${camel}Ids: number[],
+  ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]>;
+
+  abstract createOne${pascal}: ${pascal}RepoTypes['Public']['CreateOnePlainEntityFunctionType'];
+
+  abstract createMany${pascal}s: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'];
+
+  abstract updateOne${pascal}<
+    ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
+  >({ id, ...updatedPart }: ${pascal}ToUpdate): Promise<void>;
+
+  abstract updateMany${pascal}s<
+    ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
+  >(${camel}s: ${pascal}ToUpdate[]): Promise<void>;
+
+  abstract deleteOne${pascal}ById(${camel}Id: number): Promise<void>;
+
+  abstract deleteMany${pascal}sByIds(${camel}Ids: number[]): Promise<void>;
 }
 `;
 
@@ -218,14 +261,14 @@ import {
   EmptyResponseDTO,
   FindMany${pascal}sResponseDTO,
   GetOne${pascal}ByIdResponseDTO,
-  UpdatedPartOfOne${pascal}RequestDTO,
+  UpdatedPartOfOne${pascal}DTO,
   UpdateMany${pascal}sRequestDTO,
 } from 'src/types';
-import { ${pascal}UseCase } from './${camel}.useCase';
+import { DI_${pascal}UseCase } from './di';
 
 @ApiController('${camel}')
 export class ${pascal}Controller {
-  constructor(private readonly ${camel}UseCase: ${pascal}UseCase) {}
+  constructor(private readonly ${camel}UseCase: DI_${pascal}UseCase) {}
 
   @ApiQuery({
     name: 'search',
@@ -302,7 +345,7 @@ export class ${pascal}Controller {
   async updateOne${pascal}(
     @Param('${camel}Id', ParseIntPipe) ${camel}Id: number,
     @ValidatedBody()
-    updated${pascal}: UpdatedPartOfOne${pascal}RequestDTO,
+    updated${pascal}: UpdatedPartOfOne${pascal}DTO,
   ): Promise<EmptyResponseDTO> {
     await this.${camel}UseCase.updateOne${pascal}({ id: ${camel}Id, ...updated${pascal} });
     return {};
@@ -356,7 +399,7 @@ import {
 export class UpdatedPartOfOne${pascal}DTO {
 }
 
-export class UpdateOne${pascal}RequestDTO extends UpdatedPartOfOne${pascal}RequestDTO {
+export class UpdateOne${pascal}RequestDTO extends UpdatedPartOfOne${pascal}DTO {
   @IsPositive()
   id!: number;
 }
@@ -450,8 +493,26 @@ const getUpdatedAppModule = async () => {
 
 async function createModuleDirectory() {
   if (!dryRun) {
-    await mkdir(`./backend/src/${camel}`);
-    console.log(chalk.gray(`\n------ new ${camel} folder was generated\n`));
+    try {
+      await mkdir(`./backend/src/${camel}`);
+      console.log(chalk.gray(`\n------ new ${camel} folder was generated\n`));
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  }
+}
+
+async function createDI_Directory() {
+  if (!dryRun) {
+    try {
+      await mkdir(`./backend/src/${camel}/di`);
+      closeSync(openSync(`./backend/src/${camel}/di/index.ts`, 'w'));
+      console.log(
+        chalk.gray(`\n------ new ${camel} di folder was generated\n`),
+      );
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 }
 
@@ -494,6 +555,13 @@ if (selectedFilesToGenerate.includes('moduleAndUseCase')) {
     `${pascal}UseCase`,
     getUseCase(),
     `./backend/src/${camel}/${camel}.useCase.ts`,
+    dryRun,
+  );
+
+  await createDI_Directory();
+  await writeNewDI_UseCaseFileAndExtendDirReexportsAndLog(
+    entityName,
+    getDI_UseCase(),
     dryRun,
   );
 
