@@ -595,7 +595,25 @@
     "typescript.preferences.quoteStyle": "single",
     "editor.foldingImportsByDefault": true,
     "diffEditor.maxComputationTime": 0,
-    "workbench.colorCustomizations": {},
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#00d266",
+      "activityBar.background": "#00d266",
+      "activityBar.foreground": "#15202b",
+      "activityBar.inactiveForeground": "#15202b99",
+      "activityBarBadge.background": "#9d40ff",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#00d266",
+      "statusBar.background": "#009f4d",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#00d266",
+      "statusBarItem.remoteBackground": "#009f4d",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#009f4d",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#009f4d99",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    },
     "editor.linkedEditing": true,
     "editor.minimap.enabled": false,
     "workbench.editor.enablePreview": false,
@@ -714,7 +732,8 @@
       "frontend/config": true,
       "**/.github": true
     },
-    "window.title": "${dirty}${activeEditorLong}${separator}${profileName}"
+    "window.title": "${dirty}${activeEditorLong}${separator}${profileName}",
+    "peacock.color": "#009f4d"
   },
   "launch": {
     "version": "0.2.0",
