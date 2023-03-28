@@ -209,19 +209,21 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
       throw new UnauthorizedException(tokenInvalidMessage);
     }
 
-    const tokenPayload = this.jwtService.decode(token) as TokenPayload;
+    const { payload } = this.jwtService.decode(token) as {
+      payload: TokenPayload;
+    };
 
     if (
       !(await this.redisSessionsService.hasTokenBeenWhitelisted({
-        userId: tokenPayload.user.id,
-        sessionUUID: tokenPayload.sessionUUID,
+        userId: payload.user.id,
+        sessionUUID: payload.sessionUUID,
         token,
         tokenField,
       }))
     )
       throw new UnauthorizedException(tokenBlacklistedMessage);
 
-    return tokenPayload;
+    return payload;
   }
 
   private createNewTokenPair({
@@ -241,9 +243,12 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
   }
 
   private createNewAccessToken(payload: UserAccessTokenPayload): string {
-    return this.jwtService.sign(payload, {
-      expiresIn: '20m',
-    });
+    return this.jwtService.sign(
+      { payload },
+      {
+        expiresIn: '20m',
+      },
+    );
   }
 
   private createNewRefreshToken({
@@ -252,10 +257,12 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
   }: UserRefreshTokenPayload): string {
     return this.jwtService.sign(
       {
-        user: {
-          id: user.id,
+        payload: {
+          user: {
+            id: user.id,
+          },
+          sessionUUID,
         },
-        sessionUUID,
       },
       { expiresIn: '7d' },
     );

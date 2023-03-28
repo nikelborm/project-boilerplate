@@ -4,7 +4,7 @@ import type { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { LogoutOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Layout, Menu } from 'antd';
-import { useTokenPairUpdater, usePath } from 'hooks';
+import { useTokenPairUpdater, usePath, useLogoutMutation } from 'hooks';
 import { ISession, RoutesEnum } from 'types';
 import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from '../routes';
 
@@ -16,7 +16,7 @@ export function AccountPagesWrapper({
   pathParts,
 }: AccountPageWrapperProps) {
   const [isMenuCollapsed, setCollapsedMenu] = useState(true);
-  const { updateTokenPair } = useTokenPairUpdater();
+  const { sendLogoutQuery, isLoading } = useLogoutMutation();
 
   if (!session.isAuthed)
     return <Navigate to={`/auth/${notAuthedFallbackRoute}`} />;
@@ -55,8 +55,9 @@ export function AccountPagesWrapper({
             {
               label: 'Выход из аккаунта',
               key: 'logout',
+              disabled: isLoading,
               icon: <LogoutOutlined />,
-              onClick: () => updateTokenPair(null),
+              onClick: () => sendLogoutQuery(),
             },
           ]}
         />

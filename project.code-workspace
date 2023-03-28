@@ -68,7 +68,23 @@
       {
         "label": "psql dev",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U pgdockeruser -d pgdockerdatabase",
+        "command": "eval \"$(./backend/scripts/shdotenv.sh --env ./env/dev.env -d node)\"; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec postgres-dev psql -U $DATABASE_USERNAME -d $DATABASE_NAME",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "shared",
+          "close": false,
+          "showReuseMessage": true,
+          "clear": true
+        }
+      },
+      {
+        "label": "redis-cli dev",
+        "type": "shell",
+        "command": "eval \"$(./backend/scripts/shdotenv.sh --env ./env/dev.env -d node)\"; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec redis-master-dev redis-cli --pass $REDIS_MASTER_PASSWORD",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -678,7 +694,7 @@
         "editor.unicodeHighlight.ambiguousCharacters": true,
         "editor.unicodeHighlight.invisibleCharacters": true
     },
-    "editor.unicodeHighlight.nonBasicASCII": false,
+    "editor.unicodeHighlight.nonBasicASCII": true,
     "editor.unicodeHighlight.includeComments": true,
     "githubPullRequests.pullBranch": "never",
     "editor.inlayHints.enabled": "off",
