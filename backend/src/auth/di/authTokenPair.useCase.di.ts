@@ -35,9 +35,9 @@ export abstract class DI_AuthTokenPairUseCase {
 
   abstract finishSessionOfLoggedInUser(refreshToken: string): Promise<void>;
 
-  abstract decodeAuthHeaderWithAccessTokenAndGetUserId(
+  abstract decodeAuthHeaderWithAccessTokenAndGetPayload(
     authHeader: string | undefined,
-  ): Promise<{ userId: number }>;
+  ): Promise<UserAccessTokenPayload>;
 
   abstract getAllSessionsOfAnyUser(userId: number): Promise<void>;
   abstract resetAllAccessTokensOfAnyUser(userId: number): Promise<void>;

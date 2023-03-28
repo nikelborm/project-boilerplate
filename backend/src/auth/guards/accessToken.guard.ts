@@ -15,11 +15,10 @@ import {
 import { AccessEnum, ALLOWED_SCOPES_KEY } from 'src/tools';
 import {
   AllowedForArgs,
+  AuthedRequest,
   EndpointAccess,
-  UserAuthInfo,
   UserLevelScopes,
 } from 'src/types';
-import { DI_UserUseCase } from 'src/user';
 import { DI_AuthTokenPairUseCase } from '../di';
 
 @Injectable()
@@ -28,7 +27,6 @@ export class AccessTokenGuard implements CanActivate {
 
   constructor(
     private readonly accessTokenUseCase: DI_AuthTokenPairUseCase,
-    private readonly userUseCase: DI_UserUseCase,
     private readonly reflector: Reflector,
     configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
@@ -63,15 +61,13 @@ export class AccessTokenGuard implements CanActivate {
       throw new UnauthorizedException(messages.auth.unauthorizedOnly);
     }
 
-    const { userId } =
-      await this.accessTokenUseCase.decodeAuthHeaderWithAccessTokenAndGetUserId(
+    const { sessionUUID, user } =
+      await this.accessTokenUseCase.decodeAuthHeaderWithAccessTokenAndGetPayload(
         request.headers.authorization,
       );
 
-    const userFromDB: UserAuthInfo =
-      await this.userUseCase.getOneByIdWithAccessScopes(userId);
-
-    request.user = userFromDB;
+    request.user = user;
+    request.sessionUUID = sessionUUID;
 
     if (routeLevelScope === AccessEnum.AUTHORIZED) return true;
 
@@ -94,13 +90,13 @@ export class AccessTokenGuard implements CanActivate {
 
   private getRouteScopesAndRequestFrom(
     context: ExecutionContext,
-  ): [AllowedForArgs | null, Request] {
+  ): [AllowedForArgs | null, Request & Partial<AuthedRequest>] {
     return [
       this.reflector.get<AllowedForArgs>(
         ALLOWED_SCOPES_KEY,
         context.getHandler(),
       ),
-      context.getArgByIndex<Request>(0),
+      context.getArgByIndex<Request & Partial<AuthedRequest>>(0),
     ];
   }
 }

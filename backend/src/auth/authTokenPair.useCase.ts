@@ -148,9 +148,9 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
     return tokenPair;
   }
 
-  async decodeAuthHeaderWithAccessTokenAndGetUserId(
+  async decodeAuthHeaderWithAccessTokenAndGetPayload(
     authHeader: string | undefined,
-  ): Promise<{ userId: number }> {
+  ): Promise<UserAccessTokenPayload> {
     if (!authHeader)
       throw new UnauthorizedException(messages.auth.missingAuthHeader);
 
@@ -162,8 +162,7 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
     if (!accessToken)
       throw new UnauthorizedException(messages.auth.missingToken);
 
-    const { user } = await this.decodeAccessTokenAndGetPayload(accessToken);
-    return { userId: user.id };
+    return await this.decodeAccessTokenAndGetPayload(accessToken);
   }
 
   async decodeAccessTokenAndGetPayload(
