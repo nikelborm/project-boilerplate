@@ -86,7 +86,9 @@ export async function appendModelBodyMixinToFileAndLog(
     'model class',
     entityName,
     mixin,
-    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
+    `./backend/src/infrastructure/database/model/${camelCase(
+      entityName,
+    )}.model.ts`,
     /}\n$/g,
     dryRun,
   );
@@ -106,7 +108,9 @@ export async function appendModelImportsMixinToFileAndLog(
     "model's file imports",
     entityName,
     mixin,
-    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
+    `./backend/src/infrastructure/database/model/${camelCase(
+      entityName,
+    )}.model.ts`,
     /\n*@Entity/g,
     dryRun,
   );
@@ -210,9 +214,11 @@ export async function writeNewModelFileAndExtendDirReexportsAndLog(
     'model',
     entityName,
     content,
-    `./backend/src/infrastructure/model/${camelCase(entityName)}.model.ts`,
+    `./backend/src/infrastructure/database/model/${camelCase(
+      entityName,
+    )}.model.ts`,
     dryRun,
-    `./backend/src/infrastructure/model/index.ts`,
+    `./backend/src/infrastructure/database/model/index.ts`,
     `export * from './${camelCase(entityName)}.model';\n`,
   );
 }
@@ -252,9 +258,11 @@ export async function writeNewDI_RepoFileAndExtendDirReexportsAndLog(
     'DI Repo',
     `DI_${entityName}Repo`,
     content,
-    `./backend/src/infrastructure/di/${camelCase(entityName)}.repo.di.ts`,
+    `./backend/src/infrastructure/database/di/${camelCase(
+      entityName,
+    )}.repo.di.ts`,
     dryRun,
-    `./backend/src/infrastructure/di/index.ts`,
+    `./backend/src/infrastructure/database/di/index.ts`,
     `export { DI_${pascalCase(entityName)}Repo, RepoTypes as ${pascalCase(
       entityName,
     )}RepoTypes } from './${camelCase(entityName)}.repo.di';\n`,
@@ -300,9 +308,11 @@ export async function writeNewRepositoryFileAndExtendDirReexportsAndLog(
     'repo',
     `${entityName}Repo`,
     content,
-    `./backend/src/infrastructure/repo/${camelCase(entityName)}.repo.ts`,
+    `./backend/src/infrastructure/database/repo/${camelCase(
+      entityName,
+    )}.repo.ts`,
     dryRun,
-    `./backend/src/infrastructure/repo/index.ts`,
+    `./backend/src/infrastructure/database/repo/index.ts`,
     `export * from './${camelCase(entityName)}.repo';\n`,
   );
 }

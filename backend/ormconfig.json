@@ -1,6 +1,6 @@
 {
   "cli": {
-    "migrationsDir": "./src/infrastructure/migration",
-    "entitiesDir": "./src/infrastructure/model"
+    "migrationsDir": "./src/infrastructure/database/migration",
+    "entitiesDir": "./src/infrastructure/database/model"
   }
 }

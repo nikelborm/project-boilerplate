@@ -63,19 +63,71 @@ services:
       - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
       - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
+
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
+
+      - REDIS_MASTER_PORT=${REDIS_MASTER_INNER_PORT}
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - REDIS_MASTER_PASSWORD=${REDIS_MASTER_PASSWORD}
+      - REDIS_REPLICA_PORT=${REDIS_REPLICA_INNER_PORT}
+      - REDIS_REPLICA_HOST=${REDIS_REPLICA_HOST}
+      - REDIS_REPLICA_PASSWORD=${REDIS_REPLICA_PASSWORD}
     volumes:
       - type: bind # for running migrate script inside existing backend container
-        source: ./backend/src/infrastructure/
-        target: /app/src/infrastructure/
+        source: ./backend/src/infrastructure/database/
+        target: /app/src/infrastructure/database/
     networks:
       nginx-back-net-prod:
       back-db-net-prod:
+      back-redis-net-prod:
+
+  redis-master-prod:
+    image: 'bitnami/redis:latest'
+    restart: always
+    ports:
+      - ${REDIS_MASTER_OUTER_PORT}:${REDIS_MASTER_INNER_PORT}
+    environment:
+      - REDIS_AOF_ENABLED=${REDIS_AOF_ENABLED}
+      - REDIS_DISABLE_COMMANDS=${REDIS_DISABLED_COMMANDS}
+
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PORT_NUMBER=${REDIS_MASTER_INNER_PORT}
+      - REDIS_PASSWORD=${REDIS_MASTER_PASSWORD}
+    volumes:
+      - type: volume
+        source: redis-prod-persistent-data
+        target: /bitnami/redis/data
+    networks:
+      redis-master-to-replica-net-prod:
+      back-redis-net-prod:
+
+  redis-replica-prod:
+    image: 'bitnami/redis:latest'
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 3
+    depends_on:
+      - redis-master-prod
+    environment:
+      - REDIS_AOF_ENABLED=${REDIS_AOF_ENABLED}
+      - REDIS_DISABLE_COMMANDS=${REDIS_DISABLED_COMMANDS}
+
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_PORT_NUMBER=${REDIS_REPLICA_INNER_PORT}
+      - REDIS_PASSWORD=${REDIS_REPLICA_PASSWORD}
+
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - REDIS_MASTER_PORT_NUMBER=${REDIS_MASTER_INNER_PORT}
+      - REDIS_MASTER_PASSWORD=${REDIS_MASTER_PASSWORD}
+    networks:
+      redis-master-to-replica-net-prod:
+      back-redis-net-prod:
 
   postgres-prod:
     image: postgres
@@ -113,6 +165,7 @@ services:
 
 volumes:
   postgres-prod-data:
+  redis-prod-persistent-data:
 
 # when i will really want to use https and ssl
 # article how to setup certbot and let's encrypt
@@ -131,6 +184,9 @@ networks:
         - subnet: 10.5.0.0/16
           gateway: 10.5.0.1
   back-db-net-prod: {}
+  back-redis-net-prod: {}
   pgadmin-db-net-prod: {}
+  redis-master-to-replica-net-prod: {}
+
 # eval "$(./scripts/shdotenv.sh --env ../env/dev.env -d node)"; yarn test:watch
 # sudo docker run   --volume=/:/rootfs:ro   --volume=/var/run:/var/run:ro   --volume=/sys:/sys:ro   --volume=/var/lib/docker/:/var/lib/docker:ro   --volume=/dev/disk/:/dev/disk:ro   --publish=8080:8080   --detach=true   --name=cadvisor   --privileged   --device=/dev/kmsg   gcr.io/cadvisor/cadvisor:v0.46.0

@@ -1,6 +1,5 @@
 import type { MockDataUseCase } from 'src/mock';
-import type { BootstrapMode, IAppConfigMap } from './types';
-import { ConfigKeys } from './types';
+import { ConfigKeys, type BootstrapMode, type IAppConfigMap } from '../types';
 
 export const appConfig: () => IAppConfigMap = () => ({
   [ConfigKeys.IS_DEVELOPMENT]: process.env['NODE_ENV'] === 'development',

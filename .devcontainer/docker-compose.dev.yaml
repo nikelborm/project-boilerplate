@@ -93,6 +93,13 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
       - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+
+      - REDIS_MASTER_PORT=${REDIS_MASTER_INNER_PORT}
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - REDIS_MASTER_PASSWORD=${REDIS_MASTER_PASSWORD}
+      - REDIS_REPLICA_PORT=${REDIS_REPLICA_INNER_PORT}
+      - REDIS_REPLICA_HOST=${REDIS_REPLICA_HOST}
+      - REDIS_REPLICA_PASSWORD=${REDIS_REPLICA_PASSWORD}
     ports:
       - ${DEV_BACKEND_DEBUGGER_PORT}:${DEV_BACKEND_DEBUGGER_PORT}
     volumes:
@@ -111,6 +118,7 @@ services:
     networks:
       nginx-back-net-dev:
       back-db-net-dev:
+      back-redis-net-dev:
       vscode-back-net-dev:
 
   postgres-dev:
@@ -134,6 +142,47 @@ services:
       vscode-db-net-dev:
       pgcli-db-net-dev:
       # apache_superset_network:
+
+  redis-master-dev:
+    image: 'bitnami/redis:latest'
+    restart: unless-stopped
+    ports:
+      - ${REDIS_MASTER_OUTER_PORT}:${REDIS_MASTER_INNER_PORT}
+    environment:
+      - REDIS_AOF_ENABLED=${REDIS_AOF_ENABLED}
+
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PORT_NUMBER=${REDIS_MASTER_INNER_PORT}
+      - REDIS_PASSWORD=${REDIS_MASTER_PASSWORD}
+    volumes:
+      - type: volume
+        source: redis-dev-persistent-data
+        target: /bitnami/redis/data
+    networks:
+      redis-master-to-replica-net-dev:
+      back-redis-net-dev:
+
+  redis-replica-dev:
+    image: 'bitnami/redis:latest'
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 3
+    depends_on:
+      - redis-master-dev
+    environment:
+      - REDIS_AOF_ENABLED=${REDIS_AOF_ENABLED}
+
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_PORT_NUMBER=${REDIS_REPLICA_INNER_PORT}
+      - REDIS_PASSWORD=${REDIS_REPLICA_PASSWORD}
+
+      - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
+      - REDIS_MASTER_PORT_NUMBER=${REDIS_MASTER_INNER_PORT}
+      - REDIS_MASTER_PASSWORD=${REDIS_MASTER_PASSWORD}
+    networks:
+      redis-master-to-replica-net-dev:
+      back-redis-net-dev:
 
   postgres-admin-dev:
     image: dpage/pgadmin4:latest
@@ -173,9 +222,14 @@ networks:
   #   external: true
 
   back-db-net-dev: {}
+  back-redis-net-dev: {}
+  redis-master-to-replica-net-dev: {}
   pgadmin-db-net-dev: {}
   pgcli-db-net-dev: {}
 
   vscode-back-net-dev: {}
   vscode-db-net-dev: {}
   vscode-front-net-dev: {}
+
+volumes:
+  redis-dev-persistent-data:

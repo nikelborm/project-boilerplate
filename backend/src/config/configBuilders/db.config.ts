@@ -1,6 +1,5 @@
-import { dataSourceConfig } from './databaseConnectionOptions';
-import type { IDatabaseConfigMap } from './types';
-import { ConfigKeys } from './types';
+import { dataSourceConfig } from '../databaseConnectionOptions';
+import { ConfigKeys, type IDatabaseConfigMap } from '../types';
 
 export const dbConfig: () => IDatabaseConfigMap = () => ({
   [ConfigKeys.DATABASE_HOST]: dataSourceConfig.host,

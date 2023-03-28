@@ -10,6 +10,6 @@ export const dataSourceConfig = {
   logging: JSON.parse(
     process.env['DATABASE_TYPEORM_LOGGING_MODE'] || '"all"',
   ) as LoggerOptions,
-  entities: ['dist/infrastructure/model/*.model.js'],
-  migrations: ['dist/infrastructure/migration/*.js'],
+  entities: ['dist/infrastructure/database/model/*.model.js'],
+  migrations: ['dist/infrastructure/database/migration/*.js'],
 };

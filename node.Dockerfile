@@ -14,6 +14,9 @@ WORKDIR /app
 # for future dependencies installation
 # comand to check where is yarn cache docker run -it node:18-alpine yarn cache dir
 
+# https://stackoverflow.com/a/14841880
+# comand to check where is yarn cache docker run -it node:18-alpine npm config get cache
+
 # RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
 
 # sharing=private was set intentionally because yarn override caches and two parallel yarn installs break each other

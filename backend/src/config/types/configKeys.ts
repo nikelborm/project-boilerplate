@@ -15,4 +15,11 @@ export enum ConfigKeys {
   WEB_SOCKET_SERVER_PORT = 'webSocketServerPort',
   WEB_SOCKET_SERVER_PATH = 'webSocketServerPath',
   INVITE_USERS_SIGN_KEY = 'inviteUsersSignKey',
+
+  REDIS_MASTER_PORT = 'redisMasterPort',
+  REDIS_MASTER_HOST = 'redisMasterHost',
+  REDIS_MASTER_PASSWORD = 'redisMasterPassword',
+  REDIS_REPLICA_PORT = 'redisReplicaPort',
+  REDIS_REPLICA_HOST = 'redisReplicaHost',
+  REDIS_REPLICA_PASSWORD = 'redisReplicaPassword',
 }

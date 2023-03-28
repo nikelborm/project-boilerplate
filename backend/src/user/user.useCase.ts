@@ -22,9 +22,9 @@ class UserUseCase implements DI_UserUseCase {
 
   constructor(
     private readonly userRepo: DI_UserRepo,
-    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
+    configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
-    this.USER_PASSWORD_HASH_SALT = this.configService.get(
+    this.USER_PASSWORD_HASH_SALT = configService.get(
       ConfigKeys.USER_PASSWORD_HASH_SALT,
     );
   }

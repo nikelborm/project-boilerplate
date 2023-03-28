@@ -24,3 +24,12 @@ export type IDatabaseConfigMap = {
   [ConfigKeys.DATABASE_TYPEORM_LOGGING_MODE]: LoggerOptions;
   [ConfigKeys.DATABASE_USERNAME]: string;
 };
+
+export type IRedisConfigMap = {
+  [ConfigKeys.REDIS_MASTER_PORT]: number;
+  [ConfigKeys.REDIS_MASTER_HOST]: string;
+  [ConfigKeys.REDIS_MASTER_PASSWORD]: string;
+  [ConfigKeys.REDIS_REPLICA_PORT]: number;
+  [ConfigKeys.REDIS_REPLICA_HOST]: string;
+  [ConfigKeys.REDIS_REPLICA_PASSWORD]: string;
+};

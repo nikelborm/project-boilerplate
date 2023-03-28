@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { InfrastructureModule } from 'src';
+import { DBModule } from 'src';
 import { TypedConfigModule } from 'src/config';
 import { UserController } from '../user.controller';
 import { UserUseCaseDIProvider } from '../user.useCase';
@@ -11,7 +11,7 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserUseCaseDIProvider],
       controllers: [UserController],
-      imports: [InfrastructureModule, TypedConfigModule],
+      imports: [DBModule, TypedConfigModule],
     }).compile();
 
     controller = module.get<UserController>(UserController);

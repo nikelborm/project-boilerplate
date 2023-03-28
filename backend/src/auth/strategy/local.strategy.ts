@@ -4,12 +4,12 @@ import { Strategy } from 'passport-local';
 import { messages } from 'src/config';
 import { DI_UserRepo } from 'src/infrastructure';
 import type { UserAuthInfo } from 'src/types';
-import { DI_AuthUseCase } from '../di';
+import { DI_AuthTokenPairUseCase } from '../di';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly authUseCase: DI_AuthUseCase,
+    private readonly authTokenPairUseCase: DI_AuthTokenPairUseCase,
     private readonly userRepo: DI_UserRepo,
   ) {
     super({
@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!userModel)
       throw new UnauthorizedException(messages.auth.incorrectUser);
 
-    await this.authUseCase.validateLoginAttempt(userModel, password);
+    await this.authTokenPairUseCase.validateLoginAttempt(userModel, password);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, salt, ...authInfo } = userModel;

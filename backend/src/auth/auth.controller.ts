@@ -10,12 +10,12 @@ import {
   RegisterUserResponseDTO,
   UserAuthInfo,
 } from 'src/types';
-import { DI_AuthUseCase } from './di';
+import { DI_AuthTokenPairUseCase } from './di';
 import { LocalAuthGuard } from './guards';
 
 @ApiController('auth')
 export class AuthController {
-  constructor(private readonly authUseCase: DI_AuthUseCase) {}
+  constructor(private readonly authTokenPairUseCase: DI_AuthTokenPairUseCase) {}
 
   @Post('local/login')
   @UseGuards(LocalAuthGuard)
@@ -26,7 +26,7 @@ export class AuthController {
     loginUserRequestDTO: LoginUserRequestDTO,
     @Request() req: { user: UserAuthInfo },
   ): Promise<AuthTokenPairDTO> {
-    return await this.authUseCase.login(req.user);
+    return await this.authTokenPairUseCase.login(req.user);
   }
 
   @Post('local/register')
@@ -34,7 +34,9 @@ export class AuthController {
     @ValidatedBody()
     createUserDTO: CreateUserRequestDTO,
   ): Promise<RegisterUserResponseDTO> {
-    return await this.authUseCase.registerNewUserAndLogin(createUserDTO);
+    return await this.authTokenPairUseCase.registerNewUserAndLogin(
+      createUserDTO,
+    );
   }
 
   @Post('logout')
@@ -42,7 +44,10 @@ export class AuthController {
   async logout(
     @Request() { user, sessionUUID }: AuthedRequest,
   ): Promise<EmptyResponseDTO> {
-    await this.authUseCase.logoutSessionOf(user.id, sessionUUID);
+    await this.authTokenPairUseCase.finishSessionOfAnyUser(
+      user.id,
+      sessionUUID,
+    );
     return {};
   }
 
@@ -51,7 +56,7 @@ export class AuthController {
   async logoutAllSessions(
     @Request() { user }: AuthedRequest,
   ): Promise<EmptyResponseDTO> {
-    await this.authUseCase.logoutAllSessions(user.id);
+    await this.authTokenPairUseCase.finishAllSessionsOfAnyUser(user.id);
     return {};
   }
 
@@ -60,7 +65,7 @@ export class AuthController {
     @ValidatedBody()
     { refreshToken }: RefreshTokenDTO,
   ): Promise<AuthTokenPairDTO> {
-    return await this.authUseCase.useRefreshTokenAndGetNewTokenPair(
+    return await this.authTokenPairUseCase.useRefreshTokenAndGetNewTokenPair(
       refreshToken,
     );
   }

@@ -678,7 +678,7 @@
         "editor.unicodeHighlight.ambiguousCharacters": true,
         "editor.unicodeHighlight.invisibleCharacters": true
     },
-    "editor.unicodeHighlight.nonBasicASCII": true,
+    "editor.unicodeHighlight.nonBasicASCII": false,
     "editor.unicodeHighlight.includeComments": true,
     "githubPullRequests.pullBranch": "never",
     "editor.inlayHints.enabled": "off",

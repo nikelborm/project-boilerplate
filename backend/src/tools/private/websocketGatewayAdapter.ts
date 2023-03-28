@@ -5,25 +5,31 @@ import { ConfigKeys, IAppConfigMap, DI_TypedConfigService } from 'src/config';
 
 // https://github.com/nestjs/nest/issues/5676#issuecomment-749719792
 export class WebsocketGatewayAdapter extends IoAdapter {
+  private readonly WEB_SOCKET_SERVER_PORT: number;
+  private readonly WEB_SOCKET_SERVER_PATH: string;
+
   constructor(
     app: INestApplicationContext,
-    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
+    configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
     super(app);
+    this.WEB_SOCKET_SERVER_PATH = configService.get(
+      ConfigKeys.WEB_SOCKET_SERVER_PATH,
+    );
+    this.WEB_SOCKET_SERVER_PORT = configService.get(
+      ConfigKeys.WEB_SOCKET_SERVER_PORT,
+    );
   }
 
   override createIOServer(
     _: /* declaration of web socket port which we do ignore */ number,
     options?: ServerOptions & { namespace: string | RegExp },
   ): any {
-    const server = super.createIOServer(
-      this.configService.get(ConfigKeys.WEB_SOCKET_SERVER_PORT),
-      {
-        ...options,
-        transports: ['websocket', 'polling'],
-        path: this.configService.get(ConfigKeys.WEB_SOCKET_SERVER_PATH),
-      },
-    );
+    const server = super.createIOServer(this.WEB_SOCKET_SERVER_PORT, {
+      ...options,
+      transports: ['websocket', 'polling'],
+      path: this.WEB_SOCKET_SERVER_PATH,
+    });
     if (options?.namespace) return server.of(options.namespace);
     return server;
   }

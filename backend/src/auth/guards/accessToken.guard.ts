@@ -20,19 +20,19 @@ import {
   UserLevelScopes,
 } from 'src/types';
 import { DI_UserUseCase } from 'src/user';
-import { DI_AccessTokenUseCase } from '../di';
+import { DI_AuthTokenPairUseCase } from '../di';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
   private readonly IS_DEVELOPMENT: boolean;
 
   constructor(
-    private readonly configService: DI_TypedConfigService<IAppConfigMap>,
-    private readonly accessTokenUseCase: DI_AccessTokenUseCase,
+    private readonly accessTokenUseCase: DI_AuthTokenPairUseCase,
     private readonly userUseCase: DI_UserUseCase,
     private readonly reflector: Reflector,
+    configService: DI_TypedConfigService<IAppConfigMap>,
   ) {
-    this.IS_DEVELOPMENT = this.configService.get(ConfigKeys.IS_DEVELOPMENT);
+    this.IS_DEVELOPMENT = configService.get(ConfigKeys.IS_DEVELOPMENT);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -64,7 +64,7 @@ export class AccessTokenGuard implements CanActivate {
     }
 
     const { userId } =
-      await this.accessTokenUseCase.decodeAuthHeaderAndGetUserId(
+      await this.accessTokenUseCase.decodeAuthHeaderWithAccessTokenAndGetUserId(
         request.headers.authorization,
       );
 
