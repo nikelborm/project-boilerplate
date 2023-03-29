@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Link, Outlet, Navigate } from 'react-router-dom';
-import type { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { LogoutOutlined } from '@ant-design/icons';
 import { PageHeader } from '@ant-design/pro-components';
 import { Layout, Menu } from 'antd';
-import { useTokenPairUpdater, usePath, useLogoutMutation } from 'hooks';
+import type { ItemType } from 'antd/lib/menu/hooks/useItems';
+import { useLogoutMutation, usePath } from 'hooks';
+import { useState } from 'react';
+import { Link, Navigate, Outlet } from 'react-router-dom';
 import { ISession, RoutesEnum } from 'types';
 import { notAuthedFallbackRoute, routesOnlyForAuthedUsers } from '../routes';
 
