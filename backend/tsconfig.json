@@ -5,11 +5,10 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "declaration": true,
-    // without "importsNotUsedAsValues": "preserve" dto imports used by validation decorators will silently fail.
+    // with "importsNotUsedAsValues": "error" dto imports used by validation decorators will silently fail.
     // In our case we use swagger auto generation and when I import some DTO i provide it as type
     // And then transpiler will automatically add meta-info decorators with specifying link to that dto class
     // And we want to keep such "type information" in our production bundle, so I disabled back screaming about it
-    "importsNotUsedAsValues": "preserve",
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
