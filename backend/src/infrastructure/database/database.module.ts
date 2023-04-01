@@ -38,6 +38,7 @@ const repoProviders = Object.values(repo).filter(
         password: configService.get(ConfigKeys.DATABASE_PASSWORD),
         database: configService.get(ConfigKeys.DATABASE_NAME),
         entities,
+        poolSize: 20,
         logging: configService.get(ConfigKeys.DATABASE_TYPEORM_LOGGING_MODE),
       }),
     }),

@@ -34,7 +34,7 @@ services:
     build:
       context: ../
       dockerfile: ./frontend/Dockerfile
-      target: dev_front
+      target: next_dev_front
       args:
         - INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT=${INNER_DEV_FRONT_LIVE_RELOAD_SERVER_PORT}
     environment:
@@ -49,6 +49,10 @@ services:
         target: /app/src
         consistency: delegated
       - type: bind
+        source: ../frontend/public
+        target: /app/public
+        consistency: delegated
+      - type: bind
         source: ../shared/src/types/shared
         target: /app/src/types/shared
         consistency: delegated
@@ -58,6 +62,7 @@ services:
         consistency: delegated
     networks:
       nginx-front-net-dev:
+      front-back-net-dev:
       vscode-front-net-dev:
 
   backend-dev:
@@ -65,6 +70,7 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres-dev
+      - redis-master-dev
     build:
       context: ../
       dockerfile: ./backend/Dockerfile
@@ -83,6 +89,7 @@ services:
       - WEB_SOCKET_SERVER_PATH=${WEB_SOCKET_SERVER_PATH}
       - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
       - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
+      - ENABLE_SWAGGER_IN_PROD=${ENABLE_SWAGGER_IN_PROD}
       - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
       - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
@@ -118,8 +125,40 @@ services:
     networks:
       nginx-back-net-dev:
       back-db-net-dev:
+      front-back-net-dev:
       back-redis-net-dev:
       vscode-back-net-dev:
+
+  backend-migration-dev:
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-migration-dev"
+    restart: unless-stopped
+    build:
+      context: ../
+      dockerfile: ./backend/Dockerfile
+      target: migration_container
+    environment:
+      - IS_MIGRATION_ONLY_MODE=true
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
+    volumes:
+      - type: bind
+        source: ../backend/src
+        target: /app/src
+        consistency: delegated
+      - type: bind
+        source: ../shared/src/types/shared
+        target: /app/src/types/shared
+        consistency: delegated
+      - type: bind
+        source: ../shared/src/tools/shared
+        target: /app/src/tools/shared
+        consistency: delegated
+    networks:
+      back-db-net-dev:
 
   postgres-dev:
     image: postgres
@@ -212,6 +251,7 @@ services:
 networks:
   nginx-front-net-dev: {}
   nginx-back-net-dev: {}
+  front-back-net-dev: {}
   nginx-pgadmin-net-dev:
     driver: bridge
     ipam:

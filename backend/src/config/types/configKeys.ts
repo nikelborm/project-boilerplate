@@ -7,6 +7,8 @@ export enum ConfigKeys {
   DATABASE_TYPEORM_LOGGING_MODE = 'databaseLoggingMode',
   DATABASE_USERNAME = 'databaseUsername',
   IS_DEVELOPMENT = 'isDevelopment',
+  ENABLE_SWAGGER_IN_PROD = 'enableSwaggerInProd',
+  IS_MIGRATION_ONLY_MODE = 'isMigrationOnlyMode',
   AUTH_JWT_SECRET = 'authJwtSecret',
   USER_PASSWORD_HASH_SALT = 'userPasswordHashSalt',
   IS_PRODUCTION = 'isProduction',

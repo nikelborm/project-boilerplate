@@ -1,3 +1,4 @@
+#!/bin/sh -eux
 echo -e '\nrecreate db script\n';
 
 echo -e '\ninner call of drop.sh started\n';

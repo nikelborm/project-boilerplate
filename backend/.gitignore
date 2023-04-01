@@ -1,6 +1,7 @@
 
 # compiled output
 /dist
+/dist2
 /build
 /node_modules
 /src/types/shared

@@ -1,3 +1,4 @@
+#!/bin/sh -eux
 echo -e '\normgen script\n';
 
 echo -e '\ninner call of recreate.sh started\n';

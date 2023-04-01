@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import '@total-typescript/ts-reset';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -5,7 +7,6 @@ import { json, urlencoded } from 'express';
 import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
-import 'reflect-metadata';
 import { AppModule } from './app.module';
 import {
   BootstrapMode,
@@ -59,7 +60,10 @@ async function bootstrap(): Promise<void> {
   ) {
     const port = configService.get(ConfigKeys.SERVER_PORT);
 
-    if (configService.get(ConfigKeys.IS_DEVELOPMENT)) {
+    if (
+      configService.get(ConfigKeys.IS_DEVELOPMENT) ||
+      configService.get(ConfigKeys.ENABLE_SWAGGER_IN_PROD)
+    ) {
       const config = new DocumentBuilder()
         .setTitle('Project API')
         .setVersion('1.0')
@@ -69,7 +73,7 @@ async function bootstrap(): Promise<void> {
 
       const document = SwaggerModule.createDocument(app, config);
 
-      SwaggerModule.setup('/docs', app, document);
+      SwaggerModule.setup('/api/docs', app, document);
     }
 
     app.use(json({ limit: '3mb' }));
