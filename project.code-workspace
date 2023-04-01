@@ -294,7 +294,7 @@
       {
         "label": "ORM migration generation for dev database (ormgen)",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/ormgen.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -342,28 +342,28 @@
       {
         "label": "Migrate dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Migrate prod database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-prod sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-migration-prod sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Drop dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/drop.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Recreate dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-dev sh ./scripts/recreate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -724,30 +724,7 @@
       "frontend/config": false,
       "**/.github": false
     },
-    "explorerExclude.backup": {
-      "**/.git": true,
-      "**/.svn": true,
-      "**/.hg": true,
-      "**/CVS": true,
-      "**/.DS_Store": true,
-      "**/Thumbs.db": true,
-      "**/node_modules": true,
-      "**/.nvmrc": true,
-      "**/.prettierrc": true,
-      "**/tsconfig.build.json": true,
-      "**/yarn.lock": true,
-      "**/ormconfig.json": true,
-      "**/nest-cli.json": true,
-      ".env": true,
-      "**/.dockerignore": true,
-      "**/.htpasswd": true,
-      "**/.htpasswd_example": true,
-      "**/dev.nginx.template.conf": true,
-      "**/prod.nginx.template.conf": true,
-      "frontend/scripts": true,
-      "frontend/config": true,
-      "**/.github": true
-    },
+    "explorerExclude.backup": {},
     "window.title": "${dirty}${activeEditorLong}${separator}${profileName}",
     "peacock.color": "#01381b"
   },

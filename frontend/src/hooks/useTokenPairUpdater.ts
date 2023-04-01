@@ -1,1 +1,1 @@
-export { useTokenPairUpdater } from 'tools';
+export { useTokenPairUpdater } from '@/tools';

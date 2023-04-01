@@ -7,8 +7,8 @@ import {
   // invalidatePassthrough,
   // useSession,
   useTokenPairUpdater,
-} from 'tools';
-import { UseInviteLinkDTO } from 'types/shared';
+} from '@/tools';
+import { UseInviteLinkDTO } from '@/types/shared';
 import { message } from 'antd';
 
 export function useInviteLinkMutation(onError: (err: any) => void) {

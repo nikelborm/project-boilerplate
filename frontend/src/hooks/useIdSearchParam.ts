@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { RoutesEnum } from 'types';
+import { RoutesEnum } from '@/types';
 
 export function useIdSearchParam(fallback: RoutesEnum) {
   const [searchParams] = useSearchParams();

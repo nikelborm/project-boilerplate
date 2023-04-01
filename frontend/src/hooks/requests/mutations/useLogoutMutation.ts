@@ -1,5 +1,5 @@
 import { useMutation } from 'react-query';
-import { customFetch, useTokenPairUpdater } from 'tools';
+import { customFetch, useTokenPairUpdater } from '@/tools';
 
 export function useLogoutMutation() {
   const { updateTokenPair } = useTokenPairUpdater();

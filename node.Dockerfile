@@ -1,5 +1,9 @@
 FROM node:18-alpine
 
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+
+# this bullshit may be needed in case qemu going crazy when building arm64 containers
 # RUN mkdir /usr/local/sbin; \
 #   ln -n /usr/local/bin/node /usr/local/sbin/node; \
 #   chmod -R a+rwx /tmp; \

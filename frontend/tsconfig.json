@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "incremental": true,
     "target": "es2017",
     "lib" : ["ESNext", "DOM"],
     "allowJs": true,
@@ -10,23 +12,24 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "jsx": "preserve",
+    "typeRoots": ["./node_modules/@types"],
     "experimentalDecorators": true,
     "noImplicitAny": false,
     "pretty": true,
-    "baseUrl": "./src",
-    "outDir": "./built"
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": [
-    "src/index.tsx",
-    "src/types/index.d.ts"
-  ],
-  "exclude": [
-    "./built/**/*"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

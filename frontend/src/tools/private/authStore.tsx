@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useContext, useEffect, useState } from 'react';
 import decodeJWT from 'jwt-decode';
-import { ISession } from 'types';
+import { ISession } from '@/types';
 import {
   UserAccessTokenPayload,
   UserRefreshTokenPayload,
   AuthTokenPairDTO,
   RefreshTokenDTO,
-} from 'types/shared';
-import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from 'constant';
+} from '@/types/shared';
+import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from '@/constant';
 // eslint-disable-next-line import/no-cycle
 import { customFetch } from './customFetch';
 

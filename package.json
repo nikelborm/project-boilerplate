@@ -1,4 +1,14 @@
 {
+  "name": "project",
+  "version": "0.0.1",
+  "private": true,
+  "description": "project",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "nikelborm",
+    "email": "kolya007.klass@gmail.com",
+    "url": "https://github.com/nikelborm"
+  },
   "engineStrict": true,
   "engines": {
     "npm": ">=8.5.0",

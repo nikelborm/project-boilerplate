@@ -1,6 +1,6 @@
 import { useMutation } from 'react-query';
-import { RegisterUserResponseDTO, CreateUserRequestDTO } from 'types/shared';
-import { customFetch } from 'tools';
+import { RegisterUserResponseDTO, CreateUserRequestDTO } from '@/types/shared';
+import { customFetch } from '@/tools';
 
 export function useRegistrationMutation() {
   const { mutate, isLoading, isError, isSuccess, data } = useMutation(

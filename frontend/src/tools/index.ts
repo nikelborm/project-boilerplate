@@ -1,4 +1,4 @@
-/* eslint-disable */
+import 'reflect-metadata';
+
 export * from './private';
-// @ts-ignore
 export * from './shared';

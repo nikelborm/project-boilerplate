@@ -5,6 +5,7 @@ services:
     restart: always
     depends_on:
       - backend-prod
+      - frontend-prod
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
@@ -18,6 +19,7 @@ services:
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
       - INNER_NGINX_HTTP_PORT=${INNER_NGINX_HTTP_PORT}
       - EXTERNAL_NGINX_HTTP_PORT=${EXTERNAL_NGINX_HTTP_PORT}
+      - INNER_NEXT_HTTP_PORT=${INNER_NEXT_HTTP_PORT}
       - INNER_BACKEND_HTTP_SERVER_PORT=${INNER_BACKEND_HTTP_SERVER_PORT}
       - INNER_BACKEND_WS_SERVER_PORT=${INNER_BACKEND_WS_SERVER_PORT}
     ports:
@@ -25,6 +27,7 @@ services:
 #      - ${EXTERNAL_NGINX_HTTPS_PORT}:${INNER_NGINX_HTTPS_PORT}/tcp
     networks:
       nginx-back-net-prod:
+      nginx-front-net-prod:
       nginx-pgadmin-net-prod:
         ipv4_address: 10.5.0.2
 
@@ -40,11 +43,31 @@ services:
   #     - ./data/certbot/www:/var/www/certbot
   #     - ./data/certbot/logs:/var/log/letsencrypt/
 
+  frontend-prod:
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-frontend-prod"
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+      target: next_prod_front
+      args:
+        - INNER_NEXT_HTTP_PORT=${INNER_NEXT_HTTP_PORT}
+    environment:
+      - TZ=${TZ}
+      - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
+      - DANGEROUSLY_DISABLE_HOST_CHECK=${DANGEROUSLY_DISABLE_HOST_CHECK}
+      - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
+      - TSC_WATCHFILE=UseFsEvents
+    networks:
+      nginx-front-net-prod:
+      front-back-net-prod:
+
   backend-prod:
     image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-prod"
     restart: always
     depends_on:
       - postgres-prod
+      - redis-master-prod
     build:
       context: ./
       dockerfile: ./backend/Dockerfile
@@ -60,6 +83,7 @@ services:
       - WEB_SOCKET_SERVER_PATH=${WEB_SOCKET_SERVER_PATH}
       - BOOTSTRAP_MODE=${BOOTSTRAP_MODE}
       - MOCK_SCRIPT_NAME=${MOCK_SCRIPT_NAME}
+      - ENABLE_SWAGGER_IN_PROD=${ENABLE_SWAGGER_IN_PROD}
       - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
       - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
@@ -83,8 +107,40 @@ services:
         target: /app/src/infrastructure/database/
     networks:
       nginx-back-net-prod:
+      front-back-net-prod:
       back-db-net-prod:
       back-redis-net-prod:
+
+  backend-migration-prod:
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-migration-prod"
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+      target: migration_container
+    environment:
+      - IS_MIGRATION_ONLY_MODE=true
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
+    volumes:
+      - type: bind
+        source: ./backend/src
+        target: /app/src
+        consistency: delegated
+      - type: bind
+        source: ./shared/src/types/shared
+        target: /app/src/types/shared
+        consistency: delegated
+      - type: bind
+        source: ./shared/src/tools/shared
+        target: /app/src/tools/shared
+        consistency: delegated
+    networks:
+      back-db-net-prod:
 
   redis-master-prod:
     image: 'bitnami/redis:latest'
@@ -177,6 +233,8 @@ volumes:
 
 networks:
   nginx-back-net-prod: {}
+  nginx-front-net-prod: {}
+  front-back-net-prod: {}
   nginx-pgadmin-net-prod:
     driver: bridge
     ipam:

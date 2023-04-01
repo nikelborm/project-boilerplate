@@ -5,12 +5,11 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended",
     "airbnb",
     "airbnb-typescript",
     "plugin:prettier/recommended",
-    "react-app",
-    "react-app/jest"
+    "plugin:react/recommended",
+    "next/core-web-vitals"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -22,7 +21,7 @@
     "sourceType": "module"
   },
   "plugins": ["react", "prettier", "react-hooks"],
-  "ignorePatterns": ["/config", "/scripts"],
+  "ignorePatterns": ["**/index.d.ts"],
   "rules": {
     "indent": "off", // off because it does not work with decorators in backend types. Anyway prettier is implementing the same linting
     "linebreak-style": [

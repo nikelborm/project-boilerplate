@@ -1,4 +1,4 @@
-import { API_PATH } from 'constant';
+import { API_PATH } from '@/constant';
 
 // eslint-disable-next-line import/no-cycle
 import { authStore } from './authStore';

@@ -1,4 +1,4 @@
-import { UserAccessTokenPayload, UserRefreshTokenPayload } from 'types/shared';
+import { UserAccessTokenPayload, UserRefreshTokenPayload } from '../shared';
 
 export type ISession =
   | { isAuthed: false }

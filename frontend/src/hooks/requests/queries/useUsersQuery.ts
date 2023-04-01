@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
-import { customFetch } from 'tools';
-import { FindManyUsersResponseDTO } from 'types/shared';
+import { customFetch } from '@/tools';
+import { FindManyUsersResponseDTO } from '@/types/shared';
 
 export function useAllUsersQuery() {
   const { isLoading, isError, isSuccess, data } = useQuery('useAllUsers', () =>
