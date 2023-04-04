@@ -57,7 +57,10 @@ const pascal = pascalCase(first);
 const snake = snakeCase(first);
 const camel = camelCase(first);
 
-const getModel = () => `import { PrimaryIdentityColumn } from 'src/tools';
+const getModel =
+  () => `/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { PrimaryIdentityColumn } from 'src/tools';
 ${
   selectedFilesToGenerate.includes('interface')
     ? `import type { I${pascal} } from 'src/types';`
@@ -67,8 +70,10 @@ import { CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: '${snake}' })
 export class ${pascal} ${
-  selectedFilesToGenerate.includes('interface') ? `implements I${pascal} ` : ''
-}{
+    selectedFilesToGenerate.includes('interface')
+      ? `implements I${pascal} `
+      : ''
+  }{
   @PrimaryIdentityColumn('${snake}_id')
   id!: number;
 
@@ -105,12 +110,13 @@ const getRelationMapMixin = () => `  ${pascal}: {
   },
 `;
 
-const getRepo = () => `import { Injectable, Provider } from '@nestjs/common';
+const getRepo =
+  () => `import { Injectable, type Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityWithIdRepoImplementation } from 'src/tools';
-import type { Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { DI_${pascal}Repo, type RepoTypes } from '../di/${camel}.repo.di';
 import { ${pascal} } from '../model';
-import { DI_${pascal}Repo, RepoTypes } from '../di/${camel}.repo.di';
 
 @Injectable()
 class ${pascal}Repo
@@ -132,8 +138,8 @@ export const ${pascal}RepoDIProvider: Provider = {
 `;
 
 const getDI_Repo = () => `import {
-  EntityRepoMethodTypes,
-  I${pascal},
+  type EntityRepoMethodTypes,
+  type I${pascal},
   IDefaultIdRepo,
 } from 'src/types';
 

@@ -126,10 +126,10 @@ export * from './di';
 `;
 
 const getUseCase =
-  () => `import { BadRequestException, Injectable, Provider } from '@nestjs/common';
+  () => `import { BadRequestException, Injectable, type Provider } from '@nestjs/common';
 import { messages } from 'src/config';
-import { ${pascal}RepoTypes, DI_${pascal}Repo } from 'src/infrastructure';
 import { getRedundantAndMissingValues } from 'src/tools';
+import { DI_${pascal}Repo, type ${pascal}RepoTypes } from 'src/infrastructure';
 import { DI_${pascal}UseCase } from './di';
 
 @Injectable()
@@ -137,6 +137,7 @@ class ${pascal}UseCase implements DI_${pascal}UseCase {
   constructor(private readonly ${camel}Repo: DI_${pascal}Repo) {}
 
   async getAll(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     search?: string,
   ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]> {
     return await this.${camel}Repo.getAll();
@@ -210,10 +211,11 @@ export const ${pascal}UseCaseProvider: Provider = {
 `;
 
 const getDI_UseCase =
-  () => `import { ${pascal}RepoTypes } from 'src/infrastructure';
+  () => `import type { ${pascal}RepoTypes } from 'src/infrastructure';
 
 export abstract class DI_${pascal}UseCase {
   abstract getAll(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     search?: string,
   ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]>;
 
@@ -258,7 +260,7 @@ import {
   AccessEnum,
   AllowedFor,
   ApiController,
-  AuthorizedOnly,
+  ActiveSessionOnly,
   ValidatedBody,
 } from 'src/tools';
 import {
@@ -292,7 +294,7 @@ export class ${pascal}Controller {
     type: Number,
   })
   @Get('/batch')
-  @AuthorizedOnly()
+  @ActiveSessionOnly()
   async getAll${pascal}sOrFindByIds(
     @Query('search') search?: string | undefined,
     @Query(
@@ -311,7 +313,7 @@ export class ${pascal}Controller {
   }
 
   @Get('/:${camel}Id')
-  @AuthorizedOnly()
+  @ActiveSessionOnly()
   async getOne${pascal}ById(
     @Param('${camel}Id', ParseIntPipe) ${camel}Id: number,
   ): Promise<GetOne${pascal}ByIdResponseDTO> {
@@ -383,10 +385,9 @@ export class ${pascal}Controller {
 }
 `;
 
-const getCreateOneOrManyRequestDTO = () => `import {
-  AllowToBeNotDefinedOrDefinedAsNullButFailIfEqualsUndefined,
-  NestedArrayDTO,
-} from '../../../../../tools/shared';
+const getCreateOneOrManyRequestDTO =
+  () => `// here AllowToBeNotDefinedOrDefinedAsNullButFailIfEqualsUndefined is recommended
+import { NestedArrayDTO } from '../../../../../tools/shared';
 
 export class CreateOne${pascal}RequestDTO {
 }
@@ -398,11 +399,9 @@ export class CreateMany${pascal}sRequestDTO {
 `;
 
 const getUpdateOneOrManyRequestDTO =
-  () => `import { IsPositive, IsString } from 'class-validator';
-import {
-  AllowToBeNotDefinedOrDefinedAsNullButFailIfEqualsUndefined,
-  NestedArrayDTO,
-} from '../../../../../tools/shared';
+  () => `import { IsPositive, IsString, IsOptional } from 'class-validator';
+// here AllowToBeNotDefinedOrDefinedAsNullButFailIfEqualsUndefined is recommended
+import { NestedArrayDTO } from '../../../../../tools/shared';
 
 export class UpdatedPartOfOne${pascal}DTO {
 }
@@ -420,11 +419,8 @@ export class UpdateMany${pascal}sRequestDTO {
 
 const getCreateOneOrManyResponseDTO =
   () => `import { IsPositive } from 'class-validator';
-import {
-  AllowToBeNullButFailIfNotDefinedOrEqualsUndefined,
-  IsDateConverted,
-  NestedArrayDTO,
-} from '../../../../../tools/shared';
+// here AllowToBeNullButFailIfNotDefinedOrEqualsUndefined is recommended
+import { IsDateConverted, NestedArrayDTO } from '../../../../../tools/shared';
 
 export class CreateOne${pascal}ResponseDTO {
   @IsPositive()
@@ -445,11 +441,8 @@ export class CreateMany${pascal}sResponseDTO {
 
 const getFindOneOrManyResponseDTO =
   () => `import { IsPositive } from 'class-validator';
-import {
-  AllowToBeNullButFailIfNotDefinedOrEqualsUndefined,
-  IsDateConverted,
-  NestedArrayDTO,
-} from '../../../../../tools/shared';
+// here AllowToBeNullButFailIfNotDefinedOrEqualsUndefined is recommended
+import { IsDateConverted, NestedArrayDTO } from '../../../../../tools/shared';
 
 export class GetOne${pascal}ByIdResponseDTO {
   @IsPositive()

@@ -11,9 +11,9 @@ import type { IAppInitConfigMap } from 'src/config';
 import { ConfigKeys, DI_TypedConfigService, messages } from 'src/config';
 import { ALLOWED_SCOPES_KEY, AccessEnum } from 'src/tools';
 import type {
-  AllowedForArgs,
   AuthorizedRequest,
   RequestWithValidRefreshToken,
+  UserLevelScopes,
 } from 'src/types';
 import {
   ACCESS_TOKEN_COOKIE_NAME,
@@ -35,35 +35,19 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
     this.IS_DEVELOPMENT = configService.get(ConfigKeys.IS_DEVELOPMENT);
   }
 
-  private getRouteScopesAndRequestFrom(
-    context: ExecutionContext,
-  ): [AllowedForArgs | undefined, ProbablyAuthorizedRequested] {
-    return [
-      this.reflector.get<AllowedForArgs>(
-        ALLOWED_SCOPES_KEY,
-        context.getHandler(),
-      ),
-
-      context.getArgByIndex<ProbablyAuthorizedRequested>(0),
-    ];
-  }
-
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const [allScopes, request] = this.getRouteScopesAndRequestFrom(context);
 
     if (!allScopes || allScopes.length === 0) return true;
 
-    const routeLevelScopes = allScopes.filter((scope) =>
-      Object.values(EndpointAccess).includes(scope as string),
-    ) as EndpointAccess[];
+    const routeLevelScopes = allScopes.filter(
+      (scope): scope is EndpointAccess =>
+        Object.values(EndpointAccess).includes(scope as string),
+    );
 
-    if (routeLevelScopes.length !== 1)
-      throw new UnauthorizedException(
-        'You either set 1 and only 1 route level scope for endpoint or you set no scopes at all',
-      );
+    this.#assertOnlyOneRouteLevelScope(routeLevelScopes);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const routeLevelScope = routeLevelScopes[0]!;
+    const routeLevelScope = routeLevelScopes[0];
 
     if (routeLevelScope === AccessEnum.PUBLIC) return true;
 
@@ -76,7 +60,7 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
 
     const signedCookies: unknown = request.signedCookies;
 
-    const isObj = (o: unknown): o is Record<string, any> =>
+    const isObj = (o: unknown): o is Record<string, string> =>
       typeof o === 'object' && o !== null;
 
     if (routeLevelScope === AccessEnum.UNAUTHORIZED_ONLY) {
@@ -147,6 +131,33 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
     // return false;
     // console.log('userLevelScopes:', userLevelScopes);
     return true;
+  }
+
+  #assertOnlyOneRouteLevelScope(
+    routeScopes: EndpointAccess[],
+  ): asserts routeScopes is [EndpointAccess] {
+    if (routeScopes.length !== 1) {
+      console.log('routeLevelScopes: ', routeScopes);
+      throw new UnauthorizedException(
+        'You either set 1 and only 1 route level scope for endpoint or you set no scopes at all',
+      );
+    }
+  }
+
+  private getRouteScopesAndRequestFrom(
+    context: ExecutionContext,
+  ): [
+    [EndpointAccess, ...UserLevelScopes[]] | undefined,
+    ProbablyAuthorizedRequested,
+  ] {
+    return [
+      this.reflector.get<[EndpointAccess, ...UserLevelScopes[]]>(
+        ALLOWED_SCOPES_KEY,
+        context.getHandler(),
+      ),
+
+      context.getArgByIndex<ProbablyAuthorizedRequested>(0),
+    ];
   }
 }
 

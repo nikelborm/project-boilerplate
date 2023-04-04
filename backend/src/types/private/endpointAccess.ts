@@ -9,6 +9,4 @@ export enum EndpointAccess {
   DEVELOPMENT_ONLY = 'developmentOnly',
 }
 
-export type IAccessEnum = AccessScopeType | EndpointAccess;
-export type UserLevelScopes = AccessScopeType | AccessScopeType[];
-export type AllowedForArgs = (EndpointAccess | UserLevelScopes)[];
+export type UserLevelScopes = AccessScopeType /* | AccessScopeType[] */;

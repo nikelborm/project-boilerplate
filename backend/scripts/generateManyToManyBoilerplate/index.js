@@ -79,7 +79,9 @@ const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
 
 const getIntermediateModel =
-  () => `import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+  () => `/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ${secondPascal}, ${firstPascal} } from '.';
 ${
   selectedFilesToGenerate.includes('interfaces')
@@ -138,12 +140,14 @@ export class I${firstPascal}To${secondPascal} {
 `;
 
 const getIntermediateModelRepo =
-  () => `import { Injectable, Provider } from '@nestjs/common';
+  () => `import { Injectable, type Provider } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityWithIdentityRepoImplementation } from 'src/tools';
 import { Repository } from 'typeorm';
-import { DI_${firstPascal}To${secondPascal}Repo } from '../di';
-import { RepoTypes } from '../di/${firstCamel}To${secondPascal}.repo.di';
+import {
+  DI_${firstPascal}To${secondPascal}Repo,
+  type RepoTypes,
+} from '../di/${firstCamel}To${secondPascal}.repo.di';
 import { ${firstPascal}To${secondPascal} } from '../model';
 
 @Injectable()
@@ -166,9 +170,9 @@ export const ${firstPascal}To${secondPascal}RepoDIProvider: Provider = {
 `;
 
 const getIntermediateModelDI_Repo = () => `import {
-  EntityRepoMethodTypes,
+  type EntityRepoMethodTypes,
+  type I${firstPascal}To${secondPascal},
   IDefaultIdentityRepo,
-  I${firstPascal}To${secondPascal},
 } from 'src/types';
 
 export abstract class DI_${firstPascal}To${secondPascal}Repo extends IDefaultIdentityRepo<RepoTypes> {}
