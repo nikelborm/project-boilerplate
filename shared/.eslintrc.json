@@ -31,7 +31,7 @@
       "error",
       "always"
     ],
-    "@typescript-eslint/lines-between-class-members": "warn",
+    "@typescript-eslint/lines-between-class-members": "error",
     "no-restricted-syntax": "off",
     "max-classes-per-file": "off",
     "camelcase": "warn",

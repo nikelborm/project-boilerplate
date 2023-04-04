@@ -15,7 +15,9 @@ export const updateManyPlain =
   >(
     entitiesToBeUpdated: ProvidedPlainEntityToBeUpdated[],
   ): Promise<ReturnType[]> => {
-    const updatedEntities = await repo.save(entitiesToBeUpdated as any);
+    const updatedEntities = await repo.save(
+      entitiesToBeUpdated as unknown as Entity[],
+    );
     return updatedEntities as unknown as ReturnType[];
   };
 
@@ -33,6 +35,6 @@ export const updateOnePlain =
     identity: Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'],
     partToUpdate: ProvidedUpdatedPart,
   ): Promise<ReturnType> => {
-    await repo.update(identity, partToUpdate as any);
+    await repo.update(identity, partToUpdate as unknown as Entity);
     return { ...identity, ...partToUpdate } as unknown as ReturnType;
   };

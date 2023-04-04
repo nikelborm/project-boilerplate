@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { assertMockScriptNameIsCorrect } from 'src/config/tools/assertMockScriptNameIsCorrect';
+import { assertMockScriptNameIsCorrect } from 'src/tools';
 import {
   DI_UserUseCase,
   DI_UserToAccessScopeRepo,
@@ -26,6 +26,7 @@ export class MockDataUseCase {
 
     console.log(`\n\n\nFILLING STARTED: ${scriptName}\n`);
 
+    // eslint-disable-next-line security/detect-object-injection
     await this[scriptName]();
 
     console.log('\nDATABASE FILLED SUCCESSFULLY\n\n\n');
@@ -43,10 +44,10 @@ export class MockDataUseCase {
       email: 'asd@asd.asd',
       lastName: 'Такой-тов',
       firstName: 'Такой-то',
-      patronymic: 'Такой-тович',
       nickname: 'asdasdasd',
-      avatarURL: 'http://google.com',
+      avatarURL: 'https://google.com',
       gender: 'male',
+      patronymic: 'Такой-тович',
       password: 'asdasdasd',
     });
 

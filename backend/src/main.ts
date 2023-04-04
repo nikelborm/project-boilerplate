@@ -8,27 +8,26 @@ import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { AppModule } from './app.module';
-import {
-  BootstrapMode,
-  ConfigKeys,
-  IAppConfigMap,
-  DI_TypedConfigService,
-} from './config';
+import * as cookieParser from 'cookie-parser';
+import type { IAppInitConfigMap, ISecretConfigMap } from './config';
+import { BootstrapMode, ConfigKeys, DI_TypedConfigService } from './config';
 import { MockDataUseCase } from './mock';
 import { WebsocketGatewayAdapter } from './tools';
+import { ShutdownSignal } from '@nestjs/common';
 
 const SKIP_MOCK = true;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    forceCloseConnections: true,
   });
 
   app.setGlobalPrefix('/api');
 
-  const configService: DI_TypedConfigService<IAppConfigMap> = app.get(
-    DI_TypedConfigService,
-  );
+  const configService: DI_TypedConfigService<
+    IAppInitConfigMap & ISecretConfigMap
+  > = app.get(DI_TypedConfigService);
 
   if (configService.get(ConfigKeys.IS_DEVELOPMENT))
     configService.logToConsole();
@@ -38,6 +37,7 @@ async function bootstrap(): Promise<void> {
   const markerFilePath = join(resolve(), 'wasMockScriptCalledOnStartup');
 
   // const wasMockScriptCalledOnStartup = false;
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   const wasMockScriptCalledOnStartup = existsSync(markerFilePath);
   console.log('wasMockScriptCalledOnStartup: ', wasMockScriptCalledOnStartup);
 
@@ -52,6 +52,7 @@ async function bootstrap(): Promise<void> {
 
     await mockUseCase.executeMock(scriptName);
 
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     await writeFile(markerFilePath, '');
   }
 
@@ -68,7 +69,7 @@ async function bootstrap(): Promise<void> {
         .setTitle('Project API')
         .setVersion('1.0')
         .addBearerAuth()
-        .setDescription(`Project API endpoints`)
+        .setDescription('Project API endpoints')
         .build();
 
       const document = SwaggerModule.createDocument(app, config);
@@ -78,8 +79,10 @@ async function bootstrap(): Promise<void> {
 
     app.use(json({ limit: '3mb' }));
     app.use(urlencoded({ limit: '3mb', extended: true }));
+    app.use(cookieParser(configService.get(ConfigKeys.COOKIE_SIGN_KEY_SECRET)));
 
     app.useWebSocketAdapter(new WebsocketGatewayAdapter(app, configService));
+    app.enableShutdownHooks([ShutdownSignal.SIGTERM, ShutdownSignal.SIGINT]);
     await app.listen(port);
   }
 }

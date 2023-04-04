@@ -5,7 +5,8 @@ import {
   ApiController,
   ValidatedBody,
 } from 'src/tools';
-import { EmptyResponseDTO, UpdateAccessScopeDTO } from 'src/types';
+import type { EmptyResponseDTO } from 'src/types';
+import { UpdateAccessScopeDTO } from 'src/types';
 import { DI_AccessScopeUseCase } from './di';
 
 @ApiController('accessScope')

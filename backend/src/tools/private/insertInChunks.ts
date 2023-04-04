@@ -17,7 +17,7 @@ export async function insertInChunks<T>(
     },
     callAfterChunk: async () => {
       await queryRunner.query(
-        `INSERT INTO "${tableName}" VALUES ${rowsToInsert}`,
+        `INSERT INTO "${tableName}" VALUES ${rowsToInsert.join()}`,
       );
       rowsToInsert = [];
     },

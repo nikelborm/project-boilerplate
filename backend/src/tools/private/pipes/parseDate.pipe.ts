@@ -1,4 +1,5 @@
-import { BadRequestException, PipeTransform } from '@nestjs/common';
+import type { PipeTransform } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { messages } from 'src/config';
 
 export class ParseDatePipe implements PipeTransform {

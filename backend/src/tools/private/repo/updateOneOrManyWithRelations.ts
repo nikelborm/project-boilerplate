@@ -15,7 +15,9 @@ export const updateManyWithRelations =
   >(
     entitiesToBeUpdated: ProvidedEntityWithRelationsToBeUpdated[],
   ): Promise<ReturnType[]> => {
-    const updatedEntities = await repo.save(entitiesToBeUpdated as any);
+    const updatedEntities = await repo.save(
+      entitiesToBeUpdated as unknown as Entity[],
+    );
     return updatedEntities as unknown as ReturnType[];
   };
 
@@ -29,6 +31,8 @@ export const updateOneWithRelations =
   >(
     entityToBeUpdated: ProvidedEntityWithRelationsToBeUpdated,
   ): Promise<ReturnType> => {
-    const updatedEntity = await repo.save(entityToBeUpdated as any);
+    const updatedEntity = await repo.save(
+      entityToBeUpdated as unknown as Entity[],
+    );
     return updatedEntity as unknown as ReturnType;
   };

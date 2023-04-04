@@ -4,6 +4,7 @@ import { combineDecorators } from '../combineDecorators';
 export function AllowToBeNullButFailIfNotDefinedOrEqualsUndefined(): PropertyDecorator {
   return (target, propertyKey) =>
     combineDecorators(
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unsafe-member-access
       ValidateIf((dto) => dto[propertyKey] !== null),
       NotEquals(undefined), // Fails if equals undefined or propertyKey not in object keys
     )(target, propertyKey);
@@ -19,6 +20,7 @@ export function AllowToBeNotDefinedOrDefinedAsNullButFailIfEqualsUndefined(): Pr
             (
               !(propertyKey in dto) ||
               /* skip validation if property is null */
+              // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unsafe-member-access
               dto[propertyKey] === null
             )
           ),

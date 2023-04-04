@@ -2,6 +2,7 @@ export * from './authedRequest';
 export * from './endpointAccess';
 export * from './entityRepoMethodTypes';
 export * from './errors';
+export * from './googleOAuthTokenSecret.dto';
 export * from './relationMap';
 export * from './relationMapMaximizedType';
 export * from './repo';

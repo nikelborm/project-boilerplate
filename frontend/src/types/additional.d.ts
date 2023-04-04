@@ -3,10 +3,14 @@
 /// <reference types="react-dom" />
 
 type Styles = Record<string, string>;
+
+// https://dev.to/krzysztofzuraw/how-to-type-nextjs-env-variables-in-typescript-50cg
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production';
     readonly PUBLIC_URL: string;
+    readonly COOKIE_SIGN_KEY: string;
+    readonly AUTH_JWT_SECRET: string;
   }
 }
 

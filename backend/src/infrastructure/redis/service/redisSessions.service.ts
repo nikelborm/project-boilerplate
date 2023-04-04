@@ -1,12 +1,10 @@
-import { Inject, Injectable, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DI_MASTER_REDIS_CLIENT } from '../di';
 import { DI_RedisSessionsService } from '../di/redisSessions.service.di';
-import { ns_key } from '../tools';
-import {
-  RedisClientTransactionBuilder,
-  RedisMasterClient,
-  RedisNamespaceEnum,
-} from '../types';
+import { nsKey } from '../tools';
+import type { RedisClientTransactionBuilder } from '../types';
+import { RedisMasterClient, RedisNamespaceEnum } from '../types';
 
 @Injectable()
 class RedisSessionsService implements DI_RedisSessionsService {
@@ -147,10 +145,10 @@ class RedisSessionsService implements DI_RedisSessionsService {
   }
 
   private uiKey = (userId: number): string =>
-    ns_key(RedisNamespaceEnum.WHITELISTED_USER_ID_TO_SESSION_UUID, userId);
+    nsKey(RedisNamespaceEnum.WHITELISTED_USER_ID_TO_SESSION_UUID, userId);
 
   private ssKey = (sessionUUID: string): string =>
-    ns_key(
+    nsKey(
       RedisNamespaceEnum.WHITELISTED_USER_SESSION_UUID_TO_TOKEN_PAIR,
       sessionUUID,
     );

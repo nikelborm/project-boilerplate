@@ -4,7 +4,7 @@ import type {
   TypeormReturnTypeRequiredNullable,
 } from 'src/types';
 
-export abstract class IDefaultUniversalEntityRepo<
+export abstract class IDefaultRepo<
   Types extends EntityRepoMethodTypes<Entity, Config>,
   Entity extends Record<string, any> = Types['Entity'],
   Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
@@ -70,11 +70,11 @@ export abstract class IDefaultUniversalEntityRepo<
   >;
 }
 
-export abstract class IDefaultEntityWithIdRepo<
+export abstract class IDefaultIdRepo<
   Types extends EntityRepoMethodTypes<Entity, Config>,
   Entity extends { id: number } = Types['Entity'],
   Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
-> extends IDefaultUniversalEntityRepo<Types> {
+> extends IDefaultRepo<Types> {
   abstract findOneById(
     id: number,
   ): Promise<Types['Public']['SelectedOnePlainEntity'] | null>;
@@ -87,11 +87,11 @@ export abstract class IDefaultEntityWithIdRepo<
   abstract deleteManyByIds(ids: number[]): Promise<void>;
 }
 
-export abstract class IDefaultEntityWithIdentityRepo<
+export abstract class IDefaultIdentityRepo<
   Types extends EntityRepoMethodTypes<Entity, Config>,
   Entity extends Record<string, any> = Types['Entity'],
   Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
-> extends IDefaultUniversalEntityRepo<Types> {
+> extends IDefaultRepo<Types> {
   abstract findOneByIdentity(
     identity: Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'],
   ): Promise<Types['Public']['SelectedOnePlainEntity'] | null>;

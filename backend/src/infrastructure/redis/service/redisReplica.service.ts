@@ -1,4 +1,5 @@
-import { Inject, Injectable, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DI_RedisReplicaService, DI_REPLICA_REDIS_CLIENT } from '../di';
 import { RedisReplicaClient } from '../types';
 

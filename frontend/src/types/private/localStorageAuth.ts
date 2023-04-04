@@ -1,4 +1,4 @@
-import { UserAccessTokenPayload, UserRefreshTokenPayload } from '../shared';
+import { AccessTokenPayloadDTO, RefreshTokenPayloadDTO } from '../shared';
 
 export type ISession =
   | { isAuthed: false }
@@ -6,10 +6,10 @@ export type ISession =
       isAuthed: true;
       accessToken: {
         text: string;
-        payload: UserAccessTokenPayload;
+        payload: AccessTokenPayloadDTO;
       };
       refreshToken: {
         text: string;
-        payload: UserRefreshTokenPayload;
+        payload: RefreshTokenPayloadDTO;
       };
     };

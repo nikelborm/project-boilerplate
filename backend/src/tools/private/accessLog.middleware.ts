@@ -1,4 +1,5 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import type { NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 
 @Injectable()
@@ -16,7 +17,9 @@ export class AccessLogMiddleware implements NestMiddleware {
       const contentLength = response.get('content-length');
 
       this.logger.log(
-        `${method} ${url} response_code: ${statusCode} content_length: ${contentLength} from ${ip} ${userAgent}`,
+        `${method} ${url} response_code={${statusCode}} ${
+          contentLength ? `content_length={${contentLength}}` : ''
+        } from ${ip} ${userAgent}`,
       );
     });
 

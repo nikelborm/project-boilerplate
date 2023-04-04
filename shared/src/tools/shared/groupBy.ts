@@ -21,5 +21,16 @@ export function groupByKey<
   Item extends Record<string, any>,
   Key extends keyof Item,
 >(items: Item[], key: Key): Map<Item[Key], Item[]> {
-  return groupByKeyGetter(items, (item) => item[key]);
+  if (['constructor', 'toString'].includes(key as unknown as string))
+    throw new Error('Forbidden to use constructor key');
+  return groupByKeyGetter(items, (item) => {
+    // eslint-disable-next-line security/detect-object-injection
+    const groupHeader = item[key];
+    if (typeof groupHeader !== 'string' && typeof groupHeader !== 'number')
+      throw new Error(
+        'groupByKey keyGetter returns value that cannot be key (like null or undefined or object)',
+      );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return groupHeader;
+  });
 }

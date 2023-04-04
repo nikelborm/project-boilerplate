@@ -1,7 +1,7 @@
-import {
+import type {
   BasicUserInfoWithNullableAvatarWithIdDTO,
   CreateUserRequestDTO,
-  UserAuthInfo,
+  AccessTokenUserInfoDTO,
 } from 'src/types';
 
 export abstract class DI_UserUseCase {
@@ -9,7 +9,9 @@ export abstract class DI_UserUseCase {
     search?: string,
   ): Promise<BasicUserInfoWithNullableAvatarWithIdDTO[]>;
 
-  abstract getOneByIdWithAccessScopes(userId: number): Promise<UserAuthInfo>;
+  abstract getOneByIdAsAccessTokenPayload(
+    userId: number,
+  ): Promise<AccessTokenUserInfoDTO>;
 
   abstract createManyUsers(
     users: CreateUserRequestDTO[],

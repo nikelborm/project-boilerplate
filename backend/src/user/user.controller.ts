@@ -3,18 +3,20 @@ import {
   AccessEnum,
   AllowedFor,
   ApiController,
-  AuthorizedOnly,
+  ActiveSessionOnly,
   ValidatedBody,
 } from 'src/tools';
-import {
-  AuthedRequest,
+import type {
   CreateManyUsersResponseDTO,
   CreateOneUserResponseDTO,
+  EmptyResponseDTO,
+  FindManyUsersResponseDTO,
+} from 'src/types';
+import {
+  AuthorizedRequest,
   CreateUserRequestDTO,
   CreateUsersRequestDTO,
   DeleteEntityByIdDTO,
-  EmptyResponseDTO,
-  FindManyUsersResponseDTO,
   SetMyPasswordDTO,
 } from 'src/types';
 import { DI_UserUseCase } from './di';
@@ -24,7 +26,7 @@ export class UserController {
   constructor(private readonly userUseCase: DI_UserUseCase) {}
 
   @Get('all')
-  @AuthorizedOnly()
+  @ActiveSessionOnly()
   async findManyUsers(
     @Query('search') search?: string,
   ): Promise<FindManyUsersResponseDTO> {
@@ -57,9 +59,9 @@ export class UserController {
   }
 
   @Post('setMyPassword')
-  @AuthorizedOnly()
+  @ActiveSessionOnly()
   async setMyPassword(
-    @Req() { user }: AuthedRequest,
+    @Req() { user }: AuthorizedRequest,
     @ValidatedBody()
     { password }: SetMyPasswordDTO,
   ): Promise<EmptyResponseDTO> {

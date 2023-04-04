@@ -1,2 +1,2 @@
-export * from './accessToken.guard';
+export * from './JWTPairAndRouteAccess.guard';
 export * from './localAuth.guard';

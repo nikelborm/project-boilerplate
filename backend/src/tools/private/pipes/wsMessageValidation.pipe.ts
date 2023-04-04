@@ -1,9 +1,5 @@
-import {
-  ArgumentMetadata,
-  HttpException,
-  ValidationPipe,
-  ValidationPipeOptions,
-} from '@nestjs/common';
+import type { ArgumentMetadata, ValidationPipeOptions } from '@nestjs/common';
+import { HttpException, ValidationPipe } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { validationPipeConfig } from 'src/config';
 
@@ -17,6 +13,7 @@ export class WSMessageValidationPipe extends ValidationPipe {
     metadata: ArgumentMetadata,
   ): Promise<any> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return await super.transform(value, metadata);
     } catch (e: any) {
       console.log('WSMessageValidationPipe error: ', e);

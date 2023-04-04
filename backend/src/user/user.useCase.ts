@@ -1,18 +1,21 @@
-import { BadRequestException, Injectable, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
-import {
-  ConfigKeys,
-  IAppConfigMap,
-  messages,
-  DI_TypedConfigService,
-} from 'src/config';
+import type { ISecretConfigMap } from 'src/config';
+import { ConfigKeys, messages, DI_TypedConfigService } from 'src/config';
 import { DI_UserRepo } from 'src/infrastructure';
-import { isQueryFailedError } from 'src/tools';
-import {
+import { isQueryFailedError, validate } from 'src/tools';
+import type {
   BasicUserInfoWithNullableAvatarWithIdDTO,
   CreateUserRequestDTO,
+} from 'src/types';
+import {
+  AccessTokenUserInfoDTO,
   PG_UNIQUE_CONSTRAINT_VIOLATION,
-  UserAuthInfo,
 } from 'src/types';
 import { DI_UserUseCase } from './di';
 
@@ -22,10 +25,10 @@ class UserUseCase implements DI_UserUseCase {
 
   constructor(
     private readonly userRepo: DI_UserRepo,
-    configService: DI_TypedConfigService<IAppConfigMap>,
+    configService: DI_TypedConfigService<ISecretConfigMap>,
   ) {
     this.USER_PASSWORD_HASH_SALT = configService.get(
-      ConfigKeys.USER_PASSWORD_HASH_SALT,
+      ConfigKeys.USER_PASSWORD_HASH_SALT_SECRET,
     );
   }
 
@@ -35,19 +38,29 @@ class UserUseCase implements DI_UserUseCase {
     return await this.userRepo.findMany(search);
   }
 
-  async getOneByIdWithAccessScopes(userId: number): Promise<UserAuthInfo> {
+  async getOneByIdAsAccessTokenPayload(
+    userId: number,
+  ): Promise<AccessTokenUserInfoDTO> {
     const user = await this.userRepo.getOneByIdWithAccessScopes(userId);
     if (!user)
       throw new BadRequestException(
         messages.repo.common.cantGetNotFoundById(userId, 'user'),
       );
+
+    const { errors } = validate(user, AccessTokenUserInfoDTO);
+
+    if (errors.length)
+      throw new InternalServerErrorException(
+        messages.auth.doesNotSatisfyPayloadOfAccessToken(user),
+      );
+
     return user;
   }
 
   async createManyUsers(
     users: CreateUserRequestDTO[],
   ): Promise<BasicUserInfoWithNullableAvatarWithIdDTO[]> {
-    return await Promise.all(users.map(this.createUser));
+    return await Promise.all(users.map((user) => this.createUser(user)));
   }
 
   async createUser(

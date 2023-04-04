@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { DBModule } from 'src';
 import { TypedConfigModule } from 'src/config';
 import { UserController } from '../user.controller';

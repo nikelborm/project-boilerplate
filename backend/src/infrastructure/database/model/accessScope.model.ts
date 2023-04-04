@@ -1,5 +1,6 @@
 import { PrimaryIdentityColumn } from 'src/tools';
-import { AccessScopeType, IAccessScope } from 'src/types';
+import type { IAccessScope } from 'src/types';
+import { AccessScopeType } from 'src/types';
 import {
   Column,
   CreateDateColumn,

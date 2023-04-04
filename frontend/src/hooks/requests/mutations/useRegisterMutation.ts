@@ -1,5 +1,5 @@
 import { useMutation } from 'react-query';
-import { RegisterUserResponseDTO, CreateUserRequestDTO } from '@/types/shared';
+import { AuthTokenPairDTO, CreateUserRequestDTO } from '@/types/shared';
 import { customFetch } from '@/tools';
 
 export function useRegistrationMutation() {
@@ -11,7 +11,7 @@ export function useRegistrationMutation() {
             needsAccessToken: false,
             needsJsonResponseBodyParsing: true,
             requestDTOclass: CreateUserRequestDTO,
-            responseDTOclass: RegisterUserResponseDTO,
+            responseDTOclass: AuthTokenPairDTO,
             body: user,
           })
         : Promise.reject(new Error('Passwords does not match!')),

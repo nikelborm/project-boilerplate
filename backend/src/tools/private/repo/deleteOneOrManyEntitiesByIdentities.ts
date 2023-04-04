@@ -2,7 +2,7 @@ import type {
   EntityRepoMethodTypes,
   EntityRepoMethodTypesConfig,
 } from 'src/types';
-import type { Repository } from 'typeorm';
+import type { FindOptionsWhere, Repository } from 'typeorm';
 
 export const deleteEntityByIdentity =
   <Entity extends Record<string, any>>(repo: Repository<Entity>) =>
@@ -19,5 +19,5 @@ export const deleteManyEntitiesByIdentities =
   async <Types extends EntityRepoMethodTypes<Entity, Config>>(
     identities: Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'][],
   ): Promise<void> => {
-    await repo.delete(identities as any);
+    await repo.delete(identities as unknown as FindOptionsWhere<Entity>);
   };

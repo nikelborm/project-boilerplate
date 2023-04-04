@@ -1,8 +1,8 @@
-export * from './redis.module';
 export {
   DI_RedisMasterService,
-  DI_RedisSessionsService,
   DI_RedisReplicaService,
+  DI_RedisSessionsService,
 } from './di';
-export { RedisNamespaceEnum } from './types';
+export * from './redis.module';
 export { getDefaultConfiguredRedisModule } from './tools';
+export { RedisNamespaceEnum } from './types';

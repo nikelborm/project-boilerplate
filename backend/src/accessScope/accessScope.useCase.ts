@@ -1,9 +1,5 @@
-import {
-  Injectable,
-  OnModuleDestroy,
-  OnModuleInit,
-  Provider,
-} from '@nestjs/common';
+import type { OnModuleDestroy, OnModuleInit, Provider } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { UpdateAccessScopeDTO } from 'src/types';
 import { DI_AccessScopeRepo } from '../infrastructure';
 import { DI_AccessScopeUseCase } from './di/accessScope.useCase.di';

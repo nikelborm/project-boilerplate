@@ -9,7 +9,7 @@ export function NestedDTO<T>(
 ): PropertyDecorator {
   return combineDecorators(
     IsDefined(),
-    ValidateNested(),
     Type(DTOClassConstructor),
+    ValidateNested(),
   );
 }

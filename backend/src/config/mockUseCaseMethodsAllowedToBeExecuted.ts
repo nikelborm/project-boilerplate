@@ -1,9 +1,7 @@
-import type { IAppConfigMap, ConfigKeys } from './types';
+import type { IAppInitConfigMap, ConfigKeys } from './types';
 
-const allowedMethods: IAppConfigMap[ConfigKeys.MOCK_SCRIPT_NAME][] = [
+const allowedMethods: IAppInitConfigMap[ConfigKeys.MOCK_SCRIPT_NAME][] = [
   'mockUserAndAdminAccessScope',
 ];
 
-export const mockUseCaseMethodsAllowedToBeExecuted: Set<string> = new Set(
-  allowedMethods,
-);
+export const mockUseCaseMethodsAllowedToBeExecuted = new Set(allowedMethods);

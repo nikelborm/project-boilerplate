@@ -2,26 +2,18 @@
 # so you need to add ./backend/ prefix to file names
 
 
-FROM nikelborm/node as prepare_back_dev_deps
+FROM nikelborm/node as prepare_back_deps
 
 COPY ./backend/package.json ./backend/yarn.lock ./
 # see node.Dockerfile for this RUN details
+# I intentionally removed entire stage (which is dumb copy) with --production to reuse cache of development inside prod builds
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile
 COPY ./backend/tsconfig.json ./backend/tsconfig.build.json ./backend/.prettierrc ./backend/.eslintrc.js ./backend/nest-cli.json ./
 COPY ./backend/scripts scripts/
 
 
-FROM nikelborm/node as prepare_back_prod_deps
 
-COPY ./backend/package.json ./backend/yarn.lock ./
-# see node.Dockerfile for this RUN details
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=private yarn install --network-timeout 600000 --frozen-lockfile --production
-COPY ./backend/tsconfig.json ./backend/tsconfig.build.json ./backend/.prettierrc ./backend/.eslintrc.js ./backend/nest-cli.json ./
-COPY ./backend/scripts scripts/
-
-
-
-FROM prepare_back_prod_deps as prepare_back_prod_deps_and_source
+FROM prepare_back_deps as prepare_back_prod_deps_and_source
 
 COPY ./backend/src/ /app/src/
 
@@ -36,6 +28,9 @@ COPY ./shared/src/tools/shared/ /app/src/tools/shared/
 
 
 FROM prepare_back_prod_deps_and_source as messy_production
+
+# TODO: test https://blog.logrocket.com/getting-started-with-nestjs-vite-esbuild/
+# TODO: optimize images https://github.com/vercel/next.js/blob/canary/docs/basic-features/image-optimization.md
 
 RUN nest build; \
   ./node_modules/.bin/ncc build ./dist/main.js -o ./dist2 --no-source-map-register --minify --no-cache
@@ -61,13 +56,13 @@ CMD [ "node", "dist/index.js" ]
 
 
 
-FROM prepare_back_prod_deps_and_source as migration_container
+FROM prepare_back_prod_deps_and_source as service_helper_container
 
 CMD ["/bin/sh", "-c", "exec /bin/sh -c 'trap : TERM INT; sleep 9999999999d & wait'"]
 
 
 
-FROM prepare_back_dev_deps as development
+FROM prepare_back_deps as development
 
 # src and [types|tools]/shared are both bind-mounted in docker-compose file before running CMD
 # there is no need to copy src before running CMD https://stackoverflow.com/questions/69308389/docker-is-volume-mounted-before-running-cmd

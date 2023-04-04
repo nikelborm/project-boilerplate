@@ -1,21 +1,29 @@
+import type { CookieOptions } from 'express';
 import type { MockDataUseCase } from 'src/mock';
+import type { GoogleOAuthTokenSecretWrapperDTO } from 'src/types';
 import type { LoggerOptions } from 'typeorm';
 import type { BootstrapMode } from './bootstrapMode';
 import type { ConfigKeys } from './configKeys';
 
-export type IAppConfigMap = {
+export type IAppInitConfigMap = {
   [ConfigKeys.BOOTSTRAP_MODE]: BootstrapMode;
   [ConfigKeys.IS_DEVELOPMENT]: boolean;
-  [ConfigKeys.ENABLE_SWAGGER_IN_PROD]: boolean;
   [ConfigKeys.IS_PRODUCTION]: boolean;
-  [ConfigKeys.IS_MIGRATION_ONLY_MODE]: boolean;
+  [ConfigKeys.TOKEN_PAIR_COOKIE_CONFIG]: CookieOptions;
+  [ConfigKeys.IS_SERVICE_HELPER_ONLY_MODE]: boolean;
+  [ConfigKeys.ENABLE_SWAGGER_IN_PROD]: boolean;
   [ConfigKeys.MOCK_SCRIPT_NAME]: Exclude<keyof MockDataUseCase, 'executeMock'>;
-  [ConfigKeys.AUTH_JWT_SECRET]: string;
-  [ConfigKeys.USER_PASSWORD_HASH_SALT]: string;
   [ConfigKeys.SERVER_PORT]: number;
   [ConfigKeys.WEB_SOCKET_SERVER_PORT]: number;
   [ConfigKeys.WEB_SOCKET_SERVER_PATH]: string;
-  [ConfigKeys.INVITE_USERS_SIGN_KEY]: string;
+};
+
+export type ISecretConfigMap = {
+  [ConfigKeys.AUTH_JWT_SECRET]: string;
+  [ConfigKeys.USER_PASSWORD_HASH_SALT_SECRET]: string;
+  [ConfigKeys.INVITE_USERS_SIGN_KEY_SECRET]: string;
+  [ConfigKeys.COOKIE_SIGN_KEY_SECRET]: string;
+  [ConfigKeys.GOOGLE_OAUTH_TOKEN_SECRET]: GoogleOAuthTokenSecretWrapperDTO;
 };
 
 export type IDatabaseConfigMap = {

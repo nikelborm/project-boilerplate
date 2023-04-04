@@ -17,11 +17,12 @@ export function remapToIndexedObject<
   U extends T[keyof T],
 >(
   array: T[],
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   getIndexKey = (element: T): E => element['id'],
   getValueForKey: ((element: T) => U) | null = null,
 ): Record<E, U | T> {
   if (getValueForKey === null) {
-    const map: Record<E, T> = Object.create(null);
+    const map = Object.create(null) as Record<E, T>;
 
     for (const element of array) {
       map[getIndexKey(element)] = element;
@@ -29,7 +30,7 @@ export function remapToIndexedObject<
 
     return map;
   }
-  const map: Record<E, U> = Object.create(null);
+  const map = Object.create(null) as Record<E, U>;
 
   for (const element of array) {
     map[getIndexKey(element)] = getValueForKey(element);

@@ -1,6 +1,6 @@
-import type { UserAuthInfo } from '../shared';
+import type { AccessTokenUserInfoDTO } from '../shared';
 
-export interface UserForLoginAttemptValidation extends UserAuthInfo {
+export interface UserForLoginAttemptValidation extends AccessTokenUserInfoDTO {
   salt: string;
   passwordHash: string;
 }

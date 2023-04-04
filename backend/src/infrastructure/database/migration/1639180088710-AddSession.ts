@@ -13,6 +13,6 @@ export class AddSession1639180088710 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "session"`);
+    await queryRunner.query('DROP TABLE "session"');
   }
 }

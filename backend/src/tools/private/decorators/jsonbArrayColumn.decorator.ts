@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import { Column, ColumnOptions } from 'typeorm';
+import type { ColumnOptions } from 'typeorm';
+import { Column } from 'typeorm';
 
 export function JsonbArrayColumn(
   columnName: string,

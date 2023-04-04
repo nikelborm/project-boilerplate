@@ -1,10 +1,7 @@
-import {
-  EntityRepoMethodTypes,
-  IAccessScope,
-  IDefaultEntityWithIdRepo,
-} from 'src/types';
+import type { EntityRepoMethodTypes, IAccessScope } from 'src/types';
+import { IDefaultIdRepo } from 'src/types';
 
-export abstract class DI_AccessScopeRepo extends IDefaultEntityWithIdRepo<RepoTypes> {}
+export abstract class DI_AccessScopeRepo extends IDefaultIdRepo<RepoTypes> {}
 
 export type RepoTypes = EntityRepoMethodTypes<
   IAccessScope,

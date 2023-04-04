@@ -1,24 +1,24 @@
-import { Injectable, Provider, UnauthorizedException } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, timingSafeEqual } from 'crypto';
 import { TokenExpiredError } from 'jsonwebtoken';
-import {
-  ConfigKeys,
-  DI_TypedConfigService,
-  IAppConfigMap,
-  messages,
-} from 'src/config';
+import type { ISecretConfigMap } from 'src/config';
+import { ConfigKeys, DI_TypedConfigService, messages } from 'src/config';
 import { DI_RedisSessionsService } from 'src/infrastructure';
-import {
+import { logObjectNicely, validate } from 'src/tools';
+import type {
+  AccessTokenUserInfoDTO,
   AuthTokenPairDTO,
   CreateUserRequestDTO,
-  RegisterUserResponseDTO,
-  UserAccessTokenPayload,
-  UserAuthInfo,
   UserForLoginAttemptValidation,
-  UserRefreshTokenPayload,
 } from 'src/types';
-import { UniversalTokenPart } from 'src/types/shared/universalTokenPart';
+import { AccessTokenDTO, RefreshTokenDTO } from 'src/types';
+import { AccessTokenPayloadDTO, RefreshTokenPayloadDTO } from 'src/types';
 import { DI_UserUseCase } from 'src/user';
 import { v4 as uuid } from 'uuid';
 import { DI_AuthTokenPairUseCase } from './di';
@@ -26,31 +26,38 @@ import { DI_AuthTokenPairUseCase } from './di';
 @Injectable()
 class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
   private readonly AUTH_JWT_SECRET: string;
+
   private readonly USER_PASSWORD_HASH_SALT: string;
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly userUseCase: DI_UserUseCase,
     private readonly redisSessionsService: DI_RedisSessionsService,
-    configService: DI_TypedConfigService<IAppConfigMap>,
+    configService: DI_TypedConfigService<ISecretConfigMap>,
   ) {
     this.AUTH_JWT_SECRET = configService.get(ConfigKeys.AUTH_JWT_SECRET);
     this.USER_PASSWORD_HASH_SALT = configService.get(
-      ConfigKeys.USER_PASSWORD_HASH_SALT,
+      ConfigKeys.USER_PASSWORD_HASH_SALT_SECRET,
     );
   }
 
   async useRefreshTokenAndGetNewTokenPair(
-    refreshTokenToBeRemoved: string,
+    refreshTokenToBeOverwritten: string,
   ): Promise<AuthTokenPairDTO> {
-    const {
-      sessionUUID,
-      user: { id: userId },
-    } = await this.decodeRefreshTokenAndGetPayload(refreshTokenToBeRemoved);
+    const payload = await this.assertRefreshTokenIsValidAndGetPayload(
+      refreshTokenToBeOverwritten,
+    );
 
-    const user = await this.userUseCase.getOneByIdWithAccessScopes(userId);
+    return await this.useRefreshTokenPayloadAndGetNewTokenPair(payload);
+  }
 
-    const tokenPair = this.createNewTokenPair({
+  async useRefreshTokenPayloadAndGetNewTokenPair({
+    sessionUUID,
+    user: { id: userId },
+  }: RefreshTokenPayloadDTO): Promise<AuthTokenPairDTO> {
+    const user = await this.userUseCase.getOneByIdAsAccessTokenPayload(userId);
+
+    const tokenPair = this.#createNewTokenPair({
       user,
       sessionUUID,
     });
@@ -68,7 +75,9 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
   }
 
   async finishAllSessionsOfLoggedInUser(refreshToken: string): Promise<void> {
-    const { user } = await this.decodeRefreshTokenAndGetPayload(refreshToken);
+    const { user } = await this.assertRefreshTokenIsValidAndGetPayload(
+      refreshToken,
+    );
     await this.redisSessionsService.finishAllSessions(user.id);
   }
 
@@ -80,9 +89,8 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
   }
 
   async finishSessionOfLoggedInUser(refreshToken: string): Promise<void> {
-    const { user, sessionUUID } = await this.decodeRefreshTokenAndGetPayload(
-      refreshToken,
-    );
+    const { user, sessionUUID } =
+      await this.assertRefreshTokenIsValidAndGetPayload(refreshToken);
     await this.redisSessionsService.finishSession({
       userId: user.id,
       sessionUUID,
@@ -98,10 +106,10 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
     await this.redisSessionsService.resetAllAccessTokensOf(userId);
   }
 
-  async validateLoginAttempt(
+  validateLoginAttempt(
     userModel: UserForLoginAttemptValidation,
     password: string,
-  ): Promise<void> {
+  ): void {
     const { passwordHash, salt } = userModel;
 
     const isPasswordCorrect = timingSafeEqual(
@@ -122,20 +130,18 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
 
   async registerNewUserAndLogin(
     createUserDTO: CreateUserRequestDTO,
-  ): Promise<RegisterUserResponseDTO> {
+  ): Promise<AuthTokenPairDTO> {
     const user = await this.userUseCase.createUser(createUserDTO);
-    return {
-      authTokenPair: await this.login({
-        ...user,
-        accessScopes: [],
-      }),
-    };
+    return await this.login({
+      ...user,
+      accessScopes: [],
+    });
   }
 
-  async login(user: UserAuthInfo): Promise<AuthTokenPairDTO> {
+  async login(user: AccessTokenUserInfoDTO): Promise<AuthTokenPairDTO> {
     const sessionUUID = uuid();
 
-    const tokenPair = this.createNewTokenPair({
+    const tokenPair = this.#createNewTokenPair({
       user,
       sessionUUID,
     });
@@ -145,61 +151,56 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
       userId: user.id,
       sessionUUID,
     });
+
     return tokenPair;
   }
 
-  async decodeAuthHeaderWithAccessTokenAndGetPayload(
-    authHeader: string | undefined,
-  ): Promise<UserAccessTokenPayload> {
-    if (!authHeader)
-      throw new UnauthorizedException(messages.auth.missingAuthHeader);
-
-    const [type, accessToken] = authHeader.split(' ');
-
-    if (type !== 'Bearer')
-      throw new UnauthorizedException(messages.auth.incorrectTokenType);
-
-    if (!accessToken)
-      throw new UnauthorizedException(messages.auth.missingToken);
-
-    return await this.decodeAccessTokenAndGetPayload(accessToken);
-  }
-
-  async decodeAccessTokenAndGetPayload(
-    accessToken: string,
-  ): Promise<UserAccessTokenPayload> {
-    return await this.decodeTokenAndGetPayload<UserAccessTokenPayload>(
+  async assertAccessTokenIsValidAndGetPayload(
+    accessToken: unknown,
+  ): Promise<AccessTokenPayloadDTO> {
+    return await this.assertTokenIsValidAndGetPayload(
       accessToken,
+      AccessTokenDTO,
       'access',
       messages.auth.accessTokenExpired,
+      messages.auth.missingAccessTokenCookie,
       messages.auth.invalidAccessToken,
-      messages.auth.yourSessionWasFinished,
+      messages.auth.accessTokenWasBlacklisted,
     );
   }
 
-  async decodeRefreshTokenAndGetPayload(
-    refreshToken: string,
-  ): Promise<UserRefreshTokenPayload> {
-    return await this.decodeTokenAndGetPayload<UserRefreshTokenPayload>(
+  async assertRefreshTokenIsValidAndGetPayload(
+    refreshToken: unknown,
+  ): Promise<RefreshTokenPayloadDTO> {
+    return await this.assertTokenIsValidAndGetPayload(
       refreshToken,
+      RefreshTokenDTO,
       'refresh',
-      messages.auth.yourSessionWasFinished,
+      messages.auth.refreshTokenExpired,
+      messages.auth.missingRefreshTokenCookie,
       messages.auth.invalidRefreshToken,
-      messages.auth.yourSessionWasFinished,
+      messages.auth.refreshTokenWasBlacklisted,
     );
   }
 
-  private async decodeTokenAndGetPayload<
-    TokenPayload extends UniversalTokenPart,
+  private async assertTokenIsValidAndGetPayload<
+    TokenDTO extends RefreshTokenDTO,
   >(
-    token: string,
+    token: unknown,
+    tokenDTO: new () => TokenDTO,
     tokenField: 'access' | 'refresh',
     tokenExpiredMessage: string,
+    tokenEmptyMessage: string,
     tokenInvalidMessage: string,
     tokenBlacklistedMessage: string,
-  ): Promise<TokenPayload> {
+  ): Promise<TokenDTO['payload']> {
+    if (typeof token !== 'string' || !token)
+      throw new UnauthorizedException(tokenEmptyMessage);
+
+    let jwtBody: TokenDTO;
+
     try {
-      this.jwtService.verify(token, {
+      jwtBody = this.jwtService.verify(token, {
         secret: this.AUTH_JWT_SECRET,
         ignoreExpiration: false,
       });
@@ -209,63 +210,70 @@ class AuthTokenPairUseCase implements DI_AuthTokenPairUseCase {
       throw new UnauthorizedException(tokenInvalidMessage);
     }
 
-    const { payload } = this.jwtService.decode(token) as {
-      payload: TokenPayload;
-    };
+    const { errors, payloadInstance: tokenInstance } = validate(
+      jwtBody,
+      tokenDTO,
+    );
 
-    if (
-      !(await this.redisSessionsService.hasTokenBeenWhitelisted({
-        userId: payload.user.id,
-        sessionUUID: payload.sessionUUID,
+    if (errors.length) {
+      console.log(tokenInvalidMessage);
+      logObjectNicely(errors);
+      throw new UnauthorizedException(tokenInvalidMessage);
+    }
+
+    const hasTokenBeenWhitelisted =
+      await this.redisSessionsService.hasTokenBeenWhitelisted({
+        userId: tokenInstance.payload.user.id,
+        sessionUUID: tokenInstance.payload.sessionUUID,
         token,
         tokenField,
-      }))
-    )
+      });
+
+    if (!hasTokenBeenWhitelisted)
       throw new UnauthorizedException(tokenBlacklistedMessage);
 
-    return payload;
+    return tokenInstance.payload;
   }
 
-  private createNewTokenPair({
-    sessionUUID,
-    user,
-  }: UserAccessTokenPayload): AuthTokenPairDTO {
+  #createNewTokenPair(payload: AccessTokenPayloadDTO): AuthTokenPairDTO {
+    //! tokens generated in different points in time are not equal because they always have different
+    //! expiration dates, and there is no need to add additional seed to distinguish them
     return {
-      accessToken: this.createNewAccessToken({
-        sessionUUID,
-        user,
-      }),
-      refreshToken: this.createNewRefreshToken({
-        sessionUUID,
-        user,
-      }),
+      accessToken: this.#createNewAccessToken(payload),
+      refreshToken: this.#createNewRefreshToken(payload),
     };
   }
 
-  private createNewAccessToken(payload: UserAccessTokenPayload): string {
-    return this.jwtService.sign(
-      { payload },
-      {
-        expiresIn: '20m',
-      },
-    );
+  #createNewAccessToken(payload: AccessTokenPayloadDTO): string {
+    const { errors } = validate(payload, AccessTokenPayloadDTO);
+
+    if (errors.length) {
+      const message = messages.auth.doesNotSatisfyPayloadOfAccessToken(payload);
+      console.log('InternalServerError: ', message);
+      logObjectNicely(errors);
+      throw new InternalServerErrorException(message);
+    }
+    return this.jwtService.sign({ payload }, { expiresIn: '20m' });
   }
 
-  private createNewRefreshToken({
-    user,
-    sessionUUID,
-  }: UserRefreshTokenPayload): string {
-    return this.jwtService.sign(
-      {
-        payload: {
-          user: {
-            id: user.id,
-          },
-          sessionUUID,
-        },
+  #createNewRefreshToken({ user, sessionUUID }: AccessTokenPayloadDTO): string {
+    const payload: RefreshTokenPayloadDTO = {
+      user: {
+        id: user.id,
       },
-      { expiresIn: '7d' },
-    );
+      sessionUUID,
+    };
+
+    const { errors } = validate(payload, RefreshTokenPayloadDTO);
+
+    if (errors.length) {
+      const message =
+        messages.auth.doesNotSatisfyPayloadOfRefreshToken(payload);
+      console.log('InternalServerError: ', message);
+      logObjectNicely(errors);
+      throw new InternalServerErrorException(message);
+    }
+    return this.jwtService.sign({ payload }, { expiresIn: '7d' });
   }
 }
 

@@ -36,9 +36,9 @@
         "label": "Up dev with rebuilding",
         "type": "shell",
         "dependsOn": [
-          "Use docker builder"
+          "Build amd64 development for local use"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml up --build --remove-orphans --force-recreate",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml up --no-build --remove-orphans --force-recreate --pull never",
         "problemMatcher": [],
         "promptOnClose": true,
         "group": {
@@ -182,6 +182,16 @@
         "promptOnClose": true
       },
       {
+        "label": "Stop prod",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml stop",
+        "problemMatcher": [],
+        "promptOnClose": true
+      },
+      {
         "label": "Down dev",
         "type": "shell",
         "dependsOn": [
@@ -222,9 +232,9 @@
         "label": "Up prod with rebuilding local",
         "type": "shell",
         "dependsOn": [
-          "Use docker builder"
+          "Build amd64 production for local use"
         ],
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --build --remove-orphans --force-recreate -d",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --remove-orphans --force-recreate -d",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -266,6 +276,19 @@
         }
       },
       {
+        "label": "Build amd64 development for local use",
+        "type": "shell",
+        "dependsOn": [
+          "Use docker builder"
+        ],
+        "command": "eval \"$(./backend/scripts/shdotenv.sh --env ./env/dev.env -d node)\"; cd .devcontainer; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx bake -f ./docker-compose.dev.yaml --set *.platform=linux/amd64 --pull --load --progress tty",
+        "problemMatcher": [],
+        "promptOnClose": true,
+        "group": {
+          "kind": "build"
+        }
+      },
+      {
         "label": "Build amd64 production for registry",
         "type": "shell",
         "dependsOn": [
@@ -294,7 +317,7 @@
       {
         "label": "ORM migration generation for dev database (ormgen)",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/ormgen.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-service-helper-dev sh ./scripts/ormgen.sh",
         "problemMatcher": [],
         "promptOnClose": true,
         "presentation": {
@@ -342,28 +365,28 @@
       {
         "label": "Migrate dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-service-helper-dev sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Migrate prod database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-migration-prod sh ./scripts/migrate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-service-helper-prod sh ./scripts/migrate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Drop dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/drop.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-service-helper-dev sh ./scripts/drop.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
       {
         "label": "Recreate dev database",
         "type": "shell",
-        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-migration-dev sh ./scripts/recreate.sh",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/dev.env -f ./.devcontainer/docker-compose.dev.yaml exec backend-service-helper-dev sh ./scripts/recreate.sh",
         "problemMatcher": [],
         "promptOnClose": true
       },
@@ -527,7 +550,7 @@
       {
         "label": "Create new docker builder",
         "type": "shell",
-        "command": "docker buildx install; docker run --rm --privileged -d --name buildkit moby/buildkit; docker run --privileged --rm tonistiigi/binfmt --install all; docker buildx install; docker buildx create --name my_builder --platform=linux/arm64,linux/amd64",
+        "command": "DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker run --privileged --rm tonistiigi/binfmt --install all; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx create --name my_builder --platform=linux/arm64,linux/amd64 --use --bootstrap; DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker buildx --builder my_builder install",
         "promptOnClose": false,
         "problemMatcher": [],
         "group": {
@@ -726,8 +749,7 @@
     },
     "explorerExclude.backup": {},
     "window.title": "${dirty}${activeEditorLong}${separator}${profileName}",
-    "peacock.color": "#01381b",
-    "typescript.tsdk": "frontend/node_modules/typescript/lib"
+    "peacock.color": "#01381b"
   },
   "launch": {
     "version": "0.2.0",

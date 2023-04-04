@@ -1,0 +1,78 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          # linux/amd64,linux/arm64
+          platforms: linux/amd64
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
+          # linux/amd64,linux/arm64
+          platforms: linux/amd64
+      -
+        name: 'Copy env file'
+        run: |
+          cp -v ./env/prod.template.env ./env/prod.env
+      -
+        name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+      -
+        name: Build and push
+        uses: docker/bake-action@v2
+        with:
+          push: true
+          pull: true
+          # https://github.com/moby/buildkit#github-actions-cache-experimental
+          # https://github.com/docker/bake-action/issues/36
+          # *.platform=linux/amd64,linux/arm64/v8
+          set: |
+            *.platform=linux/amd64
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+          files: docker-compose.yaml
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     -
+  #       name: Pull and up production build
+  #       uses: appleboy/ssh-action@v0.1.8
+  #       with:
+  #         script_stop: true
+  #         host: ${{ secrets.SSH_DEPLOYMENT_SERVER_HOST }}
+  #         username: ${{ secrets.SSH_DEPLOYMENT_SERVER_USERNAME }}
+  #         key: ${{ secrets.SSH_DEPLOYMENT_SERVER_PRIVATE_KEY }}
+  #         port: 22
+  #         script: |
+  #           cd /home/nikel/tango-advisor
+  #           git pull
+  #           DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml pull
+  #           DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml up --no-build --pull always --remove-orphans --force-recreate -d
+  #           DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose --env-file ./env/prod.env -f ./docker-compose.yaml exec backend-service-helper-prod sh ./scripts/migrate.sh
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - {{ github.event.repository.name }}

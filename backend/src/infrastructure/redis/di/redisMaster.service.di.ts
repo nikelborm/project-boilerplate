@@ -1,4 +1,4 @@
-import { RedisNamespaceEnum } from '../types';
+import type { RedisNamespaceEnum } from '../types';
 
 export abstract class DI_RedisMasterService {
   abstract doAllKeysExist<T extends string | number>(
@@ -7,7 +7,7 @@ export abstract class DI_RedisMasterService {
   ): Promise<boolean>;
 
   abstract doAllKeysFromDifferentNsExist(
-    ns_keys: [RedisNamespaceEnum, string | number][],
+    nsKeys: [RedisNamespaceEnum, string | number][],
   ): Promise<boolean>;
 
   abstract doesKeyExist(

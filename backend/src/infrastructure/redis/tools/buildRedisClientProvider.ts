@@ -1,25 +1,26 @@
-import { Provider } from '@nestjs/common';
+import type { InjectionToken, Provider } from '@nestjs/common';
 import { createClient } from 'redis';
-import { RedisModuleFactoryOptions, RedisModuleOptions } from '../types';
+import { DI_MASTER_WITH_REPLICAS_REDIS_CLIENTS_CONFIG } from '../di';
+import type { RedisModuleInitOptions } from '../types';
 
-export const buildRedisClientProvider = async ({
-  inject,
-  useFactory,
+export const buildRedisClientProvider = ({
   provide,
   clientKey,
-}: RedisModuleFactoryOptions & {
-  provide: string;
-  clientKey: keyof RedisModuleOptions;
-}): Promise<Provider> => ({
+}: {
+  provide: InjectionToken;
+  clientKey: keyof RedisModuleInitOptions;
+}): Provider => ({
   provide,
-  inject,
-  async useFactory(...args): Promise<any> {
+  inject: [DI_MASTER_WITH_REPLICAS_REDIS_CLIENTS_CONFIG],
+  async useFactory(
+    masterWithReplicasRedisClientsConfig: RedisModuleInitOptions,
+  ): Promise<ReturnType<typeof createClient>> {
     const {
       [clientKey]: {
         connectionOptions: { host, password, port },
         onReady,
       },
-    } = await useFactory(...args);
+    } = masterWithReplicasRedisClientsConfig;
 
     const client = createClient({
       socket: {
@@ -29,7 +30,9 @@ export const buildRedisClientProvider = async ({
       password,
     });
     await client.connect();
+
     if (onReady) await onReady(client);
+
     return client;
   },
 });

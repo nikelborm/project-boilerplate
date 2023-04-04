@@ -1,12 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import type { IDatabaseConfigMap } from 'src/config';
 import {
   ConfigKeys,
   DI_TypedConfigService,
-  IDatabaseConfigMap,
   TypedConfigModule,
 } from 'src/config';
-import { DeArray } from 'src/types';
+import type { DeArray } from 'src/types';
 import * as di from './di';
 import * as model from './model';
 import * as repo from './repo';

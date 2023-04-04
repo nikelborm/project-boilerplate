@@ -1,3 +1,11 @@
+/* eslint-disable security/detect-non-literal-regexp */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 // @ts-check
 import { camelCase, pascalCase } from 'change-case';
@@ -461,10 +469,10 @@ export class FindMany${pascal}sResponseDTO {
 `;
 
 const getUpdatedAppModule = async () => {
-  const appModuleImportsRegexp = /(imports:[ \[\n\A-Za-z,]*,)[ \n]*]/g;
+  const appModuleImportsRegexp = /(imports:[ [\nA-Za-z,]*,)[ \n]*]/g;
 
   const appModuleEcmascriptImportsRegexp =
-    /(import [ \{\n\A-Za-z,]*,)[ \n]*} *from *'.';/g;
+    /(import [ {\nA-Za-z,]*,)[ \n]*} *from *'.';/g;
 
   let appModuleTsFileContent = (
     await readFile('./backend/src/app.module.ts')

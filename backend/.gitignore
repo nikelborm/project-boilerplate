@@ -16,6 +16,7 @@ yarn-error.log*
 lerna-debug.log*
 
 out.xlsx
+.eslintcache
 tourneyInfo.xlsx
 # OS
 .DS_Store

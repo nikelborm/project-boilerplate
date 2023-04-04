@@ -14,17 +14,28 @@ const rawMessages = {
       'This user has no access scopes. The user is not assigned to any access scope and has no additional role. Please contact the administrator',
     developmentOnly: 'Development only',
     unauthorizedOnly: 'You should not be authorized to use this route',
-    missingAuthHeader: 'Missing Authorization header (with Token)',
-    incorrectTokenType: 'Token type should be Bearer',
-    missingToken: `Missing Token in Authorization header`,
-    invalidAccessToken:
-      'Access token in Authorization header is not a valid JWT token',
-    invalidRefreshToken: 'Refresh token you provided is not a valid JWT token',
+    missingAccessTokenCookie: 'Missing access token cookie',
+    missingRefreshTokenCookie: 'Missing refresh token cookie',
+    invalidAccessToken: 'Access token in cookie is not a valid JWT token',
+    invalidRefreshToken: 'Refresh token in cookie is not a valid JWT token',
     accessTokenExpired:
-      'Access token in Authorization header has been expired. Refresh it with refresh token',
-    yourSessionWasFinished:
-      'Your session was finished because of long inactivity.\nIf you used your account less than a week ago, your account can be hacked.\nPlease open your settings and click the "Logout on all devices" button',
+      'Access token in cookie has been expired. Refresh it with refresh token',
+    refreshTokenExpired:
+      'Your session was finished because of long inactivity.\nIf you used your account on this device less than a week ago, your account may be hacked.\nTo be safe open your settings and click the "Logout on all devices" button',
+    accessTokenWasBlacklisted:
+      'Your current set of access rights was updated. Please refresh your access token',
+    refreshTokenWasBlacklisted:
+      'Your session was finished. Please log in again',
+    doesNotSatisfyPayloadOfAccessToken: (payload: any) =>
+      `Given payload does not satisfy AccessTokenUserInfoDTO. payload=${JSON.stringify(
+        payload,
+      )}`,
+    doesNotSatisfyPayloadOfRefreshToken: (payload: any) =>
+      `Given payload does not satisfy RefreshTokenUserInfoDTO. payload=${JSON.stringify(
+        payload,
+      )}`,
   },
+
   user: {
     exists: 'User with this email already exists',
     cantGetNotFoundByEmail: (email: string): string =>
@@ -164,6 +175,7 @@ function buildProxy<
                 return new Proxy(possiblyFunc, {
                   apply(methodTarget, thisArg, args): any {
                     return Reflect.apply(methodTarget, thisArg, [
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       ...args,
                       possiblyEntityName,
                     ]);

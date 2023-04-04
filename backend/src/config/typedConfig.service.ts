@@ -1,4 +1,5 @@
-import { Injectable, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DI_TypedConfigService } from './di';
 import { ConfigKeys } from './types';

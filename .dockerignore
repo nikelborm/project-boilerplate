@@ -20,6 +20,8 @@
 **/node.Dockerfile
 **/README.md
 **/temp
+**/.eslintcache
+**/.eslintchache
 backend/src/tools/shared
 backend/src/types/shared
 env

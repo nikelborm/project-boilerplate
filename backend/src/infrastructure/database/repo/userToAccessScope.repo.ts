@@ -1,9 +1,10 @@
-import { Injectable, Provider } from '@nestjs/common';
+import type { Provider } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityWithIdentityRepoImplementation } from 'src/tools';
 import { Repository } from 'typeorm';
 import { DI_UserToAccessScopeRepo } from '../di';
-import { RepoTypes } from '../di/userToAccessScope.repo.di';
+import type { RepoTypes } from '../di/userToAccessScope.repo.di';
 import { UserToAccessScope } from '../model';
 
 @Injectable()

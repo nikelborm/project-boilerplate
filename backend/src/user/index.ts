@@ -1,2 +1,2 @@
-export * from './user.module';
 export * from './di';
+export * from './user.module';

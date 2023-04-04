@@ -1,3 +1,11 @@
+/* eslint-disable security/detect-non-literal-regexp */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable security/detect-non-literal-fs-filename */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 // @ts-check
 import { camelCase, pascalCase, snakeCase } from 'change-case';

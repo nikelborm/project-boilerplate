@@ -1,11 +1,8 @@
-// import type { RelationMapMaximizedType } from './relationMapMaximizedType';
+import type { RelationMapMaximizedType } from './relationMapMaximizedType';
 
 //! if you change this file manually, do it very carefully
 
-// temporary uncomment type to enable intellisense
-
 const RelationMapValue = {
-  // const RelationMapValue: RelationMapMaximizedType = {
   AccessScope: {
     identityKeys: ['id'],
     relationToEntityNameMap: {
@@ -31,7 +28,7 @@ const RelationMapValue = {
     },
   },
   // RelationMapValue end token
-} as const;
+} as const satisfies RelationMapMaximizedType;
 
 //! Do not remove "Entity relationToEntityNameMap token" and "RelationMapValue end token"
 //! because it will break code auto generation

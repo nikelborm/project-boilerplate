@@ -1,7 +1,10 @@
 import type { Request } from 'express';
-import type { UserAuthInfo } from '../shared/';
+import type { RefreshTokenPayloadDTO, AccessTokenPayloadDTO } from '../shared/';
 
-export interface AuthedRequest extends Request {
-  user: UserAuthInfo;
-  sessionUUID: string;
-}
+export interface AuthorizedRequest
+  extends Omit<Request, 'user'>,
+    AccessTokenPayloadDTO {}
+
+export interface RequestWithValidRefreshToken
+  extends Omit<Request, 'user'>,
+    RefreshTokenPayloadDTO {}

@@ -3,10 +3,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import decodeJWT from 'jwt-decode';
 import { ISession } from '@/types';
 import {
-  UserAccessTokenPayload,
-  UserRefreshTokenPayload,
+  AccessTokenPayloadDTO,
+  RefreshTokenPayloadDTO,
+  RefreshTokenPairRequestDTO,
   AuthTokenPairDTO,
   RefreshTokenDTO,
+  AccessTokenDTO,
 } from '@/types/shared';
 import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from '@/constant';
 // eslint-disable-next-line import/no-cycle
@@ -63,7 +65,7 @@ class AuthStore {
     if (!this.lastTokenPairRefreshPromise) {
       this.lastTokenPairRefreshPromise = customFetch('auth/refresh', {
         needsJsonResponseBodyParsing: true,
-        requestDTOclass: RefreshTokenDTO,
+        requestDTOclass: RefreshTokenPairRequestDTO,
         responseDTOclass: AuthTokenPairDTO,
         method: 'POST',
         needsAccessToken: false,
@@ -206,10 +208,10 @@ function convertTokenPairToSession(
 ): ISession {
   if (!tokenPair) return { isAuthed: false };
 
-  const accessTokenPayload = decodeJWT<UserAccessTokenPayload>(
+  const { payload: accessTokenPayload } = decodeJWT<AccessTokenDTO>(
     tokenPair.accessToken,
   );
-  const refreshTokenPayload = decodeJWT<UserRefreshTokenPayload>(
+  const { payload: refreshTokenPayload } = decodeJWT<RefreshTokenDTO>(
     tokenPair.refreshToken,
   );
 

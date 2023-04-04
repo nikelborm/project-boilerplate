@@ -2,6 +2,7 @@ export * from './accessLog.middleware';
 export * from './decorators';
 export * from './insertInChunks';
 export * from './isQueryFailedError';
+export * from './logObjectNicely';
 export * from './pipes';
 export * from './pluralForm';
 export * from './repo';

@@ -16,6 +16,7 @@ export const iterateInChunks = async <T>({
       // TODO: Покрыть тестами, потому что ts говорит, что тут может быть проблема
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore idk wtf
+      // eslint-disable-next-line security/detect-object-injection
       callOnIteration(array[i]);
     }
     await callAfterChunk();

@@ -1,4 +1,4 @@
-import { FactoryProvider } from '@nestjs/common';
+import type { FactoryProvider } from '@nestjs/common';
 import { type createClient } from 'redis';
 
 export type RedisClient = ReturnType<typeof createClient>;
@@ -20,13 +20,15 @@ export type RedisClientOptions = {
   onReady?: (client: RedisClient) => Promise<void> | void;
 };
 
-export type RedisModuleOptions = {
+export type RedisModuleInitOptions = {
   master: RedisClientOptions;
   replicas: RedisClientOptions;
 };
 
-export type RedisModuleFactoryOptions = {
-  useFactory: (
-    ...args: any[]
-  ) => RedisModuleOptions | Promise<RedisModuleOptions>;
+export type RedisModuleFactoryFunc<FactoryArgs extends any[]> = (
+  ...args: FactoryArgs
+) => RedisModuleInitOptions | Promise<RedisModuleInitOptions>;
+
+export type RedisModuleOptionsWithFactory<FactoryArgs extends any[]> = {
+  useFactory: RedisModuleFactoryFunc<FactoryArgs>;
 } & Pick<FactoryProvider, 'inject'>;

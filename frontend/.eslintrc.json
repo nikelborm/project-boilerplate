@@ -4,12 +4,18 @@
     "es2021": true
   },
   "extends": [
-    "eslint:recommended",
-    "airbnb",
     "airbnb-typescript",
+    "airbnb",
+    "eslint:recommended",
+    "next/core-web-vitals",
+    "plugin:@microsoft/eslint-plugin-sdl/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:etc/recommended",
     "plugin:prettier/recommended",
+    "plugin:promise/recommended",
     "plugin:react/recommended",
-    "next/core-web-vitals"
+    "plugin:security/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -20,22 +26,25 @@
     "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier", "react-hooks"],
+  "plugins": [
+    "@microsoft/eslint-plugin-sdl",
+    "@typescript-eslint/eslint-plugin",
+    "etc",
+    "import",
+    "nestjs",
+    "prettier",
+    "promise",
+    "react-hooks",
+    "react",
+    "security",
+    "simple-import-sort"
+  ],
   "ignorePatterns": ["**/index.d.ts"],
   "rules": {
     "indent": "off", // off because it does not work with decorators in backend types. Anyway prettier is implementing the same linting
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
     "@typescript-eslint/lines-between-class-members": "warn",
     "no-restricted-syntax": "off",
     "max-classes-per-file": "off",

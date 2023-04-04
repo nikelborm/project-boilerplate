@@ -1,17 +1,17 @@
-import { DynamicModule } from '@nestjs/common';
+import type { DynamicModule } from '@nestjs/common';
+import type { IRedisConfigMap } from 'src/config';
 import {
   ConfigKeys,
   DI_TypedConfigService,
-  IRedisConfigMap,
   TypedConfigModule,
 } from 'src/config';
 import { RedisModule } from '../redis.module';
 
-export function getDefaultConfiguredRedisModule(): Promise<DynamicModule> {
-  return RedisModule.registerAsync({
+export function getDefaultConfiguredRedisModule(): DynamicModule {
+  return RedisModule.registerAsync<[DI_TypedConfigService<IRedisConfigMap>]>({
     imports: [TypedConfigModule],
     inject: [DI_TypedConfigService],
-    useFactory: (configService: DI_TypedConfigService<IRedisConfigMap>) => ({
+    useFactory: (configService) => ({
       master: {
         connectionOptions: {
           host: configService.get(ConfigKeys.REDIS_MASTER_HOST),

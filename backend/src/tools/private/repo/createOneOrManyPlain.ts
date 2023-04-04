@@ -18,13 +18,16 @@ export const createManyPlain =
   >(
     newEntities: ProvidedPlainEntityToBeCreated[],
   ): Promise<ReturnType[]> => {
-    const { generatedMaps } = await repo.insert(newEntities as any);
+    const { generatedMaps } = await repo.insert(
+      newEntities as unknown as Entity[],
+    );
     if (newEntities.length !== generatedMaps.length)
       throw new Error(
         'insertManyPlain newEntities.length !== generatedMaps.length',
       );
     return newEntities.map((entity, index) => ({
       ...entity,
+      // eslint-disable-next-line security/detect-object-injection
       ...generatedMaps[index],
     })) as ReturnType[];
   };
@@ -34,7 +37,7 @@ export const createOnePlain =
   <Config extends EntityRepoMethodTypesConfig<Entity>>() =>
   async <
     Types extends EntityRepoMethodTypes<Entity, Config>,
-    ProvidedPlainEntityToBeCreated extends Types['Public']['OnePlainEntityToBeCreated'],
+    const ProvidedPlainEntityToBeCreated extends Types['Public']['OnePlainEntityToBeCreated'],
     ReturnType extends TypeormReturnTypeRequiredNullable<
       ProvidedPlainEntityToBeCreated &
         Types['Parts']['GeneratedPartAfterEntityCreation']

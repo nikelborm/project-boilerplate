@@ -1,12 +1,12 @@
-import {
+import type {
   EntityRepoMethodTypes,
   EntityRepoMethodTypesConfig,
-  IDefaultUniversalEntityRepo,
-  IDefaultEntityWithIdRepo,
-  IDefaultEntityWithIdentityRepo,
+  IDefaultRepo,
+  IDefaultIdRepo,
+  IDefaultIdentityRepo,
   TypeormReturnTypeRequiredNullable,
 } from 'src/types';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 import {
   createManyPlain,
   createOnePlain,
@@ -25,7 +25,7 @@ export class DefaultUniversalEntityRepoImplementation<
   Types extends EntityRepoMethodTypes<Entity, Config>,
   Entity extends Record<string, any> = Types['Entity'],
   Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
-> implements IDefaultUniversalEntityRepo<Types>
+> implements IDefaultRepo<Types>
 {
   constructor(protected readonly repo: Repository<Entity>) {}
 
@@ -114,7 +114,7 @@ export class DefaultEntityWithIdRepoImplementation<
     Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
   >
   extends DefaultUniversalEntityRepoImplementation<Types>
-  implements IDefaultEntityWithIdRepo<Types>
+  implements IDefaultIdRepo<Types>
 {
   async findOneById(
     id: number,
@@ -149,7 +149,7 @@ export class DefaultEntityWithIdentityRepoImplementation<
     Config extends EntityRepoMethodTypesConfig<Entity> = Types['Config'],
   >
   extends DefaultUniversalEntityRepoImplementation<Types>
-  implements IDefaultEntityWithIdentityRepo<Types>
+  implements IDefaultIdentityRepo<Types>
 {
   async findOneByIdentity(
     identity: Types['Parts']['IdentityPartRequiredForUpdateAndAlwaysSelected'],

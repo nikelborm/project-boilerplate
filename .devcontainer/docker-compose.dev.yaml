@@ -42,6 +42,8 @@ services:
       - GENERATE_SOURCEMAP=${GENERATE_SOURCEMAP}
       - DANGEROUSLY_DISABLE_HOST_CHECK=${DANGEROUSLY_DISABLE_HOST_CHECK}
       - REACT_APP_NAME=${COMPOSE_PROJECT_NAME}
+      - COOKIE_SIGN_KEY=${COOKIE_SIGN_KEY}
+      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
       - TSC_WATCHFILE=UseFsEvents
     volumes:
       - type: bind
@@ -71,6 +73,7 @@ services:
     depends_on:
       - postgres-dev
       - redis-master-dev
+      - redis-replica-dev
     build:
       context: ../
       dockerfile: ./backend/Dockerfile
@@ -93,13 +96,16 @@ services:
       - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
       - USER_PASSWORD_HASH_SALT=${USER_PASSWORD_HASH_SALT}
       - INVITE_USERS_SIGN_KEY=${INVITE_USERS_SIGN_KEY}
+      - COOKIE_SIGN_KEY=${COOKIE_SIGN_KEY}
+      - GOOGLE_OAUTH_TOKEN_SECRET=${GOOGLE_OAUTH_TOKEN_SECRET}
+      - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
+
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_TYPEORM_LOGGING_MODE=${DATABASE_TYPEORM_LOGGING_MODE}
-      - DEV_BACKEND_DEBUGGER_PORT=${DEV_BACKEND_DEBUGGER_PORT}
 
       - REDIS_MASTER_PORT=${REDIS_MASTER_INNER_PORT}
       - REDIS_MASTER_HOST=${REDIS_MASTER_HOST}
@@ -129,15 +135,15 @@ services:
       back-redis-net-dev:
       vscode-back-net-dev:
 
-  backend-migration-dev:
-    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-migration-dev"
+  backend-service-helper-dev:
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-service-helper-dev"
     restart: unless-stopped
     build:
       context: ../
       dockerfile: ./backend/Dockerfile
-      target: migration_container
+      target: service_helper_container
     environment:
-      - IS_MIGRATION_ONLY_MODE=true
+      - IS_SERVICE_HELPER_ONLY_MODE=true
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
@@ -159,6 +165,24 @@ services:
         consistency: delegated
     networks:
       back-db-net-dev:
+
+  backend-linter-dev:
+    image: "${DOCKER_HUB_NICKNAME}/${DOCKER_REGISTRY_REPO_NAME}:${COMPOSE_PROJECT_NAME}-backend-service-helper-dev"
+    restart: unless-stopped
+    command: yarn watch-lint
+    volumes:
+      - type: bind
+        source: ../backend/src
+        target: /app/src
+        consistency: delegated
+      - type: bind
+        source: ../shared/src/types/shared
+        target: /app/src/types/shared
+        consistency: delegated
+      - type: bind
+        source: ../shared/src/tools/shared
+        target: /app/src/tools/shared
+        consistency: delegated
 
   postgres-dev:
     image: postgres
@@ -273,3 +297,8 @@ networks:
 
 volumes:
   redis-dev-persistent-data:
+
+
+# clear;./node_modules/.bin/prettier --write "src/**/*.ts" "test/**/*.ts"
+# clear;./node_modules/.bin/eslint '{src,apps,libs,test}/**/*.ts' --cache --cache-location ./.eslintcache
+# tree src -fia | entr -s 'eslint '{src,apps,libs,test}/**/*.ts' --cache --cache-location ./.eslintcache'

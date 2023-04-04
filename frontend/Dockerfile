@@ -54,6 +54,8 @@ FROM default_nginx as prod_nginx_with_front_static
 # EXPOSE ${INNER_NGINX_HTTPS_PORT}
 COPY ./frontend/prod.nginx.template.conf /etc/nginx/templates/nginx.conf.template
 # COPY --from=build /app/build /usr/share/nginx/html/
+# TODO: Move static files to volume, share it between nginx and frontend prod (in case frontend prod will want to rebuild using ISR)
+# https://github.com/vercel/next.js/blob/canary/docs/deployment.md
 
 
 
