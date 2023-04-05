@@ -17,6 +17,8 @@ import {
   appendModelInterfaceBodyMixinToFileAndLog,
   appendModelInterfaceImportsMixinToFileAndLog,
   appendRelationMapMixinToFileAndLog,
+  lintBackend,
+  typeormModelInjectImport,
   writeNewDI_RepoFileAndExtendDirReexportsAndLog,
   writeNewModelFileAndExtendDirReexportsAndLog,
   writeNewModelInterfaceFileAndExtendDirReexportsAndLog,
@@ -282,8 +284,13 @@ if (selectedFilesToGenerate.includes('models')) {
     dryRun,
   );
 
+  await typeormModelInjectImport(dryRun, 'ManyToMany', first);
+  await typeormModelInjectImport(dryRun, 'JoinTable', first);
+  await typeormModelInjectImport(dryRun, 'OneToMany', first);
   await appendModelBodyMixinToFileAndLog(first, getFirstModelMixin(), dryRun);
 
+  await typeormModelInjectImport(dryRun, 'ManyToMany', second);
+  await typeormModelInjectImport(dryRun, 'OneToMany', second);
   await appendModelBodyMixinToFileAndLog(second, getSecondModelMixin(), dryRun);
 
   await appendModelImportsMixinToFileAndLog(
@@ -375,5 +382,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     ),
   );
 }
+
+await lintBackend(dryRun);
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));

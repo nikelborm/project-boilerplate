@@ -144,14 +144,13 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
     }
   }
 
-  private getRouteScopesAndRequestFrom(
-    context: ExecutionContext,
-  ): [
-    [EndpointAccess, ...UserLevelScopes[]] | undefined,
+  private getRouteScopesAndRequestFrom(context: ExecutionContext): [
+    // it is not [EndpointAccess, ...UserLevelScopes[]] because we cannot guarantee that EndpointAccess comes first
+    (EndpointAccess | UserLevelScopes)[] | undefined,
     ProbablyAuthorizedRequested,
   ] {
     return [
-      this.reflector.get<[EndpointAccess, ...UserLevelScopes[]]>(
+      this.reflector.get<(EndpointAccess | UserLevelScopes)[]>(
         ALLOWED_SCOPES_KEY,
         context.getHandler(),
       ),

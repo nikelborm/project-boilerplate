@@ -17,6 +17,8 @@ import {
   appendModelInterfaceBodyMixinToFileAndLog,
   appendModelInterfaceImportsMixinToFileAndLog,
   appendRelationMapMixinToFileAndLog,
+  lintBackend,
+  typeormModelInjectImport,
 } from '../common/index.js';
 
 const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
@@ -88,7 +90,7 @@ const getMixinToMultipleSideEntityInRelationMap =
 `;
 
 const getMixinToSingleSideEntityInRelationMap =
-  () => `      ${firstCamel}: ['${firstPascal}'],
+  () => `      ${firstCamel}s: ['${firstPascal}'],
 `;
 
 const getMixinToSingleSideOfRelation = () => `
@@ -122,12 +124,16 @@ const getSecondInterfaceImportMixin = () => `
 import type { I${firstPascal} } from '.';`;
 
 if (selectedFilesToGenerate.includes('modelMixins')) {
+  await typeormModelInjectImport(dryRun, 'ManyToOne', first);
+  await typeormModelInjectImport(dryRun, 'JoinColumn', first);
+  await typeormModelInjectImport(dryRun, 'Column', first);
   await appendModelBodyMixinToFileAndLog(
     first,
     getMixinToMultipleSideOfRelation(),
     dryRun,
   );
 
+  await typeormModelInjectImport(dryRun, 'OneToMany', second);
   await appendModelBodyMixinToFileAndLog(
     second,
     getMixinToSingleSideOfRelation(),
@@ -194,5 +200,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     ),
   );
 }
+
+await lintBackend(dryRun);
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));

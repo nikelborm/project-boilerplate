@@ -12,7 +12,9 @@ import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import chalk from 'chalk';
 import {
+  typeormModelInjectImport,
   appendRelationMapMixinToFileAndLog,
+  lintBackend,
   writeNewDI_RepoFileAndExtendDirReexportsAndLog,
   writeNewModelFileAndExtendDirReexportsAndLog,
   writeNewModelInterfaceFileAndExtendDirReexportsAndLog,
@@ -199,5 +201,7 @@ if (selectedFilesToGenerate.includes('relationMapExtension')) {
     / {2}\/\/ RelationMapValue end token/g,
   );
 }
+
+await lintBackend(dryRun);
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));

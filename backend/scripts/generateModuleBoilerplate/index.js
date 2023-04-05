@@ -13,6 +13,7 @@ import prompts from 'prompts';
 import { appendFile, writeFile, mkdir, readFile } from 'fs/promises';
 import chalk from 'chalk';
 import {
+  lintBackend,
   writeNewDI_UseCaseFileAndExtendDirReexportsAndLog,
   writeNewFileAndAndLog,
   writeNewFileAndExtendDirReexportsAndLog,
@@ -625,5 +626,7 @@ if (selectedFilesToGenerate.includes('controller')) {
     dryRun,
   );
 }
+
+await lintBackend(dryRun);
 
 console.log(chalk.cyan(`\n------ executed successfully\n`));

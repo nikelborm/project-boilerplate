@@ -7,13 +7,72 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // @ts-check
 import chalk from 'chalk';
 import { camelCase, pascalCase } from 'change-case';
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
+import exec from 'node-async-exec';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { appendFile, readFile, writeFile } from 'fs/promises';
+
+export const lintBackend = async (/** @type {boolean} */ dryRun) => {
+  if (!dryRun) {
+    const path = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+    console.log('lintBackend path:', path);
+    await exec({
+      cmd: `./node_modules/.bin/eslint '{src,apps,libs,test}/**/*.ts' --fix --cache --cache-location ./.eslintcache`,
+      path,
+    });
+    await exec({
+      cmd: `./node_modules/.bin/prettier --write "src/**/*.ts" "test/**/*.ts"`,
+      path,
+    });
+  }
+};
+
+export const typeormModelInjectImport = async (
+  /** @type {boolean} */ dryRun,
+  /** @type {string} */ searchForInjectable,
+  /** @type {string} */ entityName,
+) => {
+  console.log('entityName: ', entityName);
+  const typeormImportsRegexp =
+    /(import {[\nA-Za-z, ]*)( |,[ ]*\n)} from 'typeorm';/g;
+
+  const filePath = join(
+    dirname(fileURLToPath(import.meta.url)),
+    '..',
+    '..',
+    `./src/infrastructure/database/model/${camelCase(entityName)}.model.ts`,
+  );
+  console.log('filePath: ', filePath);
+
+  let tsFileContent = (await readFile(filePath)).toString();
+
+  let {
+    ['1']: group,
+    ['2']: spaceGroup,
+    index,
+  } = [...tsFileContent.matchAll(typeormImportsRegexp)][0];
+
+  if (!index) throw new Error('typeormImportsRegexp was not found');
+
+  const shouldWeInjectImport = !group.includes(` ${searchForInjectable}`);
+
+  if (shouldWeInjectImport)
+    tsFileContent = `${tsFileContent.slice(0, index + group.length)}${
+      spaceGroup === ' ' ? ', ' : ''
+    }${searchForInjectable}${
+      spaceGroup === ' ' ? '' : ' '
+    }${tsFileContent.slice(index + group.length)}`;
+
+  console.log(tsFileContent);
+
+  if (!dryRun && shouldWeInjectImport) {
+    await writeFile(filePath, tsFileContent);
+  }
+};
 
 export const writeNewFileWithMixin = async (
   /** @type {string} */ filename,
