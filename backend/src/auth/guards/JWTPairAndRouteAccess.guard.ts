@@ -1,4 +1,5 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import {
   Injectable,
   InternalServerErrorException,
@@ -51,11 +52,12 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
 
     if (routeLevelScope === AccessEnum.PUBLIC) return true;
 
-    if (routeLevelScope === AccessEnum.FORBIDDEN) return false;
+    if (routeLevelScope === AccessEnum.FORBIDDEN)
+      throw new ForbiddenException('Endpoint forbidden for everyone forever');
 
     if (routeLevelScope === AccessEnum.DEVELOPMENT_ONLY) {
       if (this.IS_DEVELOPMENT) return true;
-      throw new UnauthorizedException(messages.auth.developmentOnly);
+      throw new ForbiddenException(messages.auth.developmentOnly);
     }
 
     const signedCookies: unknown = request.signedCookies;
@@ -74,11 +76,11 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
       )
         return true;
 
-      throw new UnauthorizedException(messages.auth.unauthorizedOnly);
+      throw new ForbiddenException(messages.auth.unauthorizedOnly);
     }
 
     if (!signedCookies || !isObj(signedCookies))
-      throw new InternalServerErrorException(
+      throw new UnauthorizedException(
         'Signed cookies are not provided for some reason',
       );
 
@@ -99,7 +101,7 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
 
     if (routeLevelScope !== AccessEnum.GOOD_ACCESS_AND_REFRESH_TOKEN_ONLY)
       throw new InternalServerErrorException(
-        `Something extremely wrong with routeLevelScopes. This error should never happen. allScopes=${JSON.stringify(
+        `Something is extremely wrong with routeLevelScopes. This error should never happen. allScopes=${JSON.stringify(
           allScopes,
         )}`,
       );
@@ -138,7 +140,7 @@ export class JWTPairAndRouteAccessGuard implements CanActivate {
   ): asserts routeScopes is [EndpointAccess] {
     if (routeScopes.length !== 1) {
       console.log('routeLevelScopes: ', routeScopes);
-      throw new UnauthorizedException(
+      throw new InternalServerErrorException(
         'You either set 1 and only 1 route level scope for endpoint or you set no scopes at all',
       );
     }
