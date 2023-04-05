@@ -11,7 +11,7 @@ export function useLoginMutation() {
         needsAccessToken: false,
         needsJsonResponseBodyParsing: true,
         requestDTOclass: LoginUserRequestDTO,
-        responseDTOclass: AuthTokenPairDTO,
+        responseDTOClass: AuthTokenPairDTO,
         body: credentials,
       }).then(updateTokenPair),
   );

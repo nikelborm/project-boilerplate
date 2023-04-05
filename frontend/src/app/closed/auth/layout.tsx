@@ -1,8 +1,5 @@
-import {
-  ACCESS_TOKEN_COOKIE_NAME,
-  AuthTokenPairDTO,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from '@/types';
+import type { AuthTokenPairDTO } from '@/types';
+import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '@/types';
 import cookieParser from 'cookie-parser';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';

@@ -39,34 +39,47 @@
   ],
   "ignorePatterns": ["**/index.d.ts"],
   "rules": {
+    "file-extension-in-import": "off",
+    "no-missing-import": "off",
+    "import/extensions": "off",
+    "new-cap": "off",
+    "putout/putout": "off",
+    "total-functions/no-unsafe-enum-assignment": "off",
+    "no-duplicate-imports": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "import/exports-last": "off",
+    "require-await": "off",
+    "@typescript-eslint/require-await": "error",
+    "@typescript-eslint/prefer-readonly-parameter-types": "off",
     "indent": "off", // off because it does not work with decorators in backend types. Anyway prettier is implementing the same linting
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "single"],
     "semi": ["error", "always"],
-    "@typescript-eslint/lines-between-class-members": "warn",
+    "@typescript-eslint/parameter-properties": [
+      1,
+      {
+        "allow": ["readonly", "private readonly", "protected readonly"],
+        "prefer": "parameter-property"
+      }
+    ],
+    "@typescript-eslint/lines-between-class-members": "error",
+    "import/no-unused-modules": "off",
+    "camelcase": ["error", { "allow": ["^DI_"] }],
     "no-restricted-syntax": "off",
-    "max-classes-per-file": "off",
-    "react/require-default-props": "off",
-    "camelcase": "warn",
     "no-sequences": "off",
     "no-void": "off",
     "no-nested-ternary": "off",
     "import/no-unresolved": "off", // this resolves @components, @assets etc.
     "import/prefer-default-export": "off", // WHY: this rule is not aware of my plans to add more exports in the future
-    "jsx-a11y/label-has-associated-control": "off", // this allows <label>s without "for" attribute (auto-associated)
-    "no-debugger": "warn", // WHY: debuggers should be removed before pushing
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "max-classes-per-file": "off",
     "no-unused-vars": "off", // WHY: unused variables should be commented out
     "@typescript-eslint/no-unused-vars": "warn", // WHY: unused variables should be commented out
     "@typescript-eslint/ban-ts-comment": ["error", { "ts-ignore": true }], // WHY: ts-expect-error should be used instead
-    "react/jsx-filename-extension": [
-      "error",
-      {
-        "extensions": [".jsx", ".tsx"]
-      }
-    ], // this requires extension to be react-ish for JSX to work
-    "react/jsx-props-no-spreading": "off", // this allows spread syntax in React
-    "react/prop-types": "off", // WHY: prop types are only needed for React Class Components
-    "react/react-in-jsx-scope": "off", // WHY: in modern react, there's no need for React in scope
     "@typescript-eslint/member-delimiter-style": [
       "error",
       {
@@ -87,16 +100,38 @@
         "ignoreComments": true, // Ignoring comments speeds things up, and adds some expectable logic.
         "ignoreStrings": true, // Mostly convenient for imports.
         "ignoreTemplateLiterals": true, // Template literals can obviously be of any length.
-        "ignoreRegExpLiterals": true // Multiline RegExps may be harder to maintain.
+        "ignoreRegExpLiterals": true, // Multiline RegExps may be harder to maintain.
+        "ignorePattern": "^export abstract class DI_"
       }
     ],
-    "no-return-await": "off",
     "@typescript-eslint/return-await": ["error", "always"],
-    "@typescript-eslint/no-explicit-any": "off",
+    "dot-notation": "off",
     "@typescript-eslint/dot-notation": "off",
-    "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
-    "@typescript-eslint/no-use-before-define": "off",
+    "no-return-await": "off",
+    "@typescript-eslint/no-return-await": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "simple-import-sort/imports": "off",
+    "simple-import-sort/exports": "error",
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "single"],
+    "react/require-default-props": "off",
+    "jsx-a11y/label-has-associated-control": "off", // this allows <label>s without "for" attribute (auto-associated)
+    "no-debugger": "warn", // WHY: debuggers should be removed before pushing
+    "react/jsx-filename-extension": [
+      "error",
+      {
+        "extensions": [".jsx", ".tsx"]
+      }
+    ], // this requires extension to be react-ish for JSX to work
+    "react/jsx-props-no-spreading": "off", // this allows spread syntax in React
+    "react/prop-types": "off", // WHY: prop types are only needed for React Class Components
+    "react/react-in-jsx-scope": "off", // WHY: in modern react, there's no need for React in scope
     "react-hooks/rules-of-hooks": "warn",
     "arrow-body-style": [1, "as-needed"] // WHY: VSC can quickly add/remove braces for arrow functions. This rule just makes code more transparent.
   }

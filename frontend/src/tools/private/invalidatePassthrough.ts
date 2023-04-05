@@ -1,4 +1,4 @@
-import { QueryClient, QueryKey } from 'react-query';
+import type { QueryClient, QueryKey } from 'react-query';
 
 export function invalidatePassthrough(
   queryClient: QueryClient,
@@ -11,6 +11,7 @@ export function invalidatePassthrough(
     ).forEach((queryKey) => {
       void queryClient.invalidateQueries(queryKey);
     });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return data;
   };
 }

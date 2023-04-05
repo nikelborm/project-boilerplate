@@ -1,19 +1,19 @@
 export function copyTextToClipboard(
   text: string,
   onSuccess: () => void,
-  onError: () => void,
+  onError: (...args: any[]) => void,
 ) {
   if (!navigator.clipboard) {
     fallbackCopyTextToClipboard(text, onSuccess, onError);
     return;
   }
-  navigator.clipboard.writeText(text).then(onSuccess, onError);
+  navigator.clipboard.writeText(text).then(onSuccess, onError).catch(onError);
 }
 
 function fallbackCopyTextToClipboard(
   text: string,
   onSuccess: () => void,
-  onError: () => void,
+  onError: (...args: any[]) => void,
 ) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
@@ -35,7 +35,7 @@ function fallbackCopyTextToClipboard(
       onError();
     }
   } catch (err) {
-    onError();
+    onError(err);
   }
 
   document.body.removeChild(textArea);

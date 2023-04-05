@@ -11,7 +11,7 @@ export function useRegistrationMutation() {
             needsAccessToken: false,
             needsJsonResponseBodyParsing: true,
             requestDTOclass: CreateUserRequestDTO,
-            responseDTOclass: AuthTokenPairDTO,
+            responseDTOClass: AuthTokenPairDTO,
             body: user,
           })
         : Promise.reject(new Error('Passwords does not match!')),

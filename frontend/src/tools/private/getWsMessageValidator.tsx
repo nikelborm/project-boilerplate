@@ -1,7 +1,7 @@
 import { validate } from '../shared';
 
 export function getWsMessageValidator<T>(dto: new () => T) {
-  function validateWsMessage(message: any) {
+  function validateWsMessage(message: T) {
     const { errors, payloadInstance } = validate<T>(message, dto);
     if (errors.length) {
       throw new Error(

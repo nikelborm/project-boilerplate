@@ -1,5 +1,5 @@
 import { DebugLinks } from '@/app/components/DebugLinks';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Client page',

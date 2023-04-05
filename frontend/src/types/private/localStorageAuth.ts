@@ -1,4 +1,4 @@
-import { AccessTokenPayloadDTO, RefreshTokenPayloadDTO } from '../shared';
+import type { AccessTokenPayloadDTO, RefreshTokenPayloadDTO } from '../shared';
 
 export type ISession =
   | { isAuthed: false }

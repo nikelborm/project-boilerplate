@@ -1,5 +1,5 @@
-import React from 'react';
-import { ISession } from './localStorageAuth';
+import type React from 'react';
+import type { ISession } from './localStorageAuth';
 
 export enum RoutesEnum {
   /* 1 */ LOGIN = 'login',

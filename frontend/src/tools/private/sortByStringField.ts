@@ -1,4 +1,7 @@
-import { KeysFilteredByValueType } from './KeysFilteredByValueType';
+/* eslint-disable security/detect-object-injection */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { KeysFilteredByValueType } from './KeysFilteredByValueType';
 
 export function sortByStringField<T extends Record<string, any>>(
   field: KeysFilteredByValueType<T, string>,

@@ -4,21 +4,37 @@ import { API_PATH } from '@/constant';
 import { authStore } from './authStore';
 import { validate } from '../shared/validate';
 
-export function customFetch<TRequest>(
-  target: RequestInfo,
-  customFetchOptions: CustomFetchOptions<TRequest, 'notParse'>,
-): Promise<Response>;
+export function customFetch<
+  const TRequest,
+  const TOptions extends {
+    needsJsonResponseBodyParsing: false;
+  } & CustomFetchOptionsBase<TRequest>,
+>(target: RequestInfo, customFetchOptions: TOptions): Promise<Response>;
 
-export function customFetch<TRequest, TResponse>(
+export function customFetch<
+  const TRequest,
+  const TOptions extends {
+    needsJsonResponseBodyParsing: true;
+    responseDTOClass?: (new () => Record<string, any>) | undefined;
+  } & CustomFetchOptionsBase<TRequest>,
+>(
   target: RequestInfo,
-  customFetchOptions: CustomFetchOptions<
-    TRequest,
-    'parseJsonBodyAndValidateIfSchemaDTOProvided',
-    TResponse
-  >,
-): Promise<TResponse>;
+  customFetchOptions: TOptions,
+): Promise<
+  keyof TOptions extends Exclude<keyof TOptions, 'responseDTOClass'>
+    ? Record<string, any> // 'responseDTOClass' not in customFetchOptions
+    : TOptions extends { responseDTOClass: new () => infer TResponse }
+    ? TResponse
+    : Record<string, any> //  customFetchOptions['responseDTOClass'] is undefined
+>;
 
-export async function customFetch<TRequest, TResponse>(
+export async function customFetch<
+  TRequest,
+  const TOptions extends CustomFetchOptionsBase<TRequest> & {
+    needsJsonResponseBodyParsing: boolean;
+    responseDTOClass?: new () => Record<string, any>;
+  },
+>(
   target: RequestInfo,
   {
     method,
@@ -28,13 +44,10 @@ export async function customFetch<TRequest, TResponse>(
     needsAccessToken = true,
     needsJsonResponseBodyParsing,
     requestDTOclass,
-    responseDTOclass,
+    responseDTOClass,
     baseUrl = API_PATH, // Project-specific
-  }: CustomFetchOptionsBase<TRequest> & {
-    needsJsonResponseBodyParsing: boolean;
-    responseDTOclass?: new () => TResponse;
-  },
-): CustomFetchResponse<TResponse> {
+  }: TOptions,
+): CustomFetchResponse<FetchReturnType<TRequest, TOptions>> {
   const nextHeaders: HeadersInit = { ...headers };
 
   const options: RequestInit = {};
@@ -68,8 +81,9 @@ export async function customFetch<TRequest, TResponse>(
 
   options.headers = new Headers(nextHeaders);
 
-  const urlToFetch = new URL(`${baseUrl}${target}`);
+  const urlToFetch = new URL(`${baseUrl}${target.toString()}`);
   const urlParamsAdditional = new URLSearchParams(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     JSON.parse(JSON.stringify(params ?? {})), // JSON to remove undefined values
   );
 
@@ -82,30 +96,48 @@ export async function customFetch<TRequest, TResponse>(
   }
 
   const responseData = await fetch(urlToFetch.href, options).then(
-    getResponseParsingFn(needsJsonResponseBodyParsing, responseDTOclass),
+    getResponseParsingFn(needsJsonResponseBodyParsing, responseDTOClass) as (
+      r: Response,
+    ) => FetchReturnType<TRequest, TOptions>,
   );
 
   return responseData;
 }
 
-function getResponseParsingFn<TResponse>(
+type FetchReturnType<
+  TRequest,
+  TOptions extends CustomFetchOptionsBase<TRequest> & {
+    needsJsonResponseBodyParsing: boolean;
+    responseDTOClass?: new () => Record<string, any>;
+  },
+> = Promise<
+  [TOptions['needsJsonResponseBodyParsing']] extends [true]
+    ? Response
+    : keyof TOptions extends Exclude<keyof TOptions, 'responseDTOClass'>
+    ? Record<string, any> // 'responseDTOClass' not in customFetchOptions
+    : TOptions extends { responseDTOClass: new () => infer TResponse }
+    ? TResponse
+    : Record<string, any> //  customFetchOptions['responseDTOClass'] is undefined
+>;
+
+function getResponseParsingFn(
   shouldParseJsonBody: boolean,
-  validationModelDTO?: new () => TResponse,
-): (res: Response) => CustomFetchResponse<TResponse> {
-  if (!shouldParseJsonBody) return async (response) => response;
+  validationModelDTO?: new () => Record<string, any>,
+) {
+  if (shouldParseJsonBody === false) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return async (response) => await Promise.resolve(response);
+  }
 
-  return async (
-    res: Response,
-  ): Promise<
-    [TResponse] extends [undefined] ? Record<string, any> : TResponse
-  > => {
-    const parsed = await res.json();
+  return async (res: Response) => {
+    const parsed = (await res.json()) as Record<string, any>;
 
-    if (!res.ok) throw parsed ?? res.statusText;
+    if (!res.ok) throw new Error((await res.text()) ?? res.statusText);
 
     if (!validationModelDTO) return parsed;
 
     const { errors, payloadInstance } = validate(parsed, validationModelDTO);
+
     if (errors.length) {
       // eslint-disable-next-line no-console
       console.error([payloadInstance, errors]);
@@ -115,6 +147,7 @@ function getResponseParsingFn<TResponse>(
         )}`,
       );
     }
+
     return payloadInstance;
   };
 }
@@ -128,25 +161,6 @@ type CustomFetchOptionsBase<TRequest> = {
   baseUrl?: string;
   requestDTOclass?: new () => TRequest;
 };
-
-type CustomFetchOptions<
-  TRequest,
-  ResponseBodyParsingMode extends
-    | 'notParse'
-    | 'parseJsonBodyAndValidateIfSchemaDTOProvided',
-  TResponse = Record<string, any>,
-> = [ResponseBodyParsingMode] extends ['notParse']
-  ? CustomFetchOptionsBase<TRequest> & {
-      needsJsonResponseBodyParsing: false;
-    }
-  : [ResponseBodyParsingMode] extends [
-      'parseJsonBodyAndValidateIfSchemaDTOProvided',
-    ]
-  ? CustomFetchOptionsBase<TRequest> & {
-      needsJsonResponseBodyParsing: true;
-      responseDTOclass?: new () => TResponse;
-    }
-  : never;
 
 type CustomFetchResponse<TResponse> = Promise<
   Response | Record<string, any> | TResponse

@@ -5,6 +5,7 @@ export const displayErrorNotification = (err: any) =>
     <>
       Error
       <div style={{ textAlign: 'left' }}>
+        {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */}
         {err?.message?.split('\n').map((e) => (
           <>
             {e}

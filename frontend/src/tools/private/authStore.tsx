@@ -1,14 +1,13 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
 import decodeJWT from 'jwt-decode';
-import { ISession } from '@/types';
+import type { ISession } from '@/types';
+import type { RefreshTokenDTO, AccessTokenDTO } from '@/types/shared';
 import {
   AccessTokenPayloadDTO,
   RefreshTokenPayloadDTO,
   RefreshTokenPairRequestDTO,
   AuthTokenPairDTO,
-  RefreshTokenDTO,
-  AccessTokenDTO,
 } from '@/types/shared';
 import { LOCAL_STORAGE_TOKEN_PAIR_KEY } from '@/constant';
 // eslint-disable-next-line import/no-cycle
@@ -66,7 +65,7 @@ class AuthStore {
       this.lastTokenPairRefreshPromise = customFetch('auth/refresh', {
         needsJsonResponseBodyParsing: true,
         requestDTOclass: RefreshTokenPairRequestDTO,
-        responseDTOclass: AuthTokenPairDTO,
+        responseDTOClass: AuthTokenPairDTO,
         method: 'POST',
         needsAccessToken: false,
 
@@ -79,10 +78,11 @@ class AuthStore {
           this.lastTokenPairRefreshPromise = null;
           return newTokenPair;
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           if (
-            err?.message ===
-            'Your session was finished because of long inactivity.\nIf you used your account less than a week ago, your account can be hacked.\nPlease open your settings and click the "Logout on all devices" button'
+            err &&
+            err['message'] ===
+            'Your session was finished because of long inactivity.\nIf you used your account on this device less than a week ago, your account may be hacked.\nTo be safe open your settings and click the "Logout on all devices" button'
           )
             updateTokenPair(null);
           // eslint-disable-next-line no-console
@@ -186,10 +186,6 @@ function setTokenPair(tokenPair: AuthTokenPairDTO | null): void {
 //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uVVVJRCI6IjEyMzQ1Njc4OTAiLCJ1c2VyIjp7ImlkIjoxMjN9fQ.smJFD1t3LyPvSd2HAT09_se_cWlJ65CmUl1Xtc7TEM8',
 // });
 
-function getLastSavedSession() {
-  return convertTokenPairToSession(getLastSavedTokenPair());
-}
-
 function getLastSavedTokenPair(): AuthTokenPairDTO | null {
   let tokenPair: AuthTokenPairDTO | null;
   try {
@@ -227,3 +223,9 @@ function convertTokenPairToSession(
     },
   };
 }
+
+function getLastSavedSession() {
+  return convertTokenPairToSession(getLastSavedTokenPair());
+}
+
+/* eslint-enable */

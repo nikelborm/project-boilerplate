@@ -29,9 +29,10 @@ module.exports = {
   },
   ignorePatterns: [".eslintrc.js"],
   rules: {
-    "n/file-extension-in-import": "off",
-    "n/no-missing-import": "off",
+    "file-extension-in-import": "off",
+    "no-missing-import": "off",
     "import/no-default-export": "error",
+    "import/extensions": "off",
     "new-cap": "off",
     "putout/putout": "off",
     "total-functions/no-unsafe-enum-assignment": "off",

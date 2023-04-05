@@ -1,4 +1,6 @@
-import { Table, TableProps } from 'antd';
+/* eslint-disable */
+import type { TableProps } from 'antd';
+import { Table } from 'antd';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useEffect, useRef, useState } from 'react';
 import { VariableSizeGrid as Grid } from 'react-window';
@@ -65,7 +67,7 @@ export function VirtualTable<T extends object>(props: TableProps<T>) {
           const { width } = mergedColumns[index];
           return totalHeight >
             (typeof scroll!.y! === 'string'
-              ? parseFloat(scroll!.y!)
+              ? parseFloat(scroll!.y)
               : scroll!.y!) && index === mergedColumns.length - 1
             ? (width as number) - scrollbarSize - 1
             : (width as number);
@@ -130,3 +132,4 @@ export function VirtualTable<T extends object>(props: TableProps<T>) {
     </ResizeObserver>
   );
 }
+/* eslint-enable */

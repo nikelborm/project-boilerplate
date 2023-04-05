@@ -1,5 +1,5 @@
 import { DebugLinks } from '@/app/components/DebugLinks';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { LoginWithGoogleButton } from './LoginWithGoogleButton';
 
 export const metadata: Metadata = {

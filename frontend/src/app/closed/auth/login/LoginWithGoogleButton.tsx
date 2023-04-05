@@ -16,8 +16,7 @@ export function LoginWithGoogleButton() {
     // }, 10000);
   };
   useEffect(() => {
-    const onMessage = (event) => {
-      console.log('event.origin: ', event.origin);
+    const onMessage = (event: { origin: string; data: any }) => {
       if (event.origin !== 'http://localhost') return;
       // console.log(event);
       console.log(event.data);

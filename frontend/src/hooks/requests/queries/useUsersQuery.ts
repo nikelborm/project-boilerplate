@@ -7,7 +7,7 @@ export function useAllUsersQuery() {
     customFetch('user/all', {
       method: 'GET',
       needsJsonResponseBodyParsing: true,
-      responseDTOclass: FindManyUsersResponseDTO,
+      responseDTOClass: FindManyUsersResponseDTO,
       needsAccessToken: true,
     }),
   );

@@ -1,3 +1,7 @@
+export enum SocialNetworkType {
+  FACEBOOK = 'facebook',
+}
+
 export interface ExternalLinkToSocialNetworkAccountOfUser {
   url: string;
   type: SocialNetworkType;
@@ -5,7 +9,3 @@ export interface ExternalLinkToSocialNetworkAccountOfUser {
 
 export type ManyLinksToSocialNetworks =
   ExternalLinkToSocialNetworkAccountOfUser[];
-
-export enum SocialNetworkType {
-  FACEBOOK = 'facebook',
-}
