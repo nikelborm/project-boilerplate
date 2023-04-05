@@ -31,7 +31,6 @@
     "@typescript-eslint/eslint-plugin",
     "etc",
     "import",
-    "nestjs",
     "prettier",
     "promise",
     "react-hooks",
