@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable security/detect-non-literal-regexp */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable security/detect-non-literal-fs-filename */
@@ -21,50 +22,57 @@ import {
   typeormModelInjectImport,
 } from '../common/index.js';
 
-const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
-  {
-    type: 'text',
-    name: 'first',
-    message: 'Many entities name (fully lower case) with space delimiter',
-  },
-  {
-    type: 'text',
-    name: 'second',
-    message: 'To one entity name (fully lower case) with space delimiter',
-  },
-  {
-    type: 'toggle',
-    name: 'dryRun',
-    message:
-      'Dry run? (Should script skip real writes to file?) [Press Tab to switch mode]',
-    initial: false,
-    active: 'yes',
-    inactive: 'no',
-  },
-  {
-    type: 'multiselect',
-    name: 'selectedFilesToGenerate',
-    message: 'Pick files to generate',
-    choices: [
-      {
-        title: 'Model mixins',
-        value: 'modelMixins',
-        selected: true,
-      },
-      {
-        title: 'Model interface mixins',
-        value: 'modelInterfaceMixins',
-        selected: true,
-      },
-      {
-        title: 'Relation map extension',
-        value: 'relationMapExtension',
-        selected: true,
-      },
-    ],
-    hint: '- Space to select. Enter to submit',
-  },
-]);
+const { first, second, dryRun, selectedFilesToGenerate, firstCamelMultiple } =
+  await prompts([
+    {
+      type: 'text',
+      name: 'first',
+      message: 'Many entities name (fully lower case) with space delimiter',
+    },
+    {
+      type: 'text',
+      name: 'firstCamelMultiple',
+      message: 'firstCamel multiple form:',
+      initial: (prev) => `${camelCase(prev)}s`,
+    },
+    {
+      type: 'text',
+      name: 'second',
+      message: 'To one entity name (fully lower case) with space delimiter',
+    },
+    {
+      type: 'toggle',
+      name: 'dryRun',
+      message:
+        'Dry run? (Should script skip real writes to file?) [Press Tab to switch mode]',
+      initial: false,
+      active: 'yes',
+      inactive: 'no',
+    },
+    {
+      type: 'multiselect',
+      name: 'selectedFilesToGenerate',
+      message: 'Pick files to generate',
+      choices: [
+        {
+          title: 'Model mixins',
+          value: 'modelMixins',
+          selected: true,
+        },
+        {
+          title: 'Model interface mixins',
+          value: 'modelInterfaceMixins',
+          selected: true,
+        },
+        {
+          title: 'Relation map extension',
+          value: 'relationMapExtension',
+          selected: true,
+        },
+      ],
+      hint: '- Space to select. Enter to submit',
+    },
+  ]);
 
 const firstPascal = pascalCase(first);
 const firstCamel = camelCase(first);
@@ -74,7 +82,7 @@ const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
 
 const getMixinToMultipleSideOfRelation = () => `
-  @ManyToOne(() => ${secondPascal}, (${secondCamel}) => ${secondCamel}.${firstCamel}s)
+  @ManyToOne(() => ${secondPascal}, (${secondCamel}) => ${secondCamel}.${firstCamelMultiple})
   @JoinColumn({ name: '${secondSnake}_id' })
   ${secondCamel}!: ${secondPascal};
 
@@ -90,7 +98,7 @@ const getMixinToMultipleSideEntityInRelationMap =
 `;
 
 const getMixinToSingleSideEntityInRelationMap =
-  () => `      ${firstCamel}s: ['${firstPascal}'],
+  () => `      ${firstCamelMultiple}: ['${firstPascal}'],
 `;
 
 const getMixinToSingleSideOfRelation = () => `
@@ -98,7 +106,7 @@ const getMixinToSingleSideOfRelation = () => `
     () => ${firstPascal},
     (${firstCamel}) => ${firstCamel}.${secondCamel},
   )
-  ${firstCamel}s!: ${firstPascal}[];
+  ${firstCamelMultiple}!: ${firstPascal}[];
 `;
 
 const getMixinToMultipleSideOfRelationInterface = () => `
@@ -108,7 +116,7 @@ const getMixinToMultipleSideOfRelationInterface = () => `
 `;
 
 const getMixinToSingleSideOfRelationInterface = () => `
-  ${firstCamel}s!: I${firstPascal}[];
+  ${firstCamelMultiple}!: I${firstPascal}[];
 `;
 
 const getFirstModelImportMixin = () => `

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable security/detect-non-literal-regexp */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable security/detect-non-literal-fs-filename */
@@ -25,7 +26,15 @@ import {
   writeNewRepositoryFileAndExtendDirReexportsAndLog,
 } from '../common/index.js';
 
-const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
+const {
+  first,
+  second,
+  dryRun,
+  selectedFilesToGenerate,
+  firstCamelMultiple,
+  secondCamelMultiple,
+  intermediatePascal,
+} = await prompts([
   {
     type: 'text',
     name: 'first',
@@ -33,8 +42,27 @@ const { first, second, dryRun, selectedFilesToGenerate } = await prompts([
   },
   {
     type: 'text',
+    name: 'firstCamelMultiple',
+    message: 'firstCamel multiple form:',
+    initial: (prev) => `${camelCase(prev)}s`,
+  },
+  {
+    type: 'text',
     name: 'second',
     message: 'Second entity name (fully lower case) with space delimiter',
+  },
+  {
+    type: 'text',
+    name: 'secondCamelMultiple',
+    message: 'secondCamel multiple form:',
+    initial: (prev) => `${camelCase(prev)}s`,
+  },
+  {
+    type: 'text',
+    name: 'intermediatePascal',
+    message: 'Intermediate pascal entity name',
+    initial: (prev, values) =>
+      `${pascalCase(values.first)}To${pascalCase(values.second)}`,
   },
   {
     type: 'toggle',
@@ -80,6 +108,9 @@ const secondPascal = pascalCase(second);
 const secondSnake = snakeCase(second);
 const secondCamel = camelCase(second);
 
+const intermediateCamel = camelCase(intermediatePascal);
+const intermediateSnake = snakeCase(intermediatePascal);
+
 const getIntermediateModel =
   () => `/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -87,19 +118,19 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ${secondPascal}, ${firstPascal} } from '.';
 ${
   selectedFilesToGenerate.includes('interfaces')
-    ? `import type { I${firstPascal}To${secondPascal} } from 'src/types';`
+    ? `import type { I${intermediatePascal} } from 'src/types';`
     : ''
 }
 
-@Entity({ name: '${firstSnake}_to_${secondSnake}' })
-export class ${firstPascal}To${secondPascal} ${
+@Entity({ name: '${intermediateSnake}' })
+export class ${intermediatePascal} ${
     selectedFilesToGenerate.includes('interfaces')
-      ? `implements I${firstPascal}To${secondPascal} `
+      ? `implements I${intermediatePascal} `
       : ''
   }{
   @ManyToOne(
     () => ${firstPascal},
-    (${firstCamel}) => ${firstCamel}.${firstCamel}To${secondPascal}Relations,
+    (${firstCamel}) => ${firstCamel}.${intermediateCamel}Relations,
   )
   @JoinColumn({ name: '${firstSnake}_id' })
   ${firstCamel}!: ${firstPascal};
@@ -113,7 +144,7 @@ export class ${firstPascal}To${secondPascal} ${
 
   @ManyToOne(
     () => ${secondPascal},
-    (${secondCamel}) => ${secondCamel}.${firstCamel}To${secondPascal}Relations,
+    (${secondCamel}) => ${secondCamel}.${intermediateCamel}Relations,
   )
   @JoinColumn({ name: '${secondSnake}_id' })
   ${secondCamel}!: ${secondPascal};
@@ -130,7 +161,7 @@ export class ${firstPascal}To${secondPascal} ${
 const getIntermediateModelInterface =
   () => `import type { I${secondPascal}, I${firstPascal} } from '.';
 
-export class I${firstPascal}To${secondPascal} {
+export class I${intermediatePascal} {
   ${firstCamel}!: I${firstPascal};
 
   ${firstCamel}Id!: number;
@@ -147,42 +178,42 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DefaultEntityWithIdentityRepoImplementation } from 'src/tools';
 import { Repository } from 'typeorm';
 import {
-  DI_${firstPascal}To${secondPascal}Repo,
+  DI_${intermediatePascal}Repo,
   type RepoTypes,
-} from '../di/${firstCamel}To${secondPascal}.repo.di';
-import { ${firstPascal}To${secondPascal} } from '../model';
+} from '../di/${intermediateCamel}.repo.di';
+import { ${intermediatePascal} } from '../model';
 
 @Injectable()
-class ${firstPascal}To${secondPascal}Repo
+class ${intermediatePascal}Repo
   extends DefaultEntityWithIdentityRepoImplementation<RepoTypes>
-  implements DI_${firstPascal}To${secondPascal}Repo
+  implements DI_${intermediatePascal}Repo
 {
   constructor(
-    @InjectRepository(${firstPascal}To${secondPascal})
-    protected override readonly repo: Repository<${firstPascal}To${secondPascal}>,
+    @InjectRepository(${intermediatePascal})
+    protected override readonly repo: Repository<${intermediatePascal}>,
   ) {
     super(repo);
   }
 }
 
-export const ${firstPascal}To${secondPascal}RepoDIProvider: Provider = {
-  provide: DI_${firstPascal}To${secondPascal}Repo,
-  useClass: ${firstPascal}To${secondPascal}Repo,
+export const ${intermediatePascal}RepoDIProvider: Provider = {
+  provide: DI_${intermediatePascal}Repo,
+  useClass: ${intermediatePascal}Repo,
 };
 `;
 
 const getIntermediateModelDI_Repo = () => `import {
   type EntityRepoMethodTypes,
-  type I${firstPascal}To${secondPascal},
+  type I${intermediatePascal},
   IDefaultIdentityRepo,
 } from 'src/types';
 
-export abstract class DI_${firstPascal}To${secondPascal}Repo extends IDefaultIdentityRepo<RepoTypes> {}
+export abstract class DI_${intermediatePascal}Repo extends IDefaultIdentityRepo<RepoTypes> {}
 
 export type RepoTypes = EntityRepoMethodTypes<
-  I${firstPascal}To${secondPascal},
+  I${intermediatePascal},
   {
-    EntityName: '${firstPascal}To${secondPascal}';
+    EntityName: '${intermediatePascal}';
 
     RequiredToCreateAndSelectRegularPlainKeys: '${firstCamel}Id' | '${secondCamel}Id';
 
@@ -199,87 +230,86 @@ export type RepoTypes = EntityRepoMethodTypes<
 const getFirstModelMixin = () => `
   @ManyToMany(
     () => ${secondPascal},
-    (${secondCamel}) => ${secondCamel}.${firstCamel}sWithThat${secondPascal},
+    (${secondCamel}) => ${secondCamel}.${firstCamelMultiple}WithThat${secondPascal},
   )
   @JoinTable({
-    name: '${firstSnake}_to_${secondSnake}',
+    name: '${intermediateSnake}',
     joinColumn: { name: '${firstSnake}_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: '${secondSnake}_id', referencedColumnName: 'id' },
     // synchronize is important flag! Without it your migrations will have two conflicting declarations for question_to_category table
     // from https://github.com/typeorm/typeorm/blob/master/docs/decorator-reference.md#jointable
     synchronize: false,
   })
-  ${secondCamel}s!: ${secondPascal}[];
+  ${secondCamelMultiple}!: ${secondPascal}[];
 
   @OneToMany(
-    () => ${firstPascal}To${secondPascal},
-    (${firstCamel}To${secondPascal}) => ${firstCamel}To${secondPascal}.${firstCamel},
+    () => ${intermediatePascal},
+    (${intermediateCamel}) => ${intermediateCamel}.${firstCamel},
   )
-  ${firstCamel}To${secondPascal}Relations!: ${firstPascal}To${secondPascal}[];
+  ${intermediateCamel}Relations!: ${intermediatePascal}[];
 `;
 
 const getFirstModelImportMixin = () => `
-import { ${secondPascal}, ${firstPascal}To${secondPascal} } from '.';`;
+import { ${secondPascal}, ${intermediatePascal} } from '.';`;
 
 const getFirstInterfaceImportMixin = () => `
-import type { I${secondPascal}, I${firstPascal}To${secondPascal} } from '.';`;
+import type { I${secondPascal}, I${intermediatePascal} } from '.';`;
 
 const getSecondModelMixin = () => `
   @ManyToMany(
     () => ${firstPascal},
-    (${firstCamel}) => ${firstCamel}.${secondCamel}s,
+    (${firstCamel}) => ${firstCamel}.${secondCamelMultiple},
   )
-  ${firstCamel}sWithThat${secondPascal}!: ${firstPascal}[];
+  ${firstCamelMultiple}WithThat${secondPascal}!: ${firstPascal}[];
 
   @OneToMany(
-    () => ${firstPascal}To${secondPascal},
-    (${firstCamel}To${secondPascal}) => ${firstCamel}To${secondPascal}.${secondCamel},
+    () => ${intermediatePascal},
+    (${intermediateCamel}) => ${intermediateCamel}.${secondCamel},
   )
-  ${firstCamel}To${secondPascal}Relations!: ${firstPascal}To${secondPascal}[];
+  ${intermediateCamel}Relations!: ${intermediatePascal}[];
 `;
 
 const getSecondModelImportMixin = () => `
-import { ${firstPascal}, ${firstPascal}To${secondPascal} } from '.';`;
+import { ${firstPascal}, ${intermediatePascal} } from '.';`;
 
 const getSecondInterfaceImportMixin = () => `
-import type { I${firstPascal}, I${firstPascal}To${secondPascal} } from '.';`;
+import type { I${firstPascal}, I${intermediatePascal} } from '.';`;
 
 const getFirstModelInterfaceMixin = () => `
-  ${secondCamel}s!: I${secondPascal}[];
+  ${secondCamelMultiple}!: I${secondPascal}[];
 
-  ${firstCamel}To${secondPascal}Relations!: I${firstPascal}To${secondPascal}[];
+  ${intermediateCamel}Relations!: I${intermediatePascal}[];
 `;
 
 const getSecondModelInterfaceMixin = () => `
-  ${firstCamel}sWithThat${secondPascal}!: I${firstPascal}[];
+  ${firstCamelMultiple}WithThat${secondPascal}!: I${firstPascal}[];
 
-  ${firstCamel}To${secondPascal}Relations!: I${firstPascal}To${secondPascal}[];
+  ${intermediateCamel}Relations!: I${intermediatePascal}[];
 `;
 
 const getMixinToFirstModelInRelationMap =
-  () => `      ${secondCamel}s: ['${secondPascal}'],
-      ${firstCamel}To${secondPascal}Relations: ['${firstPascal}To${secondPascal}'],
+  () => `      ${secondCamelMultiple}: ['${secondPascal}'],
+      ${intermediateCamel}Relations: ['${intermediatePascal}'],
 `;
 
 const getMixinToSecondModelInRelationMap =
-  () => `      ${firstCamel}sWithThat${secondPascal}: ['${firstPascal}'],
-      ${firstCamel}To${secondPascal}Relations: ['${firstPascal}To${secondPascal}'],
+  () => `      ${firstCamelMultiple}WithThat${secondPascal}: ['${firstPascal}'],
+      ${intermediateCamel}Relations: ['${intermediatePascal}'],
 `;
 
-const getIntermediateModelToRelationMapMixin =
-  () => `  ${firstPascal}To${secondPascal}: {
+const getIntermediateModelToRelationMapMixin = () => `  ${intermediatePascal}: {
     identityKeys: ['${firstCamel}Id', '${secondCamel}Id'],
     relationToEntityNameMap: {
       ${firstCamel}: '${firstPascal}',
       ${secondCamel}: '${secondPascal}',
-      // ${firstPascal}To${secondPascal} relationToEntityNameMap token
+      // ${intermediatePascal} relationToEntityNameMap token
     },
   },
 `;
 
 if (selectedFilesToGenerate.includes('models')) {
   await writeNewModelFileAndExtendDirReexportsAndLog(
-    `${firstPascal}To${secondPascal}`,
+    `${intermediatePascal}`,
     getIntermediateModel(),
     dryRun,
   );
@@ -308,7 +338,7 @@ if (selectedFilesToGenerate.includes('models')) {
 
 if (selectedFilesToGenerate.includes('interfaces')) {
   await writeNewModelInterfaceFileAndExtendDirReexportsAndLog(
-    `${firstPascal}To${secondPascal}`,
+    `${intermediatePascal}`,
     getIntermediateModelInterface(),
     dryRun,
   );
@@ -340,7 +370,7 @@ if (selectedFilesToGenerate.includes('interfaces')) {
 
 if (selectedFilesToGenerate.includes('repository')) {
   await writeNewRepositoryFileAndExtendDirReexportsAndLog(
-    `${firstPascal}To${secondPascal}`,
+    `${intermediatePascal}`,
     getIntermediateModelRepo(),
     dryRun,
   );
@@ -348,7 +378,7 @@ if (selectedFilesToGenerate.includes('repository')) {
 
 if (selectedFilesToGenerate.includes('DI_Repository')) {
   await writeNewDI_RepoFileAndExtendDirReexportsAndLog(
-    `${firstPascal}To${secondPascal}`,
+    `${intermediatePascal}`,
     getIntermediateModelDI_Repo(),
     dryRun,
   );
@@ -356,7 +386,7 @@ if (selectedFilesToGenerate.includes('DI_Repository')) {
 
 if (selectedFilesToGenerate.includes('relationMapExtension')) {
   await appendRelationMapMixinToFileAndLog(
-    `${firstPascal}To${secondPascal}`,
+    `${intermediatePascal}`,
     getIntermediateModelToRelationMapMixin(),
     dryRun,
     / {2}\/\/ RelationMapValue end token/g,

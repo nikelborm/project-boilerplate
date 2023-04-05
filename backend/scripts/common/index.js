@@ -38,7 +38,7 @@ export const typeormModelInjectImport = async (
 ) => {
   console.log('entityName: ', entityName);
   const typeormImportsRegexp =
-    /(import {[\nA-Za-z, ]*)( |,[ ]*\n)} from 'typeorm';/g;
+    /(import {[\nA-Za-z, ]*)( |,\n)} from 'typeorm';/g;
 
   const filePath = join(
     dirname(fileURLToPath(import.meta.url)),
@@ -62,10 +62,8 @@ export const typeormModelInjectImport = async (
 
   if (shouldWeInjectImport)
     tsFileContent = `${tsFileContent.slice(0, index + group.length)}${
-      spaceGroup === ' ' ? ', ' : ''
-    }${searchForInjectable}${
-      spaceGroup === ' ' ? '' : ' '
-    }${tsFileContent.slice(index + group.length)}`;
+      spaceGroup === ' ' ? ', ' : ',\n  '
+    }${searchForInjectable}${tsFileContent.slice(index + group.length)}`;
 
   console.log(tsFileContent);
 

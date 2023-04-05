@@ -21,11 +21,11 @@ export function customFetch<
   target: RequestInfo,
   customFetchOptions: TOptions,
 ): Promise<
-  keyof TOptions extends Exclude<keyof TOptions, 'responseDTOClass'>
-    ? Record<string, any> // 'responseDTOClass' not in customFetchOptions
-    : TOptions extends { responseDTOClass: new () => infer TResponse }
-    ? TResponse
-    : Record<string, any> //  customFetchOptions['responseDTOClass'] is undefined
+  'responseDTOClass' extends keyof TOptions
+    ? TOptions extends { responseDTOClass: new () => infer TResponse }
+      ? TResponse
+      : Record<string, any> //  customFetchOptions['responseDTOClass'] is undefined
+    : Record<string, any> // 'responseDTOClass' not in customFetchOptions
 >;
 
 export async function customFetch<

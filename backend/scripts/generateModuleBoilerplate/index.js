@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable security/detect-non-literal-regexp */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable security/detect-non-literal-fs-filename */
@@ -20,7 +21,13 @@ import {
 } from '../common/index.js';
 import { closeSync, openSync } from 'fs';
 
-const { entityName, dryRun, selectedFilesToGenerate } = await prompts([
+const {
+  entityName,
+  camelMultiple,
+  pascalMultiple,
+  dryRun,
+  selectedFilesToGenerate /* , entityNameMultiples */,
+} = await prompts([
   {
     type: 'text',
     name: 'entityName',
@@ -28,6 +35,18 @@ const { entityName, dryRun, selectedFilesToGenerate } = await prompts([
 Currently supported generation only for entities with single id column`)}
 
 Entity name (fully lower case) with space delimiter`,
+  },
+  {
+    type: 'text',
+    name: 'camelMultiple',
+    message: 'Camel multiple form:',
+    initial: (prev) => `${camelCase(prev)}s`,
+  },
+  {
+    type: 'text',
+    name: 'pascalMultiple',
+    message: 'Pascal multiple form:',
+    initial: (prev) => pascalCase(prev),
   },
   {
     type: 'toggle',
@@ -104,6 +123,8 @@ Entity name (fully lower case) with space delimiter`,
 const pascal = pascalCase(entityName);
 const camel = camelCase(entityName);
 
+// console.log('entityNameMultiples: ', entityNameMultiples);
+
 const getModule = () => `import { Module } from '@nestjs/common';${
   selectedFilesToGenerate.includes('controller')
     ? `\nimport { ${pascal}Controller } from './${camel}.controller';`
@@ -158,8 +179,8 @@ class ${pascal}UseCase implements DI_${pascal}UseCase {
   async getManyByIds(
     ${camel}Ids: number[],
   ): Promise<${pascal}RepoTypes['Public']['SelectedOnePlainEntity'][]> {
-    const ${camel}s = await this.${camel}Repo.findManyByIds(${camel}Ids);
-    const foundIds = ${camel}s.map(({ id }) => id);
+    const ${camelMultiple} = await this.${camel}Repo.findManyByIds(${camel}Ids);
+    const foundIds = ${camelMultiple}.map(({ id }) => id);
     const { missingValues: missingIds } = getRedundantAndMissingValues(
       ${camel}Ids,
       foundIds,
@@ -172,14 +193,14 @@ class ${pascal}UseCase implements DI_${pascal}UseCase {
           '${camel}',
         ),
       );
-    return ${camel}s;
+    return ${camelMultiple};
   }
 
   createOne${pascal}: ${pascal}RepoTypes['Public']['CreateOnePlainEntityFunctionType'] =
     async (${camel}) => await this.${camel}Repo.createOnePlain(${camel});
 
-  createMany${pascal}s: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'] =
-    async (${camel}s) => await this.${camel}Repo.createManyPlain(${camel}s);
+  createMany${pascalMultiple}: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'] =
+    async (${camelMultiple}) => await this.${camel}Repo.createManyPlain(${camelMultiple});
 
   async updateOne${pascal}<
     ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
@@ -190,17 +211,17 @@ class ${pascal}UseCase implements DI_${pascal}UseCase {
     );
   }
 
-  async updateMany${pascal}s<
+  async updateMany${pascalMultiple}<
     ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
-  >(${camel}s: ${pascal}ToUpdate[]): Promise<void> {
-    await this.${camel}Repo.updateManyPlain(${camel}s);
+  >(${camelMultiple}: ${pascal}ToUpdate[]): Promise<void> {
+    await this.${camel}Repo.updateManyPlain(${camelMultiple});
   }
 
   async deleteOne${pascal}ById(${camel}Id: number): Promise<void> {
     await this.${camel}Repo.deleteOneById(${camel}Id);
   }
 
-  async deleteMany${pascal}sByIds(${camel}Ids: number[]): Promise<void> {
+  async deleteMany${pascalMultiple}ByIds(${camel}Ids: number[]): Promise<void> {
     await this.${camel}Repo.deleteManyByIds(${camel}Ids);
   }
 }
@@ -230,19 +251,19 @@ export abstract class DI_${pascal}UseCase {
 
   abstract createOne${pascal}: ${pascal}RepoTypes['Public']['CreateOnePlainEntityFunctionType'];
 
-  abstract createMany${pascal}s: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'];
+  abstract createMany${pascalMultiple}: ${pascal}RepoTypes['Public']['CreateManyPlainEntitiesFunctionType'];
 
   abstract updateOne${pascal}<
     ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
   >({ id, ...updatedPart }: ${pascal}ToUpdate): Promise<void>;
 
-  abstract updateMany${pascal}s<
+  abstract updateMany${pascalMultiple}<
     ${pascal}ToUpdate extends ${pascal}RepoTypes['Public']['OnePlainEntityToBeUpdated'],
-  >(${camel}s: ${pascal}ToUpdate[]): Promise<void>;
+  >(${camelMultiple}: ${pascal}ToUpdate[]): Promise<void>;
 
   abstract deleteOne${pascal}ById(${camel}Id: number): Promise<void>;
 
-  abstract deleteMany${pascal}sByIds(${camel}Ids: number[]): Promise<void>;
+  abstract deleteMany${pascalMultiple}ByIds(${camel}Ids: number[]): Promise<void>;
 }
 `;
 
@@ -265,15 +286,15 @@ import {
   ValidatedBody,
 } from 'src/tools';
 import {
-  CreateMany${pascal}sRequestDTO,
-  CreateMany${pascal}sResponseDTO,
+  CreateMany${pascalMultiple}RequestDTO,
+  CreateMany${pascalMultiple}ResponseDTO,
   CreateOne${pascal}RequestDTO,
   CreateOne${pascal}ResponseDTO,
   EmptyResponseDTO,
-  FindMany${pascal}sResponseDTO,
+  FindMany${pascalMultiple}ResponseDTO,
   GetOne${pascal}ByIdResponseDTO,
   UpdatedPartOfOne${pascal}DTO,
-  UpdateMany${pascal}sRequestDTO,
+  UpdateMany${pascalMultiple}RequestDTO,
 } from 'src/types';
 import { DI_${pascal}UseCase } from './di';
 
@@ -289,27 +310,27 @@ export class ${pascal}Controller {
   })
   @ApiQuery({
     name: 'ids',
-    description: 'Get only ${camel}s with these ids',
+    description: 'Get only ${camelMultiple} with these ids',
     required: false,
     isArray: true,
     type: Number,
   })
   @Get('/batch')
   @ActiveSessionOnly()
-  async getAll${pascal}sOrFindByIds(
+  async getAll${pascalMultiple}OrFindByIds(
     @Query('search') search?: string | undefined,
     @Query(
       'ids',
       new ParseArrayPipe({ items: Number, optional: true, separator: ',' }),
     )
     ids?: number[] | undefined,
-  ): Promise<FindMany${pascal}sResponseDTO> {
+  ): Promise<FindMany${pascalMultiple}ResponseDTO> {
     if (ids)
       return {
-        ${camel}s: await this.${camel}UseCase.getManyByIds(ids),
+        ${camelMultiple}: await this.${camel}UseCase.getManyByIds(ids),
       };
     return {
-      ${camel}s: await this.${camel}UseCase.getAll(search),
+      ${camelMultiple}: await this.${camel}UseCase.getAll(search),
     };
   }
 
@@ -323,12 +344,12 @@ export class ${pascal}Controller {
 
   @Post('/batch')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
-  async createMany${pascal}s(
+  async createMany${pascalMultiple}(
     @ValidatedBody()
-    { ${camel}s }: CreateMany${pascal}sRequestDTO,
-  ): Promise<CreateMany${pascal}sResponseDTO> {
+    { ${camelMultiple} }: CreateMany${pascalMultiple}RequestDTO,
+  ): Promise<CreateMany${pascalMultiple}ResponseDTO> {
     return {
-      created${pascal}s: await this.${camel}UseCase.createMany${pascal}s(${camel}s),
+      created${pascalMultiple}: await this.${camel}UseCase.createMany${pascalMultiple}(${camelMultiple}),
     };
   }
 
@@ -343,11 +364,11 @@ export class ${pascal}Controller {
 
   @Put('/batch')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
-  async updateMany${pascal}s(
+  async updateMany${pascalMultiple}(
     @ValidatedBody()
-    { ${camel}s }: UpdateMany${pascal}sRequestDTO,
+    { ${camelMultiple} }: UpdateMany${pascalMultiple}RequestDTO,
   ): Promise<EmptyResponseDTO> {
-    await this.${camel}UseCase.updateMany${pascal}s(${camel}s);
+    await this.${camel}UseCase.updateMany${pascalMultiple}(${camelMultiple});
     return {};
   }
 
@@ -364,14 +385,14 @@ export class ${pascal}Controller {
 
   @Delete('/batch')
   @AllowedFor(AccessEnum.SYSTEM_ADMIN)
-  async deleteMany${pascal}s(
+  async deleteMany${pascalMultiple}(
     @Query(
       'ids',
       new ParseArrayPipe({ items: Number, optional: false, separator: ',' }),
     )
     ${camel}Ids: number[],
   ): Promise<EmptyResponseDTO> {
-    await this.${camel}UseCase.deleteMany${pascal}sByIds(${camel}Ids);
+    await this.${camel}UseCase.deleteMany${pascalMultiple}ByIds(${camel}Ids);
     return {};
   }
 
@@ -393,9 +414,9 @@ import { NestedArrayDTO } from '../../../../../tools/shared';
 export class CreateOne${pascal}RequestDTO {
 }
 
-export class CreateMany${pascal}sRequestDTO {
+export class CreateMany${pascalMultiple}RequestDTO {
   @NestedArrayDTO(() => CreateOne${pascal}RequestDTO)
-  ${camel}s!: CreateOne${pascal}RequestDTO[];
+  ${camelMultiple}!: CreateOne${pascal}RequestDTO[];
 }
 `;
 
@@ -412,9 +433,9 @@ export class UpdateOne${pascal}RequestDTO extends UpdatedPartOfOne${pascal}DTO {
   id!: number;
 }
 
-export class UpdateMany${pascal}sRequestDTO {
+export class UpdateMany${pascalMultiple}RequestDTO {
   @NestedArrayDTO(() => UpdateOne${pascal}RequestDTO)
-  ${camel}s!: UpdateOne${pascal}RequestDTO[];
+  ${camelMultiple}!: UpdateOne${pascal}RequestDTO[];
 }
 `;
 
@@ -434,9 +455,9 @@ export class CreateOne${pascal}ResponseDTO {
   updatedAt!: Date;
 }
 
-export class CreateMany${pascal}sResponseDTO {
+export class CreateMany${pascalMultiple}ResponseDTO {
   @NestedArrayDTO(() => CreateOne${pascal}ResponseDTO)
-  created${pascal}s!: CreateOne${pascal}ResponseDTO[];
+  created${pascalMultiple}!: CreateOne${pascal}ResponseDTO[];
 }
 `;
 
@@ -456,9 +477,9 @@ export class GetOne${pascal}ByIdResponseDTO {
   updatedAt!: Date;
 }
 
-export class FindMany${pascal}sResponseDTO {
+export class FindMany${pascalMultiple}ResponseDTO {
   @NestedArrayDTO(() => GetOne${pascal}ByIdResponseDTO)
-  ${camel}s!: GetOne${pascal}ByIdResponseDTO[];
+  ${camelMultiple}!: GetOne${pascal}ByIdResponseDTO[];
 }
 `;
 
@@ -571,40 +592,40 @@ if (selectedFilesToGenerate.includes('moduleAndUseCase')) {
     'DTO',
     `CreateOneOrMany${pascal}RequestDTO`,
     getCreateOneOrManyRequestDTO(),
-    `./shared/src/types/shared/dto/request_body/mutation/createOneOrMany${pascal}s.dto.ts`,
+    `./shared/src/types/shared/dto/request_body/mutation/createOneOrMany${pascalMultiple}.dto.ts`,
     dryRun,
     `./shared/src/types/shared/dto/request_body/mutation/index.ts`,
-    `export * from './createOneOrMany${pascal}s.dto';\n`,
+    `export * from './createOneOrMany${pascalMultiple}.dto';\n`,
   );
 
   await writeNewFileAndExtendDirReexportsAndLog(
     'DTO',
     `UpdateOneOrMany${pascal}RequestDTO`,
     getUpdateOneOrManyRequestDTO(),
-    `./shared/src/types/shared/dto/request_body/mutation/updateOneOrMany${pascal}s.dto.ts`,
+    `./shared/src/types/shared/dto/request_body/mutation/updateOneOrMany${pascalMultiple}.dto.ts`,
     dryRun,
     `./shared/src/types/shared/dto/request_body/mutation/index.ts`,
-    `export * from './updateOneOrMany${pascal}s.dto';\n`,
+    `export * from './updateOneOrMany${pascalMultiple}.dto';\n`,
   );
 
   await writeNewFileAndExtendDirReexportsAndLog(
     'DTO',
     `CreateOneOrMany${pascal}ResponseDTO`,
     getCreateOneOrManyResponseDTO(),
-    `./shared/src/types/shared/dto/response_body/mutation/createOneOrMany${pascal}s.dto.ts`,
+    `./shared/src/types/shared/dto/response_body/mutation/createOneOrMany${pascalMultiple}.dto.ts`,
     dryRun,
     `./shared/src/types/shared/dto/response_body/mutation/index.ts`,
-    `export * from './createOneOrMany${pascal}s.dto';\n`,
+    `export * from './createOneOrMany${pascalMultiple}.dto';\n`,
   );
 
   await writeNewFileAndExtendDirReexportsAndLog(
     'DTO',
     `GetOneOrFindMany${pascal}ResponseDTO`,
     getFindOneOrManyResponseDTO(),
-    `./shared/src/types/shared/dto/response_body/query/getOneOrMany${pascal}s.dto.ts`,
+    `./shared/src/types/shared/dto/response_body/query/getOneOrMany${pascalMultiple}.dto.ts`,
     dryRun,
     `./shared/src/types/shared/dto/response_body/query/index.ts`,
-    `export * from './getOneOrMany${pascal}s.dto';\n`,
+    `export * from './getOneOrMany${pascalMultiple}.dto';\n`,
   );
 
   console.log(chalk.cyan(`\n------ new AppModule.ts were generated\n`));
