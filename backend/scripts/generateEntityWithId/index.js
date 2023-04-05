@@ -12,7 +12,6 @@ import { camelCase, pascalCase, snakeCase } from 'change-case';
 import prompts from 'prompts';
 import chalk from 'chalk';
 import {
-  typeormModelInjectImport,
   appendRelationMapMixinToFileAndLog,
   lintBackend,
   writeNewDI_RepoFileAndExtendDirReexportsAndLog,
